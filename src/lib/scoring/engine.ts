@@ -15,12 +15,10 @@ function scoreQuestion(question: Question, answers: Answers): number {
 
   if (question.type === "multi") {
     const selected = Array.isArray(answer) ? answer : [];
-    return thresholdScore(
-      selected.length,
-      question.options.length,
-      question.weight,
-      question.baselineAtOne
-    );
+    if (question.noneOption && selected.includes(question.noneOption.value)) return 0;
+    const validOptionValues = new Set(question.options.map((o) => o.value));
+    const count = selected.filter((v) => validOptionValues.has(v)).length;
+    return thresholdScore(count, question.options.length, question.weight, question.baselineAtOne);
   }
 
   // matrix

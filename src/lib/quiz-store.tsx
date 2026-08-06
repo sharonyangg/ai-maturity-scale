@@ -45,10 +45,12 @@ export interface CompanyInfo {
   department?: string;
 }
 
-/** page6 結尾兩題複選題，已驗證不影響計分，純資訊蒐集用途 */
+/** page6 結尾兩題複選題（Q18、Q19），已驗證不影響計分，純資訊蒐集用途 */
 export interface ClosingAnswers {
   q1: string[];
+  q1Other: string;
   q2: string[];
+  q2Other: string;
 }
 
 interface QuizState {
@@ -62,13 +64,14 @@ const STORAGE_KEY = "ai-maturity-quiz-state";
 const initialState: QuizState = {
   companyInfo: {},
   answers: {},
-  closing: { q1: [], q2: [] },
+  closing: { q1: [], q1Other: "", q2: [], q2Other: "" },
 };
 
 type Action =
   | { type: "SET_COMPANY_FIELD"; field: keyof CompanyInfo; value: string }
   | { type: "SET_ANSWER"; questionId: string; value: Answers[string] }
-  | { type: "SET_CLOSING"; field: keyof ClosingAnswers; value: string[] }
+  | { type: "SET_CLOSING"; field: "q1" | "q2"; value: string[] }
+  | { type: "SET_CLOSING_OTHER"; field: "q1Other" | "q2Other"; value: string }
   | { type: "HYDRATE"; state: QuizState }
   | { type: "RESET" };
 
@@ -79,6 +82,8 @@ function reducer(state: QuizState, action: Action): QuizState {
     case "SET_ANSWER":
       return { ...state, answers: { ...state.answers, [action.questionId]: action.value } };
     case "SET_CLOSING":
+      return { ...state, closing: { ...state.closing, [action.field]: action.value } };
+    case "SET_CLOSING_OTHER":
       return { ...state, closing: { ...state.closing, [action.field]: action.value } };
     case "HYDRATE":
       return action.state;
@@ -92,7 +97,8 @@ function reducer(state: QuizState, action: Action): QuizState {
 interface QuizContextValue extends QuizState {
   setCompanyField: (field: keyof CompanyInfo, value: string) => void;
   setAnswer: (questionId: string, value: Answers[string]) => void;
-  setClosing: (field: keyof ClosingAnswers, value: string[]) => void;
+  setClosing: (field: "q1" | "q2", value: string[]) => void;
+  setClosingOther: (field: "q1Other" | "q2Other", value: string) => void;
   reset: () => void;
 }
 
@@ -122,6 +128,7 @@ export function QuizProvider({ children }: { children: React.ReactNode }) {
       setCompanyField: (field, value) => dispatch({ type: "SET_COMPANY_FIELD", field, value }),
       setAnswer: (questionId, value) => dispatch({ type: "SET_ANSWER", questionId, value }),
       setClosing: (field, value) => dispatch({ type: "SET_CLOSING", field, value }),
+      setClosingOther: (field, value) => dispatch({ type: "SET_CLOSING_OTHER", field, value }),
       reset: () => {
         dispatch({ type: "RESET" });
         window.localStorage.removeItem(STORAGE_KEY);

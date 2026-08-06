@@ -36,18 +36,25 @@ export function QuestionField({ question }: { question: Question }) {
 
   if (question.type === "multi") {
     const selected = Array.isArray(answer) ? answer : [];
+    const noneValue = question.noneOption?.value;
+    const isNoneSelected = noneValue !== undefined && selected.includes(noneValue);
+
     const toggle = (value: string) => {
-      const next = selected.includes(value)
-        ? selected.filter((v) => v !== value)
-        : [...selected, value];
+      // 「以上皆無」與其他選項互斥：勾其中一種要清掉另一種
+      if (value === noneValue) {
+        setAnswer(question.id, isNoneSelected ? [] : [value]);
+        return;
+      }
+      const withoutNone = noneValue ? selected.filter((v) => v !== noneValue) : selected;
+      const next = withoutNone.includes(value)
+        ? withoutNone.filter((v) => v !== value)
+        : [...withoutNone, value];
       setAnswer(question.id, next);
     };
+
     return (
       <fieldset className="space-y-3">
-        <legend className="font-medium text-gray-900">
-          {question.title}
-          <span className="ml-2 text-xs font-normal text-gray-500">（複選）</span>
-        </legend>
+        <legend className="font-medium text-gray-900">{question.title}</legend>
         <div className="space-y-2">
           {question.options.map((option) => (
             <label
@@ -63,6 +70,17 @@ export function QuestionField({ question }: { question: Question }) {
               <span>{option.label}</span>
             </label>
           ))}
+          {question.noneOption && (
+            <label className="flex items-center gap-3 rounded-lg border border-gray-200 px-4 py-2.5 cursor-pointer hover:bg-gray-50 has-checked:border-blue-500 has-checked:bg-blue-50">
+              <input
+                type="checkbox"
+                checked={isNoneSelected}
+                onChange={() => toggle(question.noneOption!.value)}
+                className="accent-blue-600"
+              />
+              <span>{question.noneOption.label}</span>
+            </label>
+          )}
         </div>
       </fieldset>
     );

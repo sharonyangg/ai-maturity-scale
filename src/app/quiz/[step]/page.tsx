@@ -6,7 +6,6 @@ import { ClosingQuestionsForm } from "@/components/quiz/ClosingQuestionsForm";
 import { QuestionField } from "@/components/quiz/QuestionField";
 import { useQuizStore } from "@/lib/quiz-store";
 import { QUESTIONS_BY_ID, QUESTION_PAGES } from "@/lib/scoring/questions";
-import { DIMENSION_LABELS } from "@/lib/scoring/dimensions";
 import { encodeAnswers } from "@/lib/answer-codec";
 
 export default function QuizStepPage() {
@@ -38,7 +37,7 @@ export default function QuizStepPage() {
       {dimensionPage && (
         <div className="space-y-8">
           <h2 className="text-lg font-semibold text-gray-900">
-            {DIMENSION_LABELS[dimensionPage.dimension]}
+            {dimensionPage.sectionTitle}
           </h2>
           {dimensionPage.questionIds.map((id) => (
             <QuestionField key={id} question={QUESTIONS_BY_ID[id]} />

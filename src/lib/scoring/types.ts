@@ -32,7 +32,13 @@ export interface MultiChoiceQuestion {
   type: "multi";
   title: string;
   weight: number;
+  /** 計入門檻式計分公式的選項（原站選項總數會扣掉「以上皆無」這類互斥選項） */
   options: { value: string; label: string }[];
+  /**
+   * 原站部分複選題有「以上皆無」這種互斥選項：勾選它會清空其他選項（反之亦然），
+   * 且不計入 options.length 的門檻公式，分數固定為 0。
+   */
+  noneOption?: { value: string; label: string };
   /** 勾選 1 項時的分數（門檻式計分的基礎分），已實測或估算值，見 curve.ts 說明 */
   baselineAtOne: number;
   /** 基礎分是否為實測值（false = 依 Q10 之比例估算） */
