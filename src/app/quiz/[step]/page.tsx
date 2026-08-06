@@ -62,7 +62,7 @@ export default function QuizStepPage() {
           onClick={goNext}
           className="rounded-lg bg-blue-600 px-6 py-2 font-medium text-white hover:bg-blue-700"
         >
-          {step === 6 ? "送出" : "下一步"}
+          {step === 6 ? "確認送出" : "下一步"}
         </button>
       </div>
     </div>

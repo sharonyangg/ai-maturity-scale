@@ -5,20 +5,44 @@ import type { Answers } from "./scoring/types";
 
 /**
  * page0（公司基本資料）在原站共有 q1~q13 共 13 個欄位，且不影響計分。
- * 交接文件只留下其中一組測試假資料，欄位對應關係未逐一還原，先用已知的幾項起步，
- * 之後對照原站補齊。
+ * role / companyName / taxId / identityType / identityTypeOther / purpose / purposeOther
+ * 這幾個欄位的名稱與選項，已從原站 JS 打包檔內的表單驗證文字逐字確認過。
+ * address / industry / city / employeeScale / department 目前仍沿用交接文件測試假資料的欄位猜測，
+ * 未在原站程式碼中逐一驗證。
  */
+export const IDENTITY_TYPE_OPTIONS = [
+  "製造業廠商",
+  "服務業廠商",
+  "公協會",
+  "法人機構",
+  "政府機關",
+  "學界機構",
+  "顧問公司",
+  "技術方案業者",
+  "其他",
+] as const;
+
+export const PURPOSE_OPTIONS = [
+  "企業導入參考",
+  "教育或教育訓練用",
+  "產業研究需要",
+  "個人興趣想了解",
+  "其他",
+] as const;
+
 export interface CompanyInfo {
+  role?: string;
   companyName?: string;
   taxId?: string;
+  identityType?: string;
+  identityTypeOther?: string;
+  purpose?: string;
+  purposeOther?: string;
   address?: string;
   industry?: string;
   city?: string;
   employeeScale?: string;
-  role?: string;
   department?: string;
-  purpose?: string;
-  email?: string;
 }
 
 /** page6 結尾兩題複選題，已驗證不影響計分，純資訊蒐集用途 */
