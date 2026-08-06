@@ -63,20 +63,20 @@ export function ClosingQuestionsForm() {
     };
 
     return (
-      <fieldset key={field} className="rounded-2xl bg-white p-6 shadow-[0_2px_16px_rgba(15,23,42,0.08)]">
-        <legend className="mb-4 font-semibold text-black">
+      <div key={field} className="rounded-2xl bg-white p-6 shadow-[0_2px_16px_rgba(15,23,42,0.08)]">
+        <p className="mb-4 font-semibold text-black break-words">
           {index}.{title}
           <span className="ml-2 text-xs font-normal text-gray-500">
             【複選，最多選{MAX_SELECT}個】
           </span>
-        </legend>
+        </p>
         <div className="space-y-3">
           {options.map((label) => {
             const disabled = !selected.includes(label) && atLimit;
             return (
               <label
                 key={label}
-                className={`flex items-center gap-3 text-black ${
+                className={`flex items-start gap-3 text-black transition-colors has-checked:text-emerald-700 has-checked:font-medium ${
                   disabled ? "cursor-not-allowed opacity-40" : "cursor-pointer"
                 }`}
               >
@@ -85,14 +85,14 @@ export function ClosingQuestionsForm() {
                   checked={selected.includes(label)}
                   disabled={disabled}
                   onChange={() => toggle(label)}
-                  className="h-4 w-4 shrink-0 accent-[#2a78d6]"
+                  className="mt-1 h-4 w-4 shrink-0 accent-emerald-600"
                 />
-                <span>{label}</span>
+                <span className="min-w-0 break-words">{label}</span>
               </label>
             );
           })}
           <label
-            className={`flex items-center gap-3 text-black ${
+            className={`flex items-start gap-3 text-black transition-colors has-checked:text-emerald-700 has-checked:font-medium ${
               !selected.includes(OTHER_VALUE) && atLimit
                 ? "cursor-not-allowed opacity-40"
                 : "cursor-pointer"
@@ -103,9 +103,9 @@ export function ClosingQuestionsForm() {
               checked={selected.includes(OTHER_VALUE)}
               disabled={!selected.includes(OTHER_VALUE) && atLimit}
               onChange={() => toggle(OTHER_VALUE)}
-              className="h-4 w-4 shrink-0 accent-[#2a78d6]"
+              className="mt-1 h-4 w-4 shrink-0 accent-emerald-600"
             />
-            <span>其他</span>
+            <span className="min-w-0 break-words">其他</span>
           </label>
           {selected.includes(OTHER_VALUE) && (
             <input
@@ -113,11 +113,11 @@ export function ClosingQuestionsForm() {
               value={otherText}
               onChange={(e) => setClosingOther(otherField, e.target.value)}
               placeholder="請輸入其他內容"
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-black focus:border-[#3987e5] focus:outline-none focus:ring-2 focus:ring-[#3987e5]/20"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-black focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
             />
           )}
         </div>
-      </fieldset>
+      </div>
     );
   };
 

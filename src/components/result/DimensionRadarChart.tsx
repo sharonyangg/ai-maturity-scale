@@ -23,8 +23,8 @@ export function DimensionRadarChart({ scores }: { scores: Record<DimensionKey, n
         <RadarChart data={data} outerRadius="75%">
           <defs>
             <radialGradient id="radarFill" cx="50%" cy="50%" r="70%">
-              <stop offset="0%" stopColor="#5598e7" stopOpacity={0.55} />
-              <stop offset="100%" stopColor="#104281" stopOpacity={0.25} />
+              <stop offset="0%" stopColor="#34d399" stopOpacity={0.55} />
+              <stop offset="100%" stopColor="#047857" stopOpacity={0.25} />
             </radialGradient>
           </defs>
           <PolarGrid stroke="#e1e0d9" />
@@ -33,9 +33,11 @@ export function DimensionRadarChart({ scores }: { scores: Record<DimensionKey, n
           <Radar
             name="成熟度分數"
             dataKey="score"
-            stroke="#2a78d6"
+            stroke="#059669"
             strokeWidth={2}
             fill="url(#radarFill)"
+            animationDuration={700}
+            animationEasing="ease-out"
           />
         </RadarChart>
       </ResponsiveContainer>

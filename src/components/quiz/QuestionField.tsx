@@ -3,6 +3,11 @@
 import type { Question } from "@/lib/scoring/types";
 import { useQuizStore } from "@/lib/quiz-store";
 
+const CARD_CLASS = "rounded-2xl bg-white p-6 shadow-[0_2px_16px_rgba(15,23,42,0.08)]";
+const TITLE_CLASS = "mb-4 font-semibold text-black break-words";
+const OPTION_LABEL_CLASS =
+  "flex items-start gap-3 cursor-pointer text-black transition-colors has-checked:text-emerald-700 has-checked:font-medium";
+
 export function QuestionField({ question }: { question: Question }) {
   const { answers, setAnswer } = useQuizStore();
   const answer = answers[question.id];
@@ -10,27 +15,24 @@ export function QuestionField({ question }: { question: Question }) {
   if (question.type === "single") {
     const selected = typeof answer === "string" ? answer : undefined;
     return (
-      <fieldset className="rounded-2xl bg-white p-6 shadow-[0_2px_16px_rgba(15,23,42,0.08)]">
-        <legend className="mb-4 font-semibold text-black">{question.title}</legend>
+      <div className={CARD_CLASS}>
+        <p className={TITLE_CLASS}>{question.title}</p>
         <div className="space-y-3">
           {question.options.map((option) => (
-            <label
-              key={option.value}
-              className="flex items-center gap-3 cursor-pointer text-black"
-            >
+            <label key={option.value} className={OPTION_LABEL_CLASS}>
               <input
                 type="radio"
                 name={question.id}
                 value={option.value}
                 checked={selected === option.value}
                 onChange={() => setAnswer(question.id, option.value)}
-                className="h-4 w-4 shrink-0 accent-[#2a78d6]"
+                className="mt-1 h-4 w-4 shrink-0 accent-emerald-600"
               />
-              <span>{option.label}</span>
+              <span className="min-w-0 break-words">{option.label}</span>
             </label>
           ))}
         </div>
-      </fieldset>
+      </div>
     );
   }
 
@@ -53,36 +55,33 @@ export function QuestionField({ question }: { question: Question }) {
     };
 
     return (
-      <fieldset className="rounded-2xl bg-white p-6 shadow-[0_2px_16px_rgba(15,23,42,0.08)]">
-        <legend className="mb-4 font-semibold text-black">{question.title}</legend>
+      <div className={CARD_CLASS}>
+        <p className={TITLE_CLASS}>{question.title}</p>
         <div className="space-y-3">
           {question.options.map((option) => (
-            <label
-              key={option.value}
-              className="flex items-center gap-3 cursor-pointer text-black"
-            >
+            <label key={option.value} className={OPTION_LABEL_CLASS}>
               <input
                 type="checkbox"
                 checked={selected.includes(option.value)}
                 onChange={() => toggle(option.value)}
-                className="h-4 w-4 shrink-0 accent-[#2a78d6]"
+                className="mt-1 h-4 w-4 shrink-0 accent-emerald-600"
               />
-              <span>{option.label}</span>
+              <span className="min-w-0 break-words">{option.label}</span>
             </label>
           ))}
           {question.noneOption && (
-            <label className="flex items-center gap-3 cursor-pointer text-black">
+            <label className={OPTION_LABEL_CLASS}>
               <input
                 type="checkbox"
                 checked={isNoneSelected}
                 onChange={() => toggle(question.noneOption!.value)}
-                className="h-4 w-4 shrink-0 accent-[#2a78d6]"
+                className="mt-1 h-4 w-4 shrink-0 accent-emerald-600"
               />
-              <span>{question.noneOption.label}</span>
+              <span className="min-w-0 break-words">{question.noneOption.label}</span>
             </label>
           )}
         </div>
-      </fieldset>
+      </div>
     );
   }
 
@@ -96,15 +95,18 @@ export function QuestionField({ question }: { question: Question }) {
   };
 
   return (
-    <fieldset className="rounded-2xl bg-white p-6 shadow-[0_2px_16px_rgba(15,23,42,0.08)]">
-      <legend className="mb-4 font-semibold text-black">{question.title}</legend>
+    <div className={CARD_CLASS}>
+      <p className={TITLE_CLASS}>{question.title}</p>
       <div className="overflow-x-auto">
         <table className="w-full text-sm border-collapse">
           <thead>
             <tr>
               <th className="text-left font-normal text-gray-500 py-2" />
               {question.subItemOptions.map((opt) => (
-                <th key={opt.value} className="text-center font-normal text-gray-500 py-2 px-2">
+                <th
+                  key={opt.value}
+                  className="min-w-[86px] break-words text-center font-normal text-gray-500 py-2 px-2"
+                >
                   {opt.label}
                 </th>
               ))}
@@ -113,7 +115,7 @@ export function QuestionField({ question }: { question: Question }) {
           <tbody>
             {question.subItems.map((sub) => (
               <tr key={sub.id} className="border-t border-gray-100">
-                <td className="py-2.5 pr-4 text-black">{sub.label}</td>
+                <td className="max-w-[160px] break-words py-2.5 pr-4 text-black">{sub.label}</td>
                 {question.subItemOptions.map((opt) => (
                   <td key={opt.value} className="text-center py-2.5 px-2">
                     <input
@@ -122,7 +124,7 @@ export function QuestionField({ question }: { question: Question }) {
                       value={opt.value}
                       checked={selections[sub.id] === opt.value}
                       onChange={() => setSubItem(sub.id, opt.value)}
-                      className="h-4 w-4 accent-[#2a78d6]"
+                      className="h-4 w-4 accent-emerald-600"
                     />
                   </td>
                 ))}
@@ -131,6 +133,6 @@ export function QuestionField({ question }: { question: Question }) {
           </tbody>
         </table>
       </div>
-    </fieldset>
+    </div>
   );
 }

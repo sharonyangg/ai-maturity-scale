@@ -20,7 +20,7 @@ const UNVERIFIED_FIELDS: { key: keyof CompanyInfo; label: string; placeholder?: 
 ];
 
 const inputClass =
-  "w-full rounded-lg border border-gray-300 px-3 py-2 text-black focus:border-[#3987e5] focus:outline-none focus:ring-2 focus:ring-[#3987e5]/20";
+  "w-full rounded-lg border border-gray-300 px-3 py-2 text-black focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20";
 const labelClass = "mb-1 block text-sm font-medium text-black";
 
 export function CompanyInfoForm() {

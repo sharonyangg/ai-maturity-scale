@@ -40,8 +40,14 @@ export default function QuizStepPage() {
             {dimensionPage.sectionTitle}
           </h2>
           <div className="space-y-6">
-            {dimensionPage.questionIds.map((id) => (
-              <QuestionField key={id} question={QUESTIONS_BY_ID[id]} />
+            {dimensionPage.questionIds.map((id, index) => (
+              <div
+                key={id}
+                className="animate-fade-up"
+                style={{ animationDelay: `${index * 60}ms` }}
+              >
+                <QuestionField question={QUESTIONS_BY_ID[id]} />
+              </div>
             ))}
           </div>
         </div>
@@ -61,7 +67,7 @@ export default function QuizStepPage() {
         <button
           type="button"
           onClick={goNext}
-          className="rounded-full bg-gradient-to-r from-[#3987e5] to-[#104281] px-8 py-2.5 font-medium text-white shadow-[0_4px_20px_rgba(57,135,229,0.35)] transition-all hover:shadow-[0_4px_28px_rgba(57,135,229,0.55)] hover:brightness-110"
+          className="rounded-full bg-gradient-to-r from-emerald-500 to-emerald-700 px-8 py-2.5 font-medium text-white shadow-[0_4px_20px_rgba(5,150,105,0.35)] transition-all hover:scale-[1.03] hover:shadow-[0_4px_28px_rgba(5,150,105,0.5)] active:scale-[0.97]"
         >
           {step === 6 ? "確認送出" : "下一步"}
         </button>
