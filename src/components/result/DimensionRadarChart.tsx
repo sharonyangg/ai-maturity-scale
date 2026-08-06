@@ -21,15 +21,21 @@ export function DimensionRadarChart({ scores }: { scores: Record<DimensionKey, n
     <div className="h-96 w-full">
       <ResponsiveContainer width="100%" height="100%">
         <RadarChart data={data} outerRadius="75%">
-          <PolarGrid />
-          <PolarAngleAxis dataKey="dimension" tick={{ fontSize: 13 }} />
-          <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fontSize: 10 }} />
+          <defs>
+            <radialGradient id="radarFill" cx="50%" cy="50%" r="70%">
+              <stop offset="0%" stopColor="#5598e7" stopOpacity={0.55} />
+              <stop offset="100%" stopColor="#104281" stopOpacity={0.25} />
+            </radialGradient>
+          </defs>
+          <PolarGrid stroke="#e1e0d9" />
+          <PolarAngleAxis dataKey="dimension" tick={{ fontSize: 13, fill: "#0b0b0b" }} />
+          <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fontSize: 10, fill: "#898781" }} />
           <Radar
             name="成熟度分數"
             dataKey="score"
-            stroke="#2563eb"
-            fill="#3b82f6"
-            fillOpacity={0.4}
+            stroke="#2a78d6"
+            strokeWidth={2}
+            fill="url(#radarFill)"
           />
         </RadarChart>
       </ResponsiveContainer>

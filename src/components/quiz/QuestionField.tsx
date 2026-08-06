@@ -10,7 +10,7 @@ export function QuestionField({ question }: { question: Question }) {
   if (question.type === "single") {
     const selected = typeof answer === "string" ? answer : undefined;
     return (
-      <fieldset className="rounded-2xl bg-white p-6 shadow-sm">
+      <fieldset className="rounded-2xl bg-white p-6 shadow-[0_8px_30px_rgba(0,0,0,0.35)]">
         <legend className="mb-4 font-semibold text-black">{question.title}</legend>
         <div className="space-y-3">
           {question.options.map((option) => (
@@ -24,7 +24,7 @@ export function QuestionField({ question }: { question: Question }) {
                 value={option.value}
                 checked={selected === option.value}
                 onChange={() => setAnswer(question.id, option.value)}
-                className="h-4 w-4 shrink-0 accent-blue-600"
+                className="h-4 w-4 shrink-0 accent-[#2a78d6]"
               />
               <span>{option.label}</span>
             </label>
@@ -53,7 +53,7 @@ export function QuestionField({ question }: { question: Question }) {
     };
 
     return (
-      <fieldset className="rounded-2xl bg-white p-6 shadow-sm">
+      <fieldset className="rounded-2xl bg-white p-6 shadow-[0_8px_30px_rgba(0,0,0,0.35)]">
         <legend className="mb-4 font-semibold text-black">{question.title}</legend>
         <div className="space-y-3">
           {question.options.map((option) => (
@@ -65,7 +65,7 @@ export function QuestionField({ question }: { question: Question }) {
                 type="checkbox"
                 checked={selected.includes(option.value)}
                 onChange={() => toggle(option.value)}
-                className="h-4 w-4 shrink-0 accent-blue-600"
+                className="h-4 w-4 shrink-0 accent-[#2a78d6]"
               />
               <span>{option.label}</span>
             </label>
@@ -76,7 +76,7 @@ export function QuestionField({ question }: { question: Question }) {
                 type="checkbox"
                 checked={isNoneSelected}
                 onChange={() => toggle(question.noneOption!.value)}
-                className="h-4 w-4 shrink-0 accent-blue-600"
+                className="h-4 w-4 shrink-0 accent-[#2a78d6]"
               />
               <span>{question.noneOption.label}</span>
             </label>
@@ -96,7 +96,7 @@ export function QuestionField({ question }: { question: Question }) {
   };
 
   return (
-    <fieldset className="rounded-2xl bg-white p-6 shadow-sm">
+    <fieldset className="rounded-2xl bg-white p-6 shadow-[0_8px_30px_rgba(0,0,0,0.35)]">
       <legend className="mb-4 font-semibold text-black">{question.title}</legend>
       <div className="overflow-x-auto">
         <table className="w-full text-sm border-collapse">
@@ -122,7 +122,7 @@ export function QuestionField({ question }: { question: Question }) {
                       value={opt.value}
                       checked={selections[sub.id] === opt.value}
                       onChange={() => setSubItem(sub.id, opt.value)}
-                      className="h-4 w-4 accent-blue-600"
+                      className="h-4 w-4 accent-[#2a78d6]"
                     />
                   </td>
                 ))}

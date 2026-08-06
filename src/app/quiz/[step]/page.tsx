@@ -15,7 +15,7 @@ export default function QuizStepPage() {
   const step = Number(params.step);
 
   if (!Number.isInteger(step) || step < 0 || step > 6) {
-    return <p className="text-gray-600">找不到這個步驟。</p>;
+    return <p className="text-slate-300">找不到這個步驟。</p>;
   }
 
   const goPrev = () => step > 0 && router.push(`/quiz/${step - 1}`);
@@ -36,7 +36,7 @@ export default function QuizStepPage() {
 
       {dimensionPage && (
         <div className="space-y-6">
-          <h2 className="text-center text-xl font-bold text-black">
+          <h2 className="text-center text-xl font-bold text-white">
             {dimensionPage.sectionTitle}
           </h2>
           <div className="space-y-6">
@@ -54,14 +54,14 @@ export default function QuizStepPage() {
           type="button"
           onClick={goPrev}
           disabled={step === 0}
-          className="rounded-lg px-4 py-2 text-gray-600 disabled:opacity-0"
+          className="rounded-lg px-4 py-2 text-slate-300 transition-colors hover:text-white disabled:opacity-0"
         >
           上一步
         </button>
         <button
           type="button"
           onClick={goNext}
-          className="rounded-lg bg-blue-600 px-6 py-2 font-medium text-white hover:bg-blue-700"
+          className="rounded-full bg-gradient-to-r from-[#3987e5] to-[#104281] px-8 py-2.5 font-medium text-white shadow-[0_4px_20px_rgba(57,135,229,0.35)] transition-all hover:shadow-[0_4px_28px_rgba(57,135,229,0.55)] hover:brightness-110"
         >
           {step === 6 ? "確認送出" : "下一步"}
         </button>

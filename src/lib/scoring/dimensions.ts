@@ -43,12 +43,16 @@ export const LEVEL_DESCRIPTIONS: Record<Level, string> = {
   4: "規模化擴散",
 };
 
-/** Tailwind 色系名稱，用於結果頁依等級呈現不同主色調 */
-export const LEVEL_COLORS: Record<Level, { text: string; bg: string; ring: string }> = {
-  1: { text: "text-slate-600", bg: "bg-slate-500", ring: "ring-slate-200" },
-  2: { text: "text-blue-600", bg: "bg-blue-500", ring: "ring-blue-200" },
-  3: { text: "text-indigo-600", bg: "bg-indigo-500", ring: "ring-indigo-200" },
-  4: { text: "text-emerald-600", bg: "bg-emerald-500", ring: "ring-emerald-200" },
+/**
+ * 每個等級的漸層色（起訖兩色的 hex），用於結果頁 hero 卡片背景。
+ * 四色沿用 dataviz skill 已驗證的類別色（藍/靛/水鴨綠），中性灰代表「尚未意識」，
+ * 呈現由冷到暖、由淡到亮的等級遞進感。
+ */
+export const LEVEL_COLORS: Record<Level, { from: string; to: string; glow: string }> = {
+  1: { from: "#52514e", to: "#2c2b28", glow: "rgba(82,81,78,0.45)" },
+  2: { from: "#3987e5", to: "#104281", glow: "rgba(57,135,229,0.45)" },
+  3: { from: "#6a5ad1", to: "#2c2266", glow: "rgba(106,90,209,0.45)" },
+  4: { from: "#1baf7a", to: "#0f7350", glow: "rgba(27,175,122,0.45)" },
 };
 
 /**

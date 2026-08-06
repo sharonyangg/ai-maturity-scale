@@ -63,7 +63,7 @@ export function ClosingQuestionsForm() {
     };
 
     return (
-      <fieldset key={field} className="rounded-2xl bg-white p-6 shadow-sm">
+      <fieldset key={field} className="rounded-2xl bg-white p-6 shadow-[0_8px_30px_rgba(0,0,0,0.35)]">
         <legend className="mb-4 font-semibold text-black">
           {index}.{title}
           <span className="ml-2 text-xs font-normal text-gray-500">
@@ -85,7 +85,7 @@ export function ClosingQuestionsForm() {
                   checked={selected.includes(label)}
                   disabled={disabled}
                   onChange={() => toggle(label)}
-                  className="h-4 w-4 shrink-0 accent-blue-600"
+                  className="h-4 w-4 shrink-0 accent-[#2a78d6]"
                 />
                 <span>{label}</span>
               </label>
@@ -103,7 +103,7 @@ export function ClosingQuestionsForm() {
               checked={selected.includes(OTHER_VALUE)}
               disabled={!selected.includes(OTHER_VALUE) && atLimit}
               onChange={() => toggle(OTHER_VALUE)}
-              className="h-4 w-4 shrink-0 accent-blue-600"
+              className="h-4 w-4 shrink-0 accent-[#2a78d6]"
             />
             <span>其他</span>
           </label>
@@ -113,7 +113,7 @@ export function ClosingQuestionsForm() {
               value={otherText}
               onChange={(e) => setClosingOther(otherField, e.target.value)}
               placeholder="請輸入其他內容"
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-black focus:border-blue-500 focus:outline-none"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-black focus:border-[#3987e5] focus:outline-none focus:ring-2 focus:ring-[#3987e5]/20"
             />
           )}
         </div>
@@ -124,8 +124,8 @@ export function ClosingQuestionsForm() {
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h2 className="text-xl font-bold text-black">公司經營目標與痛點</h2>
-        <p className="mt-1 text-sm text-gray-500">這兩題不影響計分，純粹是資訊蒐集用途。</p>
+        <h2 className="text-xl font-bold text-white">公司經營目標與痛點</h2>
+        <p className="mt-1 text-sm text-slate-400">這兩題不影響計分，純粹是資訊蒐集用途。</p>
       </div>
       {renderQuestion(
         "q1",

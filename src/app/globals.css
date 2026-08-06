@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #05070d;
+  --foreground: #e6e8ee;
 }
 
 @theme inline {
@@ -13,8 +13,10 @@
 }
 
 /*
- * 這個表單目前只有淺色版型（卡片背景固定白色），刻意不跟隨系統深色模式偏好，
- * 否則文字顏色會被瀏覽器自動換成淺色，在白色卡片上幾乎看不見。
+ * 整體版型是深色科技感外殼（TechBackdrop）+ 白色問卷卡片，兩者的文字顏色都用
+ * 明確的 class 指定，刻意不跟隨系統深色模式偏好——之前跟隨系統偏好時，白色卡片
+ * 裡的文字會被瀏覽器自動換成淺色，幾乎看不見。這裡的 --background/--foreground
+ * 只是外殼預設值，避免首次繪製時閃一下白底。
  */
 body {
   background: var(--background);

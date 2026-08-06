@@ -17,9 +17,9 @@ export function DimensionBreakdown({ scores }: { scores: Record<DimensionKey, nu
               </span>
               <span className="text-black">{score}%</span>
             </div>
-            <div className="h-2 rounded-full bg-gray-200">
+            <div className="h-2 rounded-full bg-[#e1e0d9]">
               <div
-                className="h-2 rounded-full bg-blue-600"
+                className="h-2 rounded-full bg-gradient-to-r from-[#5598e7] to-[#184f95]"
                 style={{ width: `${score}%` }}
               />
             </div>
