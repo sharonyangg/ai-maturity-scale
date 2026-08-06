@@ -63,21 +63,21 @@ export function ClosingQuestionsForm() {
     };
 
     return (
-      <fieldset key={field} className="space-y-3">
-        <legend className="font-medium text-gray-900">
+      <fieldset key={field} className="rounded-2xl bg-white p-6 shadow-sm">
+        <legend className="mb-4 font-semibold text-black">
           {index}.{title}
           <span className="ml-2 text-xs font-normal text-gray-500">
             【複選，最多選{MAX_SELECT}個】
           </span>
         </legend>
-        <div className="space-y-2">
+        <div className="space-y-3">
           {options.map((label) => {
             const disabled = !selected.includes(label) && atLimit;
             return (
               <label
                 key={label}
-                className={`flex items-center gap-3 rounded-lg border border-gray-200 px-4 py-2.5 ${
-                  disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:bg-gray-50"
+                className={`flex items-center gap-3 text-black ${
+                  disabled ? "cursor-not-allowed opacity-40" : "cursor-pointer"
                 }`}
               >
                 <input
@@ -85,17 +85,17 @@ export function ClosingQuestionsForm() {
                   checked={selected.includes(label)}
                   disabled={disabled}
                   onChange={() => toggle(label)}
-                  className="accent-blue-600"
+                  className="h-4 w-4 shrink-0 accent-blue-600"
                 />
                 <span>{label}</span>
               </label>
             );
           })}
           <label
-            className={`flex items-center gap-3 rounded-lg border border-gray-200 px-4 py-2.5 ${
+            className={`flex items-center gap-3 text-black ${
               !selected.includes(OTHER_VALUE) && atLimit
-                ? "cursor-not-allowed opacity-50"
-                : "cursor-pointer hover:bg-gray-50"
+                ? "cursor-not-allowed opacity-40"
+                : "cursor-pointer"
             }`}
           >
             <input
@@ -103,7 +103,7 @@ export function ClosingQuestionsForm() {
               checked={selected.includes(OTHER_VALUE)}
               disabled={!selected.includes(OTHER_VALUE) && atLimit}
               onChange={() => toggle(OTHER_VALUE)}
-              className="accent-blue-600"
+              className="h-4 w-4 shrink-0 accent-blue-600"
             />
             <span>其他</span>
           </label>
@@ -113,7 +113,7 @@ export function ClosingQuestionsForm() {
               value={otherText}
               onChange={(e) => setClosingOther(otherField, e.target.value)}
               placeholder="請輸入其他內容"
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-black focus:border-blue-500 focus:outline-none"
             />
           )}
         </div>
@@ -122,9 +122,11 @@ export function ClosingQuestionsForm() {
   };
 
   return (
-    <div className="space-y-8">
-      <h2 className="text-lg font-semibold text-gray-900">公司經營目標與痛點</h2>
-      <p className="text-sm text-gray-500">這兩題不影響計分，純粹是資訊蒐集用途。</p>
+    <div className="space-y-6">
+      <div className="text-center">
+        <h2 className="text-xl font-bold text-black">公司經營目標與痛點</h2>
+        <p className="mt-1 text-sm text-gray-500">這兩題不影響計分，純粹是資訊蒐集用途。</p>
+      </div>
       {renderQuestion(
         "q1",
         "q1Other",

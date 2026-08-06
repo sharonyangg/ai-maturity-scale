@@ -35,13 +35,15 @@ export default function QuizStepPage() {
       {step === 0 && <CompanyInfoForm />}
 
       {dimensionPage && (
-        <div className="space-y-8">
-          <h2 className="text-lg font-semibold text-gray-900">
+        <div className="space-y-6">
+          <h2 className="text-center text-xl font-bold text-black">
             {dimensionPage.sectionTitle}
           </h2>
-          {dimensionPage.questionIds.map((id) => (
-            <QuestionField key={id} question={QUESTIONS_BY_ID[id]} />
-          ))}
+          <div className="space-y-6">
+            {dimensionPage.questionIds.map((id) => (
+              <QuestionField key={id} question={QUESTIONS_BY_ID[id]} />
+            ))}
+          </div>
         </div>
       )}
 

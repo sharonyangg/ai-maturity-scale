@@ -9,13 +9,13 @@ export function DimensionBreakdown({ scores }: { scores: Record<DimensionKey, nu
         return (
           <div key={dim}>
             <div className="mb-1 flex items-baseline justify-between text-sm">
-              <span className="font-medium text-gray-800">
+              <span className="font-medium text-black">
                 {DIMENSION_LABELS[dim]}
-                <span className="ml-1 text-xs text-gray-400">
+                <span className="ml-1 text-xs text-gray-500">
                   （加權占比 {DIMENSION_WEIGHTS[dim] * 100}%）
                 </span>
               </span>
-              <span className="text-gray-600">{score}%</span>
+              <span className="text-black">{score}%</span>
             </div>
             <div className="h-2 rounded-full bg-gray-200">
               <div

@@ -36,6 +36,21 @@ export const LEVEL_NAMES: Record<Level, string> = {
   4: "Scaling AI",
 };
 
+export const LEVEL_DESCRIPTIONS: Record<Level, string> = {
+  1: "尚未意識",
+  2: "初步意識",
+  3: "準備就緒",
+  4: "規模化擴散",
+};
+
+/** Tailwind 色系名稱，用於結果頁依等級呈現不同主色調 */
+export const LEVEL_COLORS: Record<Level, { text: string; bg: string; ring: string }> = {
+  1: { text: "text-slate-600", bg: "bg-slate-500", ring: "ring-slate-200" },
+  2: { text: "text-blue-600", bg: "bg-blue-500", ring: "ring-blue-200" },
+  3: { text: "text-indigo-600", bg: "bg-indigo-500", ring: "ring-indigo-200" },
+  4: { text: "text-emerald-600", bg: "bg-emerald-500", ring: "ring-emerald-200" },
+};
+
 /**
  * 三個等級邊界，取實測夾出區間的中點作為判定門檻：
  *  - Unknowing / Conscious 實測區間 (20.25, 21]，取 20.625

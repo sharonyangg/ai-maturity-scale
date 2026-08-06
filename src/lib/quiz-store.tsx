@@ -61,6 +61,14 @@ interface QuizState {
 
 const STORAGE_KEY = "ai-maturity-quiz-state";
 
+/**
+ * 結果頁不在 QuizProvider 底下（它是獨立路由，答案已經編碼進 URL 了），
+ * 所以「回到首頁」要清掉暫存進度時，直接操作 localStorage，而不是透過 context。
+ */
+export function clearStoredQuizState() {
+  if (typeof window !== "undefined") window.localStorage.removeItem(STORAGE_KEY);
+}
+
 const initialState: QuizState = {
   companyInfo: {},
   answers: {},

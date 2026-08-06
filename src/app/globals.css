@@ -12,13 +12,10 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/*
+ * 這個表單目前只有淺色版型（卡片背景固定白色），刻意不跟隨系統深色模式偏好，
+ * 否則文字顏色會被瀏覽器自動換成淺色，在白色卡片上幾乎看不見。
+ */
 body {
   background: var(--background);
   color: var(--foreground);

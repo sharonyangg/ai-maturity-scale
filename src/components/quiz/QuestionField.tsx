@@ -10,13 +10,13 @@ export function QuestionField({ question }: { question: Question }) {
   if (question.type === "single") {
     const selected = typeof answer === "string" ? answer : undefined;
     return (
-      <fieldset className="space-y-3">
-        <legend className="font-medium text-gray-900">{question.title}</legend>
-        <div className="space-y-2">
+      <fieldset className="rounded-2xl bg-white p-6 shadow-sm">
+        <legend className="mb-4 font-semibold text-black">{question.title}</legend>
+        <div className="space-y-3">
           {question.options.map((option) => (
             <label
               key={option.value}
-              className="flex items-center gap-3 rounded-lg border border-gray-200 px-4 py-2.5 cursor-pointer hover:bg-gray-50 has-checked:border-blue-500 has-checked:bg-blue-50"
+              className="flex items-center gap-3 cursor-pointer text-black"
             >
               <input
                 type="radio"
@@ -24,7 +24,7 @@ export function QuestionField({ question }: { question: Question }) {
                 value={option.value}
                 checked={selected === option.value}
                 onChange={() => setAnswer(question.id, option.value)}
-                className="accent-blue-600"
+                className="h-4 w-4 shrink-0 accent-blue-600"
               />
               <span>{option.label}</span>
             </label>
@@ -53,30 +53,30 @@ export function QuestionField({ question }: { question: Question }) {
     };
 
     return (
-      <fieldset className="space-y-3">
-        <legend className="font-medium text-gray-900">{question.title}</legend>
-        <div className="space-y-2">
+      <fieldset className="rounded-2xl bg-white p-6 shadow-sm">
+        <legend className="mb-4 font-semibold text-black">{question.title}</legend>
+        <div className="space-y-3">
           {question.options.map((option) => (
             <label
               key={option.value}
-              className="flex items-center gap-3 rounded-lg border border-gray-200 px-4 py-2.5 cursor-pointer hover:bg-gray-50 has-checked:border-blue-500 has-checked:bg-blue-50"
+              className="flex items-center gap-3 cursor-pointer text-black"
             >
               <input
                 type="checkbox"
                 checked={selected.includes(option.value)}
                 onChange={() => toggle(option.value)}
-                className="accent-blue-600"
+                className="h-4 w-4 shrink-0 accent-blue-600"
               />
               <span>{option.label}</span>
             </label>
           ))}
           {question.noneOption && (
-            <label className="flex items-center gap-3 rounded-lg border border-gray-200 px-4 py-2.5 cursor-pointer hover:bg-gray-50 has-checked:border-blue-500 has-checked:bg-blue-50">
+            <label className="flex items-center gap-3 cursor-pointer text-black">
               <input
                 type="checkbox"
                 checked={isNoneSelected}
                 onChange={() => toggle(question.noneOption!.value)}
-                className="accent-blue-600"
+                className="h-4 w-4 shrink-0 accent-blue-600"
               />
               <span>{question.noneOption.label}</span>
             </label>
@@ -96,8 +96,8 @@ export function QuestionField({ question }: { question: Question }) {
   };
 
   return (
-    <fieldset className="space-y-3">
-      <legend className="font-medium text-gray-900">{question.title}</legend>
+    <fieldset className="rounded-2xl bg-white p-6 shadow-sm">
+      <legend className="mb-4 font-semibold text-black">{question.title}</legend>
       <div className="overflow-x-auto">
         <table className="w-full text-sm border-collapse">
           <thead>
@@ -113,16 +113,16 @@ export function QuestionField({ question }: { question: Question }) {
           <tbody>
             {question.subItems.map((sub) => (
               <tr key={sub.id} className="border-t border-gray-100">
-                <td className="py-2 pr-4 text-gray-800">{sub.label}</td>
+                <td className="py-2.5 pr-4 text-black">{sub.label}</td>
                 {question.subItemOptions.map((opt) => (
-                  <td key={opt.value} className="text-center py-2 px-2">
+                  <td key={opt.value} className="text-center py-2.5 px-2">
                     <input
                       type="radio"
                       name={`${question.id}_${sub.id}`}
                       value={opt.value}
                       checked={selections[sub.id] === opt.value}
                       onChange={() => setSubItem(sub.id, opt.value)}
-                      className="accent-blue-600"
+                      className="h-4 w-4 accent-blue-600"
                     />
                   </td>
                 ))}
