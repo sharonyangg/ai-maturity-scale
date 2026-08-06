@@ -83,19 +83,16 @@ export default function ResultPage() {
 
         <div className={CARD_CLASS} style={{ animationDelay: "160ms" }}>
           <DimensionRadarChart scores={result.dimensionScores} />
-        </div>
-
-        <div className={CARD_CLASS} style={{ animationDelay: "240ms" }}>
-          <h2 className="mb-4 text-lg font-semibold text-black">五大構面明細</h2>
+          <h2 className="mt-2 mb-4 text-lg font-semibold text-black">五大構面明細</h2>
           <DimensionBreakdown scores={result.dimensionScores} />
         </div>
 
-        <div className={CARD_CLASS} style={{ animationDelay: "320ms" }}>
+        <div className={CARD_CLASS} style={{ animationDelay: "240ms" }}>
           <h2 className="mb-4 text-lg font-semibold text-black">五大構面說明</h2>
           <DimensionNotes notes={commentary.dimensionNotes} />
         </div>
 
-        <div className={CARD_CLASS} style={{ animationDelay: "400ms" }}>
+        <div className={CARD_CLASS} style={{ animationDelay: "320ms" }}>
           <h2 className="mb-1 text-lg font-semibold text-black">AI 導入策略建議</h2>
           <p className="mb-3 text-xs text-gray-400">
             此建議依您所屬的成熟度等級提供代表性參考內容；原站會再依五大構面的實際分數組合進一步客製化，因此與您在原站看到的文字可能略有不同。
@@ -105,7 +102,7 @@ export default function ResultPage() {
 
         <div
           className="animate-fade-up flex flex-col items-center justify-center gap-3 pt-2 sm:flex-row"
-          style={{ animationDelay: "480ms" }}
+          style={{ animationDelay: "400ms" }}
         >
           <button
             type="button"
