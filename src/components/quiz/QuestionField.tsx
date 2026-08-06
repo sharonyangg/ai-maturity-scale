@@ -3,7 +3,7 @@
 import type { Question } from "@/lib/scoring/types";
 import { useQuizStore } from "@/lib/quiz-store";
 
-const CARD_CLASS = "rounded-2xl bg-white p-6 shadow-[0_2px_16px_rgba(15,23,42,0.08)]";
+const CARD_CLASS = "rounded-2xl bg-[#f7faf8] p-6 shadow-[0_2px_16px_rgba(15,23,42,0.08)]";
 const TITLE_CLASS = "mb-4 font-semibold text-black break-words";
 const OPTION_LABEL_CLASS =
   "flex items-start gap-3 cursor-pointer text-black transition-colors has-checked:text-emerald-700 has-checked:font-medium";

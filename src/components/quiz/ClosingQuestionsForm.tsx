@@ -63,7 +63,7 @@ export function ClosingQuestionsForm() {
     };
 
     return (
-      <div key={field} className="rounded-2xl bg-white p-6 shadow-[0_2px_16px_rgba(15,23,42,0.08)]">
+      <div key={field} className="rounded-2xl bg-[#f7faf8] p-6 shadow-[0_2px_16px_rgba(15,23,42,0.08)]">
         <p className="mb-4 font-semibold text-black break-words">
           {index}.{title}
           <span className="ml-2 text-xs font-normal text-gray-500">

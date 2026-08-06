@@ -71,14 +71,14 @@ export default function ResultPage() {
         </div>
 
         <div
-          className="animate-fade-up rounded-2xl bg-white p-6 shadow-[0_2px_16px_rgba(15,23,42,0.08)]"
+          className="animate-fade-up rounded-2xl bg-[#f7faf8] p-6 shadow-[0_2px_16px_rgba(15,23,42,0.08)]"
           style={{ animationDelay: "100ms" }}
         >
           <DimensionRadarChart scores={result.dimensionScores} />
         </div>
 
         <div
-          className="animate-fade-up rounded-2xl bg-white p-6 shadow-[0_2px_16px_rgba(15,23,42,0.08)]"
+          className="animate-fade-up rounded-2xl bg-[#f7faf8] p-6 shadow-[0_2px_16px_rgba(15,23,42,0.08)]"
           style={{ animationDelay: "180ms" }}
         >
           <h2 className="mb-4 text-lg font-semibold text-black">五大構面明細</h2>
