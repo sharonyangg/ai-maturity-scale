@@ -1,9 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { decodeAnswers } from "@/lib/answer-codec";
-import { clearStoredQuizState } from "@/lib/quiz-store";
+import { clearStoredQuizState, getStoredCompanyInfo } from "@/lib/quiz-store";
+import { downloadResultDocx } from "@/lib/export-docx";
 import { computeResult } from "@/lib/scoring/engine";
 import { LEVEL_COLORS, LEVEL_DESCRIPTIONS } from "@/lib/scoring/dimensions";
 import { DimensionRadarChart } from "@/components/result/DimensionRadarChart";
@@ -12,6 +14,7 @@ import { DimensionBreakdown } from "@/components/result/DimensionBreakdown";
 export default function ResultPage() {
   const params = useParams<{ code: string }>();
   const answers = decodeAnswers(params.code);
+  const [downloading, setDownloading] = useState(false);
 
   if (!answers) {
     return (
@@ -29,6 +32,15 @@ export default function ResultPage() {
 
   const result = computeResult(answers);
   const color = LEVEL_COLORS[result.level];
+
+  const handleDownload = async () => {
+    setDownloading(true);
+    try {
+      await downloadResultDocx(result, getStoredCompanyInfo());
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen px-4 py-12">
@@ -74,9 +86,17 @@ export default function ResultPage() {
         </div>
 
         <div
-          className="animate-fade-up flex justify-center pt-2"
+          className="animate-fade-up flex flex-col items-center justify-center gap-3 pt-2 sm:flex-row"
           style={{ animationDelay: "260ms" }}
         >
+          <button
+            type="button"
+            onClick={handleDownload}
+            disabled={downloading}
+            className="rounded-full border border-emerald-600 px-8 py-3 font-medium text-emerald-700 transition-all hover:scale-[1.03] hover:bg-emerald-50 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {downloading ? "產生中…" : "下載 Word 報告"}
+          </button>
           <Link
             href="/"
             onClick={clearStoredQuizState}

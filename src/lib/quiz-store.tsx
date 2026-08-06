@@ -45,6 +45,22 @@ export interface CompanyInfo {
   department?: string;
 }
 
+/** 依原站欄位順序排列，供 Word 報告等需要「欄位 key → 中文標籤」對照的地方共用 */
+export const COMPANY_FIELD_LABELS: Record<keyof CompanyInfo, string> = {
+  role: "職稱",
+  companyName: "公司名稱",
+  taxId: "公司統編",
+  identityType: "身份類型",
+  identityTypeOther: "其他身份類別",
+  purpose: "申請用途",
+  purposeOther: "其他用途",
+  address: "地址",
+  industry: "產業別",
+  city: "縣市",
+  employeeScale: "員工規模",
+  department: "部門",
+};
+
 /** page6 結尾兩題複選題（Q18、Q19），已驗證不影響計分，純資訊蒐集用途 */
 export interface ClosingAnswers {
   q1: string[];
@@ -67,6 +83,23 @@ const STORAGE_KEY = "ai-maturity-quiz-state";
  */
 export function clearStoredQuizState() {
   if (typeof window !== "undefined") window.localStorage.removeItem(STORAGE_KEY);
+}
+
+/**
+ * 結果頁下載 Word 報告時想帶上公司資訊，但結果頁本身不在 QuizProvider 底下，
+ * 所以一樣直接讀 localStorage。只在剛完成問卷、同一台裝置的情境下才讀得到；
+ * 純靠 URL 分享出去的結果連結不會有這份資料，屬預期行為。
+ */
+export function getStoredCompanyInfo(): CompanyInfo {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    if (!raw) return {};
+    const state = JSON.parse(raw) as QuizState;
+    return state.companyInfo ?? {};
+  } catch {
+    return {};
+  }
 }
 
 const initialState: QuizState = {
