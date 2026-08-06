@@ -8,8 +8,13 @@ import { clearStoredQuizState, getStoredCompanyInfo } from "@/lib/quiz-store";
 import { downloadResultDocx } from "@/lib/export-docx";
 import { computeResult } from "@/lib/scoring/engine";
 import { LEVEL_COLORS, LEVEL_DESCRIPTIONS } from "@/lib/scoring/dimensions";
+import { LEVEL_COMMENTARY } from "@/lib/scoring/commentary";
 import { DimensionRadarChart } from "@/components/result/DimensionRadarChart";
 import { DimensionBreakdown } from "@/components/result/DimensionBreakdown";
+import { DimensionNotes } from "@/components/result/DimensionNotes";
+
+const CARD_CLASS =
+  "animate-fade-up rounded-2xl bg-[#f7faf8] p-6 shadow-[0_2px_16px_rgba(15,23,42,0.08)]";
 
 export default function ResultPage() {
   const params = useParams<{ code: string }>();
@@ -32,6 +37,7 @@ export default function ResultPage() {
 
   const result = computeResult(answers);
   const color = LEVEL_COLORS[result.level];
+  const commentary = LEVEL_COMMENTARY[result.level];
 
   const handleDownload = async () => {
     setDownloading(true);
@@ -70,24 +76,36 @@ export default function ResultPage() {
           </div>
         </div>
 
-        <div
-          className="animate-fade-up rounded-2xl bg-[#f7faf8] p-6 shadow-[0_2px_16px_rgba(15,23,42,0.08)]"
-          style={{ animationDelay: "100ms" }}
-        >
+        <div className={CARD_CLASS} style={{ animationDelay: "80ms" }}>
+          <h2 className="mb-3 text-lg font-semibold text-black">整體評語</h2>
+          <p className="text-sm leading-relaxed text-gray-600">{commentary.overall}</p>
+        </div>
+
+        <div className={CARD_CLASS} style={{ animationDelay: "160ms" }}>
           <DimensionRadarChart scores={result.dimensionScores} />
         </div>
 
-        <div
-          className="animate-fade-up rounded-2xl bg-[#f7faf8] p-6 shadow-[0_2px_16px_rgba(15,23,42,0.08)]"
-          style={{ animationDelay: "180ms" }}
-        >
+        <div className={CARD_CLASS} style={{ animationDelay: "240ms" }}>
           <h2 className="mb-4 text-lg font-semibold text-black">五大構面明細</h2>
           <DimensionBreakdown scores={result.dimensionScores} />
         </div>
 
+        <div className={CARD_CLASS} style={{ animationDelay: "320ms" }}>
+          <h2 className="mb-4 text-lg font-semibold text-black">五大構面說明</h2>
+          <DimensionNotes notes={commentary.dimensionNotes} />
+        </div>
+
+        <div className={CARD_CLASS} style={{ animationDelay: "400ms" }}>
+          <h2 className="mb-1 text-lg font-semibold text-black">AI 導入策略建議</h2>
+          <p className="mb-3 text-xs text-gray-400">
+            此建議依您所屬的成熟度等級提供代表性參考內容；原站會再依五大構面的實際分數組合進一步客製化，因此與您在原站看到的文字可能略有不同。
+          </p>
+          <p className="text-sm leading-relaxed text-gray-600">{commentary.strategyAdvice}</p>
+        </div>
+
         <div
           className="animate-fade-up flex flex-col items-center justify-center gap-3 pt-2 sm:flex-row"
-          style={{ animationDelay: "260ms" }}
+          style={{ animationDelay: "480ms" }}
         >
           <button
             type="button"

@@ -17,6 +17,7 @@ import {
   DIMENSION_WEIGHTS,
   LEVEL_DESCRIPTIONS,
 } from "./scoring/dimensions";
+import { LEVEL_COMMENTARY } from "./scoring/commentary";
 import type { QuizResult } from "./scoring/types";
 
 const ACCENT = "047857"; // emerald-700，docx 顏色字串不含 #
@@ -27,6 +28,20 @@ function sectionHeading(text: string): Paragraph {
     heading: HeadingLevel.HEADING_2,
     spacing: { before: 300, after: 150 },
     children: [new TextRun({ text, bold: true, color: ACCENT })],
+  });
+}
+
+function bodyParagraph(text: string, opts?: { color?: string; size?: number }): Paragraph {
+  return new Paragraph({
+    spacing: { after: 150 },
+    children: [new TextRun({ text, color: opts?.color, size: opts?.size ?? 22 })],
+  });
+}
+
+function subHeading(text: string): Paragraph {
+  return new Paragraph({
+    spacing: { before: 150, after: 60 },
+    children: [new TextRun({ text, bold: true })],
   });
 }
 
@@ -47,6 +62,8 @@ function labelValueRow(label: string, value: string): TableRow {
 }
 
 function buildDocument(result: QuizResult, companyInfo: CompanyInfo): Document {
+  const commentary = LEVEL_COMMENTARY[result.level];
+
   const companyRows = (Object.keys(COMPANY_FIELD_LABELS) as (keyof CompanyInfo)[])
     .filter((key) => companyInfo[key])
     .map((key) => labelValueRow(COMPANY_FIELD_LABELS[key], companyInfo[key] as string));
@@ -123,11 +140,27 @@ function buildDocument(result: QuizResult, companyInfo: CompanyInfo): Document {
             ],
           }),
 
+          sectionHeading("整體評語"),
+          bodyParagraph(commentary.overall),
+
           sectionHeading("五大構面明細"),
           new Table({
             width: { size: 100, type: WidthType.PERCENTAGE },
             rows: [dimensionHeaderRow, ...dimensionRows],
           }),
+
+          sectionHeading("五大構面說明"),
+          ...DIMENSION_ORDER.flatMap((dim) => [
+            subHeading(DIMENSION_LABELS[dim]),
+            bodyParagraph(commentary.dimensionNotes[dim]),
+          ]),
+
+          sectionHeading("AI 導入策略建議"),
+          bodyParagraph(
+            "此建議依所屬的成熟度等級提供代表性參考內容；原站會再依五大構面的實際分數組合進一步客製化，因此與您在原站看到的文字可能略有不同。",
+            { color: "9CA3AF", size: 16 }
+          ),
+          bodyParagraph(commentary.strategyAdvice),
 
           new Paragraph({
             spacing: { before: 400 },
