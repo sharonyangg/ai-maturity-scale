@@ -32,7 +32,7 @@ export default function ResultPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-12">
-      <div className="mx-auto max-w-2xl space-y-6">
+      <div className="mx-auto max-w-4xl space-y-6">
         <div className={`rounded-2xl ${color.bg} px-8 py-10 text-center text-white shadow-sm`}>
           <p className="text-sm font-medium text-white/80">您的 AI 成熟度等級</p>
           <h1 className="mt-2 text-4xl font-bold">{result.levelName}</h1>

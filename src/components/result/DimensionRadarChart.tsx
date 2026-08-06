@@ -18,7 +18,7 @@ export function DimensionRadarChart({ scores }: { scores: Record<DimensionKey, n
   }));
 
   return (
-    <div className="h-80 w-full">
+    <div className="h-96 w-full">
       <ResponsiveContainer width="100%" height="100%">
         <RadarChart data={data} outerRadius="75%">
           <PolarGrid />
