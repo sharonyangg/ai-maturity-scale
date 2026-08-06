@@ -1,45 +1,14 @@
 "use client";
 
 import { useQuizStore } from "@/lib/quiz-store";
-
-/**
- * 原站 page6（第五部分之後的結尾兩題，Q18、Q19），已驗證勾任何組合都不影響
- * 五大構面分數與等級（見交接文件第5節），純粹是資訊蒐集用途。題目與選項文字
- * 為使用者親自截圖原站問卷後逐字轉錄。
- */
-const MAX_SELECT = 5;
-
-const Q18_OPTIONS = [
-  "產品研發設計",
-  "生產製程",
-  "供應鏈管理",
-  "品質檢測",
-  "設備維護",
-  "廠務管理",
-  "工廠碳排能耗",
-  "業務客服",
-  "營運管理行銷",
-  "人力資源",
-  "物流倉儲",
-];
-
-const Q19_OPTIONS = [
-  "尚無AI應用需求",
-  "導入AI的金額成本太高",
-  "缺乏相關技術人才",
-  "目標效益難以量化",
-  "風險難以評估",
-  "組織文化不支持創新",
-  "擔心公司資料外洩",
-  "公司資料尚未進行整合",
-  "領導階層對於AI認知不足",
-  "IT基礎建設不足",
-  "AI系統的穩定性和可靠性不足",
-  "維護和升級成本過高",
-  "能源成本耗費過高，不符合企業的節能減碳目標",
-];
-
-const OTHER_VALUE = "其他";
+import {
+  CLOSING_MAX_SELECT,
+  CLOSING_OTHER_VALUE,
+  Q18_OPTIONS,
+  Q18_TITLE,
+  Q19_OPTIONS,
+  Q19_TITLE,
+} from "@/lib/closing-questions";
 
 export function ClosingQuestionsForm() {
   const { closing, setClosing, setClosingOther } = useQuizStore();
@@ -53,11 +22,11 @@ export function ClosingQuestionsForm() {
   ) => {
     const selected = closing[field];
     const otherText = closing[otherField];
-    const atLimit = selected.length >= MAX_SELECT;
+    const atLimit = selected.length >= CLOSING_MAX_SELECT;
 
     const toggle = (value: string) => {
       const isSelected = selected.includes(value);
-      if (!isSelected && atLimit) return; // 最多選 MAX_SELECT 個
+      if (!isSelected && atLimit) return; // 最多選 CLOSING_MAX_SELECT 個
       const next = isSelected ? selected.filter((v) => v !== value) : [...selected, value];
       setClosing(field, next);
     };
@@ -67,7 +36,7 @@ export function ClosingQuestionsForm() {
         <p className="mb-4 text-lg font-semibold text-black break-words">
           {index}.{title}
           <span className="ml-2 text-sm font-normal text-gray-500">
-            【複選，最多選{MAX_SELECT}個】
+            【複選，最多選{CLOSING_MAX_SELECT}個】
           </span>
         </p>
         <div className="space-y-3">
@@ -93,21 +62,21 @@ export function ClosingQuestionsForm() {
           })}
           <label
             className={`flex items-start gap-3 text-base text-black transition-colors has-checked:text-emerald-700 has-checked:font-medium ${
-              !selected.includes(OTHER_VALUE) && atLimit
+              !selected.includes(CLOSING_OTHER_VALUE) && atLimit
                 ? "cursor-not-allowed opacity-40"
                 : "cursor-pointer"
             }`}
           >
             <input
               type="checkbox"
-              checked={selected.includes(OTHER_VALUE)}
-              disabled={!selected.includes(OTHER_VALUE) && atLimit}
-              onChange={() => toggle(OTHER_VALUE)}
+              checked={selected.includes(CLOSING_OTHER_VALUE)}
+              disabled={!selected.includes(CLOSING_OTHER_VALUE) && atLimit}
+              onChange={() => toggle(CLOSING_OTHER_VALUE)}
               className="mt-1 h-4 w-4 shrink-0 accent-emerald-600"
             />
             <span className="min-w-0 break-words">其他</span>
           </label>
-          {selected.includes(OTHER_VALUE) && (
+          {selected.includes(CLOSING_OTHER_VALUE) && (
             <input
               type="text"
               value={otherText}
@@ -127,20 +96,8 @@ export function ClosingQuestionsForm() {
         <h2 className="text-2xl font-bold text-slate-900">公司經營目標與痛點</h2>
         <p className="mt-1 text-base text-slate-500">這兩題不影響計分，純粹是資訊蒐集用途。</p>
       </div>
-      {renderQuestion(
-        "q1",
-        "q1Other",
-        18,
-        "貴公司除現階段已導入的AI應用外，還有哪些營運痛點或業務場景規劃下一步導入AI？",
-        Q18_OPTIONS
-      )}
-      {renderQuestion(
-        "q2",
-        "q2Other",
-        19,
-        "貴公司無論目前AI應用的進程如何，您認為公司在應用或執行AI專案上，主要面臨哪些挑戰？",
-        Q19_OPTIONS
-      )}
+      {renderQuestion("q1", "q1Other", 18, Q18_TITLE, Q18_OPTIONS)}
+      {renderQuestion("q2", "q2Other", 19, Q19_TITLE, Q19_OPTIONS)}
     </div>
   );
 }

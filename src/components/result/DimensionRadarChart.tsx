@@ -11,14 +11,20 @@ import {
 import { DIMENSION_LABELS, DIMENSION_ORDER } from "@/lib/scoring/dimensions";
 import type { DimensionKey } from "@/lib/scoring/types";
 
-export function DimensionRadarChart({ scores }: { scores: Record<DimensionKey, number> }) {
+interface DimensionRadarChartProps {
+  scores: Record<DimensionKey, number>;
+  /** 掛在圖表外層容器上，供下載 Word 報告時抓取內部渲染出的 <svg> 轉成圖片 */
+  containerRef?: React.RefObject<HTMLDivElement | null>;
+}
+
+export function DimensionRadarChart({ scores, containerRef }: DimensionRadarChartProps) {
   const data = DIMENSION_ORDER.map((dim) => ({
     dimension: DIMENSION_LABELS[dim],
     score: Math.min(100, Math.round(scores[dim])),
   }));
 
   return (
-    <div className="h-96 w-full">
+    <div ref={containerRef} className="h-96 w-full">
       <ResponsiveContainer width="100%" height="100%">
         <RadarChart data={data} outerRadius="75%">
           <defs>

@@ -1,30 +1,28 @@
 "use client";
 
-import type { CompanyInfo } from "@/lib/quiz-store";
-import { IDENTITY_TYPE_OPTIONS, PURPOSE_OPTIONS, useQuizStore } from "@/lib/quiz-store";
-
-/** 已從原站 JS 打包檔的表單驗證文字逐字確認的文字輸入欄位 */
-const TEXT_FIELDS: { key: keyof CompanyInfo; label: string }[] = [
-  { key: "role", label: "職稱" },
-  { key: "companyName", label: "公司名稱" },
-  { key: "taxId", label: "公司統編" },
-];
-
-/** 未在原站程式碼中逐一驗證，沿用交接文件測試假資料的欄位猜測 */
-const UNVERIFIED_FIELDS: { key: keyof CompanyInfo; label: string; placeholder?: string }[] = [
-  { key: "address", label: "地址" },
-  { key: "industry", label: "產業別", placeholder: "例：C27 電腦、電子產品及光學製品製造業" },
-  { key: "city", label: "縣市" },
-  { key: "employeeScale", label: "員工規模" },
-  { key: "department", label: "部門" },
-];
+import {
+  DEPARTMENT_OPTIONS,
+  RESPONDENT_LEVEL_OPTIONS,
+  SUB_INDUSTRY_OPTIONS,
+  useQuizStore,
+} from "@/lib/quiz-store";
 
 const inputClass =
   "w-full rounded-lg border border-gray-300 px-3 py-2 text-base text-black focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20";
 const labelClass = "mb-1 block text-base font-medium text-black";
 
+const OTHER_DEPARTMENT = "其他部門";
+
 export function CompanyInfoForm() {
-  const { companyInfo, setCompanyField } = useQuizStore();
+  const { companyInfo, setCompanyField, setCompanyDepartments } = useQuizStore();
+  const departments = companyInfo.departments ?? [];
+
+  const toggleDepartment = (value: string) => {
+    const next = departments.includes(value)
+      ? departments.filter((v) => v !== value)
+      : [...departments, value];
+    setCompanyDepartments(next);
+  };
 
   return (
     <div className="rounded-2xl bg-[#f7faf8] p-6 shadow-[0_2px_16px_rgba(15,23,42,0.08)]">
@@ -34,88 +32,106 @@ export function CompanyInfoForm() {
       </p>
 
       <div className="space-y-4">
-        {TEXT_FIELDS.map((field) => (
-          <label key={field.key} className="block">
-            <span className={labelClass}>{field.label}</span>
-            <input
-              type="text"
-              value={companyInfo[field.key] ?? ""}
-              onChange={(e) => setCompanyField(field.key, e.target.value)}
-              className={inputClass}
-            />
-          </label>
-        ))}
+        <label className="block">
+          <span className={labelClass}>公司名稱</span>
+          <input
+            type="text"
+            value={companyInfo.companyName ?? ""}
+            onChange={(e) => setCompanyField("companyName", e.target.value)}
+            className={inputClass}
+          />
+        </label>
 
         <label className="block">
-          <span className={labelClass}>身份類型</span>
+          <span className={labelClass}>統編</span>
+          <input
+            type="text"
+            value={companyInfo.taxId ?? ""}
+            onChange={(e) => setCompanyField("taxId", e.target.value)}
+            className={inputClass}
+          />
+        </label>
+
+        <label className="block">
+          <span className={labelClass}>次產業別</span>
           <select
-            value={companyInfo.identityType ?? ""}
-            onChange={(e) => setCompanyField("identityType", e.target.value)}
+            value={companyInfo.subIndustry ?? ""}
+            onChange={(e) => setCompanyField("subIndustry", e.target.value)}
             className={inputClass}
           >
             <option value="" disabled>
               請選擇
             </option>
-            {IDENTITY_TYPE_OPTIONS.map((opt) => (
+            {SUB_INDUSTRY_OPTIONS.map((opt) => (
               <option key={opt} value={opt}>
                 {opt}
               </option>
             ))}
           </select>
         </label>
-        {companyInfo.identityType === "其他" && (
-          <label className="block">
-            <span className={labelClass}>其他身份類別</span>
-            <input
-              type="text"
-              value={companyInfo.identityTypeOther ?? ""}
-              onChange={(e) => setCompanyField("identityTypeOther", e.target.value)}
-              className={inputClass}
-            />
-          </label>
-        )}
 
         <label className="block">
-          <span className={labelClass}>申請用途</span>
+          <span className={labelClass}>填答職級</span>
           <select
-            value={companyInfo.purpose ?? ""}
-            onChange={(e) => setCompanyField("purpose", e.target.value)}
+            value={companyInfo.respondentLevel ?? ""}
+            onChange={(e) => setCompanyField("respondentLevel", e.target.value)}
             className={inputClass}
           >
             <option value="" disabled>
               請選擇
             </option>
-            {PURPOSE_OPTIONS.map((opt) => (
+            {RESPONDENT_LEVEL_OPTIONS.map((opt) => (
               <option key={opt} value={opt}>
                 {opt}
               </option>
             ))}
           </select>
         </label>
-        {companyInfo.purpose === "其他" && (
-          <label className="block">
-            <span className={labelClass}>其他用途</span>
-            <input
-              type="text"
-              value={companyInfo.purposeOther ?? ""}
-              onChange={(e) => setCompanyField("purposeOther", e.target.value)}
-              className={inputClass}
-            />
-          </label>
-        )}
 
-        {UNVERIFIED_FIELDS.map((field) => (
-          <label key={field.key} className="block">
-            <span className={labelClass}>{field.label}</span>
-            <input
-              type="text"
-              value={companyInfo[field.key] ?? ""}
-              placeholder={field.placeholder}
-              onChange={(e) => setCompanyField(field.key, e.target.value)}
-              className={inputClass}
-            />
-          </label>
-        ))}
+        <div>
+          <span className={labelClass}>填答部門（可複選）</span>
+          <div className="space-y-2">
+            {DEPARTMENT_OPTIONS.map((opt) => (
+              <label key={opt} className="flex items-center gap-3 text-base text-black">
+                <input
+                  type="checkbox"
+                  checked={departments.includes(opt)}
+                  onChange={() => toggleDepartment(opt)}
+                  className="h-4 w-4 shrink-0 accent-emerald-600"
+                />
+                <span>{opt}</span>
+              </label>
+            ))}
+            <label className="flex items-center gap-3 text-base text-black">
+              <input
+                type="checkbox"
+                checked={departments.includes(OTHER_DEPARTMENT)}
+                onChange={() => toggleDepartment(OTHER_DEPARTMENT)}
+                className="h-4 w-4 shrink-0 accent-emerald-600"
+              />
+              <span>其他部門</span>
+            </label>
+            {departments.includes(OTHER_DEPARTMENT) && (
+              <input
+                type="text"
+                value={companyInfo.departmentOther ?? ""}
+                onChange={(e) => setCompanyField("departmentOther", e.target.value)}
+                placeholder="請輸入其他部門"
+                className={inputClass}
+              />
+            )}
+          </div>
+        </div>
+
+        <label className="block">
+          <span className={labelClass}>E-mail</span>
+          <input
+            type="email"
+            value={companyInfo.email ?? ""}
+            onChange={(e) => setCompanyField("email", e.target.value)}
+            className={inputClass}
+          />
+        </label>
       </div>
     </div>
   );

@@ -383,3 +383,35 @@ export const QUESTION_PAGES: {
   { page: "page4", dimension: "application", sectionTitle: "第四部分：製造業AI應用與落地", questionIds: ["Q12", "Q13", "Q14", "Q15"] },
   { page: "page5", dimension: "diffusion", sectionTitle: "第五部分：企業AI數位轉型營運效益", questionIds: ["Q16", "Q17"] },
 ];
+
+/**
+ * 官方正式報告（PDF）使用的子題編號與構面中文編號標題，逐字對照自使用者提供的
+ * 真實填答結果 PDF 範本，Word 匯出報告的完整逐題作答清單依此呈現。
+ */
+export const REPORT_SECTION_TITLES: Record<Question["dimension"], string> = {
+  baseData: "一、數據與基礎設施",
+  inputResource: "二、企業AI投入資源",
+  strategy: "三、企業AI策略規劃與管理",
+  application: "四、製造業AI應用與落地",
+  diffusion: "五、企業AI數位轉型營運效益",
+};
+
+export const QUESTION_SUBCODES: Record<string, { code: string; label: string }> = {
+  Q1: { code: "1-1", label: "數位化程度" },
+  Q2: { code: "1-2", label: "機聯網程度" },
+  Q3: { code: "1-3", label: "數據彙整程度" },
+  Q4: { code: "1-4", label: "伺服器運算能力" },
+  Q5: { code: "2-1", label: "資金投入" },
+  Q6: { code: "2-2", label: "人才培訓" },
+  Q7: { code: "2-3", label: "AI技術人力" },
+  Q8: { code: "3-1", label: "企業AI推動策略" },
+  Q9: { code: "3-2", label: "AI推動組織" },
+  Q10: { code: "3-3", label: "數據治理制度" },
+  Q11: { code: "3-4", label: "可信賴AI管理" },
+  Q12: { code: "4-1", label: "AI應用導入深度" },
+  Q13: { code: "4-2", label: "AI應用領域落地程度" },
+  Q14: { code: "4-3", label: "技術開發管道" },
+  Q15: { code: "4-4", label: "AI系統維運更新" },
+  Q16: { code: "5-1", label: "AI導入應用效益" },
+  Q17: { code: "5-2", label: "導入ROI投報率" },
+};

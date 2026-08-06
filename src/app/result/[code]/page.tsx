@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { decodeAnswers } from "@/lib/answer-codec";
-import { clearStoredQuizState, getStoredCompanyInfo } from "@/lib/quiz-store";
+import { clearStoredQuizState, getStoredClosingAnswers, getStoredCompanyInfo } from "@/lib/quiz-store";
 import { downloadResultDocx } from "@/lib/export-docx";
+import { svgElementToPngBytes } from "@/lib/svg-to-png";
 import { computeResult } from "@/lib/scoring/engine";
 import { LEVEL_COLORS, LEVEL_DESCRIPTIONS } from "@/lib/scoring/dimensions";
 import { LEVEL_COMMENTARY } from "@/lib/scoring/commentary";
@@ -20,6 +21,7 @@ export default function ResultPage() {
   const params = useParams<{ code: string }>();
   const answers = decodeAnswers(params.code);
   const [downloading, setDownloading] = useState(false);
+  const chartContainerRef = useRef<HTMLDivElement>(null);
 
   if (!answers) {
     return (
@@ -42,7 +44,15 @@ export default function ResultPage() {
   const handleDownload = async () => {
     setDownloading(true);
     try {
-      await downloadResultDocx(result, getStoredCompanyInfo());
+      const svg = chartContainerRef.current?.querySelector("svg") ?? null;
+      const chartImageBytes = svg ? await svgElementToPngBytes(svg) : null;
+      await downloadResultDocx(
+        result,
+        getStoredCompanyInfo(),
+        answers,
+        getStoredClosingAnswers(),
+        chartImageBytes
+      );
     } finally {
       setDownloading(false);
     }
@@ -82,7 +92,7 @@ export default function ResultPage() {
         </div>
 
         <div className={CARD_CLASS} style={{ animationDelay: "160ms" }}>
-          <DimensionRadarChart scores={result.dimensionScores} />
+          <DimensionRadarChart scores={result.dimensionScores} containerRef={chartContainerRef} />
           <h2 className="mt-2 mb-4 text-xl font-semibold text-black">五大構面明細</h2>
           <DimensionBreakdown scores={result.dimensionScores} />
         </div>
