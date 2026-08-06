@@ -27,7 +27,7 @@ export function CompanyInfoForm() {
   const { companyInfo, setCompanyField } = useQuizStore();
 
   return (
-    <div className="rounded-2xl bg-white p-6 shadow-[0_8px_30px_rgba(0,0,0,0.35)]">
+    <div className="rounded-2xl bg-white p-6 shadow-[0_2px_16px_rgba(15,23,42,0.08)]">
       <h2 className="text-lg font-semibold text-black">公司基本資料</h2>
       <p className="mt-1 mb-6 text-sm text-gray-500">
         此頁不影響計分結果，僅供產出報告時顯示公司資訊。

@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #05070d;
-  --foreground: #e6e8ee;
+  --background: #f6f8fc;
+  --foreground: #0f172a;
 }
 
 @theme inline {
@@ -13,13 +13,13 @@
 }
 
 /*
- * 整體版型是深色科技感外殼（TechBackdrop）+ 白色問卷卡片，兩者的文字顏色都用
- * 明確的 class 指定，刻意不跟隨系統深色模式偏好——之前跟隨系統偏好時，白色卡片
- * 裡的文字會被瀏覽器自動換成淺色，幾乎看不見。這裡的 --background/--foreground
- * 只是外殼預設值，避免首次繪製時閃一下白底。
+ * 淺色版型：文字顏色都用明確的 class 指定，刻意不跟隨系統深色模式偏好——
+ * 之前跟隨系統偏好時，白色卡片裡的文字會被瀏覽器自動換成淺色，幾乎看不見。
+ * 背景是畫在 body 本身的一層極淡漸層（不是額外疊加的定位圖層），避免出現
+ * 蓋住內頁內容的浮動框。
  */
 body {
-  background: var(--background);
+  background: radial-gradient(circle at 50% -10%, #e4edfb 0%, #f6f8fc 45%) fixed;
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }

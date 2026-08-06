@@ -13,13 +13,13 @@ export function QuizChrome({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen">
       <div className="mx-auto max-w-2xl px-4 pt-8">
-        <div className="h-1.5 w-full rounded-full bg-white/10">
+        <div className="h-1.5 w-full rounded-full bg-slate-200">
           <div
-            className="h-1.5 rounded-full bg-gradient-to-r from-[#3987e5] to-[#4a3aa7] shadow-[0_0_12px_rgba(57,135,229,0.6)] transition-all"
+            className="h-1.5 rounded-full bg-gradient-to-r from-[#3987e5] to-[#104281] transition-all"
             style={{ width: `${progress}%` }}
           />
         </div>
-        <p className="mt-2 text-sm text-slate-400">
+        <p className="mt-2 text-sm text-slate-500">
           第 {step + 1} / {TOTAL_STEPS} 步
         </p>
       </div>

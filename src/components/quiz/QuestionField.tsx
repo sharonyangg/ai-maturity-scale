@@ -10,7 +10,7 @@ export function QuestionField({ question }: { question: Question }) {
   if (question.type === "single") {
     const selected = typeof answer === "string" ? answer : undefined;
     return (
-      <fieldset className="rounded-2xl bg-white p-6 shadow-[0_8px_30px_rgba(0,0,0,0.35)]">
+      <fieldset className="rounded-2xl bg-white p-6 shadow-[0_2px_16px_rgba(15,23,42,0.08)]">
         <legend className="mb-4 font-semibold text-black">{question.title}</legend>
         <div className="space-y-3">
           {question.options.map((option) => (
@@ -53,7 +53,7 @@ export function QuestionField({ question }: { question: Question }) {
     };
 
     return (
-      <fieldset className="rounded-2xl bg-white p-6 shadow-[0_8px_30px_rgba(0,0,0,0.35)]">
+      <fieldset className="rounded-2xl bg-white p-6 shadow-[0_2px_16px_rgba(15,23,42,0.08)]">
         <legend className="mb-4 font-semibold text-black">{question.title}</legend>
         <div className="space-y-3">
           {question.options.map((option) => (
@@ -96,7 +96,7 @@ export function QuestionField({ question }: { question: Question }) {
   };
 
   return (
-    <fieldset className="rounded-2xl bg-white p-6 shadow-[0_8px_30px_rgba(0,0,0,0.35)]">
+    <fieldset className="rounded-2xl bg-white p-6 shadow-[0_2px_16px_rgba(15,23,42,0.08)]">
       <legend className="mb-4 font-semibold text-black">{question.title}</legend>
       <div className="overflow-x-auto">
         <table className="w-full text-sm border-collapse">

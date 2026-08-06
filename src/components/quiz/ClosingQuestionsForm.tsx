@@ -63,7 +63,7 @@ export function ClosingQuestionsForm() {
     };
 
     return (
-      <fieldset key={field} className="rounded-2xl bg-white p-6 shadow-[0_8px_30px_rgba(0,0,0,0.35)]">
+      <fieldset key={field} className="rounded-2xl bg-white p-6 shadow-[0_2px_16px_rgba(15,23,42,0.08)]">
         <legend className="mb-4 font-semibold text-black">
           {index}.{title}
           <span className="ml-2 text-xs font-normal text-gray-500">
@@ -124,8 +124,8 @@ export function ClosingQuestionsForm() {
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h2 className="text-xl font-bold text-white">公司經營目標與痛點</h2>
-        <p className="mt-1 text-sm text-slate-400">這兩題不影響計分，純粹是資訊蒐集用途。</p>
+        <h2 className="text-xl font-bold text-slate-900">公司經營目標與痛點</h2>
+        <p className="mt-1 text-sm text-slate-500">這兩題不影響計分，純粹是資訊蒐集用途。</p>
       </div>
       {renderQuestion(
         "q1",

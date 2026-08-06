@@ -4,10 +4,7 @@ export default function Home() {
   return (
     <div className="relative flex min-h-screen items-center justify-center px-6">
       <div className="relative flex flex-col items-center text-center">
-        <h1
-          className="text-4xl font-bold tracking-tight text-white sm:text-5xl"
-          style={{ textShadow: "0 0 40px rgba(57,135,229,0.45)" }}
-        >
+        <h1 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
           AI成熟度量表
         </h1>
 

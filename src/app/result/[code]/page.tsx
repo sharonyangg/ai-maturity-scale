@@ -17,8 +17,8 @@ export default function ResultPage() {
     return (
       <div className="flex min-h-screen items-center justify-center px-4">
         <div className="max-w-xl text-center">
-          <h1 className="text-xl font-semibold text-white">連結無法解析</h1>
-          <p className="mt-2 text-slate-400">這個結果連結可能已損毀，請重新填寫問卷。</p>
+          <h1 className="text-xl font-semibold text-slate-900">連結無法解析</h1>
+          <p className="mt-2 text-slate-500">這個結果連結可能已損毀，請重新填寫問卷。</p>
           <Link href="/" className="mt-6 inline-block text-[#5598e7] hover:underline">
             回到首頁
           </Link>
@@ -34,7 +34,7 @@ export default function ResultPage() {
     <div className="min-h-screen px-4 py-12">
       <div className="mx-auto max-w-4xl space-y-6">
         <div
-          className="rounded-2xl px-8 py-10 text-center text-white shadow-[0_20px_60px_-15px_var(--glow)]"
+          className="rounded-2xl px-8 py-10 text-center text-white shadow-[0_12px_32px_-12px_var(--glow)]"
           style={
             {
               backgroundImage: `linear-gradient(135deg, ${color.from}, ${color.to})`,
@@ -58,11 +58,11 @@ export default function ResultPage() {
           </div>
         </div>
 
-        <div className="rounded-2xl bg-white p-6 shadow-[0_8px_30px_rgba(0,0,0,0.35)]">
+        <div className="rounded-2xl bg-white p-6 shadow-[0_2px_16px_rgba(15,23,42,0.08)]">
           <DimensionRadarChart scores={result.dimensionScores} />
         </div>
 
-        <div className="rounded-2xl bg-white p-6 shadow-[0_8px_30px_rgba(0,0,0,0.35)]">
+        <div className="rounded-2xl bg-white p-6 shadow-[0_2px_16px_rgba(15,23,42,0.08)]">
           <h2 className="mb-4 text-lg font-semibold text-black">五大構面明細</h2>
           <DimensionBreakdown scores={result.dimensionScores} />
         </div>
