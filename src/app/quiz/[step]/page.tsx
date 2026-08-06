@@ -36,7 +36,7 @@ export default function QuizStepPage() {
 
       {dimensionPage && (
         <div className="space-y-6">
-          <h2 className="text-center text-xl font-bold text-slate-900">
+          <h2 className="text-center text-2xl font-bold text-slate-900">
             {dimensionPage.sectionTitle}
           </h2>
           <div className="space-y-6">

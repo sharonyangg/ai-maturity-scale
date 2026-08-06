@@ -20,16 +20,16 @@ const UNVERIFIED_FIELDS: { key: keyof CompanyInfo; label: string; placeholder?: 
 ];
 
 const inputClass =
-  "w-full rounded-lg border border-gray-300 px-3 py-2 text-black focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20";
-const labelClass = "mb-1 block text-sm font-medium text-black";
+  "w-full rounded-lg border border-gray-300 px-3 py-2 text-base text-black focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20";
+const labelClass = "mb-1 block text-base font-medium text-black";
 
 export function CompanyInfoForm() {
   const { companyInfo, setCompanyField } = useQuizStore();
 
   return (
     <div className="rounded-2xl bg-[#f7faf8] p-6 shadow-[0_2px_16px_rgba(15,23,42,0.08)]">
-      <h2 className="text-lg font-semibold text-black">公司基本資料</h2>
-      <p className="mt-1 mb-6 text-sm text-gray-500">
+      <h2 className="text-xl font-semibold text-black">公司基本資料</h2>
+      <p className="mt-1 mb-6 text-base text-gray-500">
         此頁不影響計分結果，僅供產出報告時顯示公司資訊。
       </p>
 

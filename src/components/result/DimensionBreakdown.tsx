@@ -8,10 +8,10 @@ export function DimensionBreakdown({ scores }: { scores: Record<DimensionKey, nu
         const score = Math.min(100, Math.round(scores[dim]));
         return (
           <div key={dim}>
-            <div className="mb-1 flex items-baseline justify-between text-sm">
+            <div className="mb-1 flex items-baseline justify-between text-base">
               <span className="font-medium text-black">
                 {DIMENSION_LABELS[dim]}
-                <span className="ml-1 text-xs text-gray-500">
+                <span className="ml-1 text-sm text-gray-500">
                   （加權占比 {DIMENSION_WEIGHTS[dim] * 100}%）
                 </span>
               </span>

@@ -4,9 +4,9 @@ import type { Question } from "@/lib/scoring/types";
 import { useQuizStore } from "@/lib/quiz-store";
 
 const CARD_CLASS = "rounded-2xl bg-[#f7faf8] p-6 shadow-[0_2px_16px_rgba(15,23,42,0.08)]";
-const TITLE_CLASS = "mb-4 font-semibold text-black break-words";
+const TITLE_CLASS = "mb-4 text-lg font-semibold text-black break-words";
 const OPTION_LABEL_CLASS =
-  "flex items-start gap-3 cursor-pointer text-black transition-colors has-checked:text-emerald-700 has-checked:font-medium";
+  "flex items-start gap-3 cursor-pointer text-base text-black transition-colors has-checked:text-emerald-700 has-checked:font-medium";
 
 export function QuestionField({ question }: { question: Question }) {
   const { answers, setAnswer } = useQuizStore();
@@ -98,7 +98,7 @@ export function QuestionField({ question }: { question: Question }) {
     <div className={CARD_CLASS}>
       <p className={TITLE_CLASS}>{question.title}</p>
       <div className="overflow-x-auto">
-        <table className="w-full text-sm border-collapse">
+        <table className="w-full text-base border-collapse">
           <thead>
             <tr>
               <th className="text-left font-normal text-gray-500 py-2" />

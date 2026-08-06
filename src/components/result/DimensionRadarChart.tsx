@@ -28,8 +28,8 @@ export function DimensionRadarChart({ scores }: { scores: Record<DimensionKey, n
             </radialGradient>
           </defs>
           <PolarGrid stroke="#e1e0d9" />
-          <PolarAngleAxis dataKey="dimension" tick={{ fontSize: 13, fill: "#0b0b0b" }} />
-          <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fontSize: 10, fill: "#898781" }} />
+          <PolarAngleAxis dataKey="dimension" tick={{ fontSize: 15, fill: "#0b0b0b" }} />
+          <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fontSize: 12, fill: "#898781" }} />
           <Radar
             name="成熟度分數"
             dataKey="score"

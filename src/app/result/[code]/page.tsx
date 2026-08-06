@@ -25,8 +25,8 @@ export default function ResultPage() {
     return (
       <div className="flex min-h-screen items-center justify-center px-4">
         <div className="max-w-xl text-center">
-          <h1 className="text-xl font-semibold text-slate-900">連結無法解析</h1>
-          <p className="mt-2 text-slate-500">這個結果連結可能已損毀，請重新填寫問卷。</p>
+          <h1 className="text-2xl font-semibold text-slate-900">連結無法解析</h1>
+          <p className="mt-2 text-lg text-slate-500">這個結果連結可能已損毀，請重新填寫問卷。</p>
           <Link href="/" className="mt-6 inline-block text-emerald-700 hover:underline">
             回到首頁
           </Link>
@@ -60,9 +60,9 @@ export default function ResultPage() {
             } as React.CSSProperties
           }
         >
-          <p className="text-sm font-medium text-white/80">您的 AI 成熟度等級</p>
-          <h1 className="mt-2 text-4xl font-bold">{result.levelName}</h1>
-          <p className="mt-1 text-white/90">{LEVEL_DESCRIPTIONS[result.level]}</p>
+          <p className="text-base font-medium text-white/80">您的 AI 成熟度等級</p>
+          <h1 className="mt-2 text-5xl font-bold">{result.levelName}</h1>
+          <p className="mt-1 text-lg text-white/90">{LEVEL_DESCRIPTIONS[result.level]}</p>
           <div className="mx-auto mt-6 max-w-xs">
             <div className="h-2 rounded-full bg-white/20">
               <div
@@ -70,34 +70,34 @@ export default function ResultPage() {
                 style={{ width: `${Math.min(100, Math.max(0, result.weightedScore))}%` }}
               />
             </div>
-            <p className="mt-2 text-sm text-white/80">
+            <p className="mt-2 text-base text-white/80">
               加權分數 {result.weightedScore.toFixed(1)} / 100
             </p>
           </div>
         </div>
 
         <div className={CARD_CLASS} style={{ animationDelay: "80ms" }}>
-          <h2 className="mb-3 text-lg font-semibold text-black">整體評語</h2>
-          <p className="text-sm leading-relaxed text-gray-600">{commentary.overall}</p>
+          <h2 className="mb-3 text-xl font-semibold text-black">整體評語</h2>
+          <p className="text-base leading-relaxed text-gray-600">{commentary.overall}</p>
         </div>
 
         <div className={CARD_CLASS} style={{ animationDelay: "160ms" }}>
           <DimensionRadarChart scores={result.dimensionScores} />
-          <h2 className="mt-2 mb-4 text-lg font-semibold text-black">五大構面明細</h2>
+          <h2 className="mt-2 mb-4 text-xl font-semibold text-black">五大構面明細</h2>
           <DimensionBreakdown scores={result.dimensionScores} />
         </div>
 
         <div className={CARD_CLASS} style={{ animationDelay: "240ms" }}>
-          <h2 className="mb-4 text-lg font-semibold text-black">五大構面說明</h2>
+          <h2 className="mb-4 text-xl font-semibold text-black">五大構面說明</h2>
           <DimensionNotes notes={commentary.dimensionNotes} />
         </div>
 
         <div className={CARD_CLASS} style={{ animationDelay: "320ms" }}>
-          <h2 className="mb-1 text-lg font-semibold text-black">AI 導入策略建議</h2>
-          <p className="mb-3 text-xs text-gray-400">
+          <h2 className="mb-1 text-xl font-semibold text-black">AI 導入策略建議</h2>
+          <p className="mb-3 text-sm text-gray-400">
             此建議依您所屬的成熟度等級提供代表性參考內容；原站會再依五大構面的實際分數組合進一步客製化，因此與您在原站看到的文字可能略有不同。
           </p>
-          <p className="text-sm leading-relaxed text-gray-600">{commentary.strategyAdvice}</p>
+          <p className="text-base leading-relaxed text-gray-600">{commentary.strategyAdvice}</p>
         </div>
 
         <div

@@ -11,7 +11,7 @@ export default function Home() {
         <Link
           href="/quiz/0"
           style={{ animationDelay: "150ms" }}
-          className="animate-fade-up mt-10 rounded-full bg-gradient-to-r from-emerald-500 to-emerald-700 px-10 py-3 text-base font-medium text-white shadow-[0_8px_30px_rgba(5,150,105,0.35)] transition-all hover:scale-[1.03] hover:shadow-[0_8px_40px_rgba(5,150,105,0.5)] active:scale-[0.97]"
+          className="animate-fade-up mt-10 rounded-full bg-gradient-to-r from-emerald-500 to-emerald-700 px-10 py-3 text-lg font-medium text-white shadow-[0_8px_30px_rgba(5,150,105,0.35)] transition-all hover:scale-[1.03] hover:shadow-[0_8px_40px_rgba(5,150,105,0.5)] active:scale-[0.97]"
         >
           開始測驗
         </Link>
