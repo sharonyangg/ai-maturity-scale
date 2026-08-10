@@ -11,9 +11,8 @@ import type { Answers } from "./scoring/types";
  * subIndustry / respondentLevel / departments 三個欄位的完整選項清單則是從使用者提供的
  * 正式填答結果 PDF 最後一頁「B.公司填答部門同仁」區塊逐字確認的。
  *
- * city 的選項是台灣 22 縣市的標準行政區劃分，非猜測。employeeScale 的選項原站雖然也是
- * 下拉選單，但確切級距文字沒有來源可以對照，這裡先沿用經濟部中小企業常見的員工規模級距
- * 佔位，標記為未確認。
+ * city 的選項是台灣 22 縣市的標準行政區劃分，非猜測。employeeScale 的選項已對照使用者
+ * 提供的原站截圖逐字確認。
  *
  * 之前這裡放的 identityType（身份類型）／purpose（申請用途）等欄位是從原站 JS 打包檔
  * 的表單驗證文字猜測來的，對照真實填答結果後發現猜錯了——那組文字實際上屬於網站另一個
@@ -44,13 +43,11 @@ export const CITY_OPTIONS = [
   "連江縣",
 ] as const;
 
-/** 未在原站逐一確認，沿用經濟部中小企業常見的員工規模級距佔位 */
 export const EMPLOYEE_SCALE_OPTIONS = [
-  "未滿5人",
-  "5-29人",
-  "30-99人",
-  "100-199人",
-  "200人以上",
+  "9人以下，小微型企業",
+  "10-200人，中小企業",
+  "201-1000人，大型企業",
+  "1001人以上，巨型企業",
 ] as const;
 export const SUB_INDUSTRY_OPTIONS = [
   "非C類製造業",
