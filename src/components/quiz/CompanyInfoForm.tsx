@@ -9,9 +9,10 @@ import {
   useQuizStore,
 } from "@/lib/quiz-store";
 
+const CARD_CLASS = "rounded-2xl bg-[#f7faf8] p-6 shadow-[0_2px_16px_rgba(15,23,42,0.08)]";
 const inputClass =
   "w-full rounded-lg border border-gray-300 px-3 py-2 text-base text-black focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20";
-const labelClass = "mb-1 block text-base font-medium text-black";
+const labelClass = "mb-3 block text-lg font-semibold text-black";
 
 const OTHER_DEPARTMENT = "其他部門";
 
@@ -27,13 +28,15 @@ export function CompanyInfoForm() {
   };
 
   return (
-    <div className="rounded-2xl bg-[#f7faf8] p-6 shadow-[0_2px_16px_rgba(15,23,42,0.08)]">
-      <h2 className="text-xl font-semibold text-black">公司基本資料</h2>
-      <p className="mt-1 mb-6 text-base text-gray-500">
-        此頁不影響計分結果，僅供產出報告時顯示公司資訊。
-      </p>
+    <div className="space-y-6">
+      <div className="text-center">
+        <h2 className="text-2xl font-bold text-slate-900">公司基本資料</h2>
+        <p className="mt-1 text-base text-slate-500">
+          此頁不影響計分結果，僅供產出報告時顯示公司資訊。
+        </p>
+      </div>
 
-      <div className="space-y-4">
+      <div className={CARD_CLASS}>
         <label className="block">
           <span className={labelClass}>1. 請問您的公司登記完整中文名稱？</span>
           <input
@@ -43,7 +46,9 @@ export function CompanyInfoForm() {
             className={inputClass}
           />
         </label>
+      </div>
 
+      <div className={CARD_CLASS}>
         <label className="block">
           <span className={labelClass}>2. 請問您的公司統一編號？</span>
           <input
@@ -53,7 +58,9 @@ export function CompanyInfoForm() {
             className={inputClass}
           />
         </label>
+      </div>
 
+      <div className={CARD_CLASS}>
         <label className="block">
           <span className={labelClass}>
             3. 請問貴公司於製造業所屬的主要次產業別？(依據行政院主計總處行業分類)
@@ -73,7 +80,9 @@ export function CompanyInfoForm() {
             ))}
           </select>
         </label>
+      </div>
 
+      <div className={CARD_CLASS}>
         <label className="block">
           <span className={labelClass}>4. 請問貴公司登記地址所處縣市？</span>
           <select
@@ -91,7 +100,9 @@ export function CompanyInfoForm() {
             ))}
           </select>
         </label>
+      </div>
 
+      <div className={CARD_CLASS}>
         <label className="block">
           <span className={labelClass}>5. 請問貴公司登記地址？</span>
           <input
@@ -101,7 +112,9 @@ export function CompanyInfoForm() {
             className={inputClass}
           />
         </label>
+      </div>
 
+      <div className={CARD_CLASS}>
         <label className="block">
           <span className={labelClass}>6. 請問貴公司員工人數規模？</span>
           <select
@@ -119,7 +132,9 @@ export function CompanyInfoForm() {
             ))}
           </select>
         </label>
+      </div>
 
+      <div className={CARD_CLASS}>
         <label className="block">
           <span className={labelClass}>7. 請問您的姓名？</span>
           <input
@@ -129,7 +144,9 @@ export function CompanyInfoForm() {
             className={inputClass}
           />
         </label>
+      </div>
 
+      <div className={CARD_CLASS}>
         <label className="block">
           <span className={labelClass}>8. 請問您的公司職稱職級？</span>
           <select
@@ -147,42 +164,44 @@ export function CompanyInfoForm() {
             ))}
           </select>
         </label>
+      </div>
 
-        <div>
-          <span className={labelClass}>9. 請問您的部門？（若共同填寫可填多個部門）</span>
-          <div className="space-y-2">
-            {DEPARTMENT_OPTIONS.map((opt) => (
-              <label key={opt} className="flex items-center gap-3 text-base text-black">
-                <input
-                  type="checkbox"
-                  checked={departments.includes(opt)}
-                  onChange={() => toggleDepartment(opt)}
-                  className="h-4 w-4 shrink-0 accent-emerald-600"
-                />
-                <span>{opt}</span>
-              </label>
-            ))}
-            <label className="flex items-center gap-3 text-base text-black">
+      <div className={CARD_CLASS}>
+        <span className={labelClass}>9. 請問您的部門？（若共同填寫可填多個部門）</span>
+        <div className="space-y-2">
+          {DEPARTMENT_OPTIONS.map((opt) => (
+            <label key={opt} className="flex items-center gap-3 text-base text-black">
               <input
                 type="checkbox"
-                checked={departments.includes(OTHER_DEPARTMENT)}
-                onChange={() => toggleDepartment(OTHER_DEPARTMENT)}
+                checked={departments.includes(opt)}
+                onChange={() => toggleDepartment(opt)}
                 className="h-4 w-4 shrink-0 accent-emerald-600"
               />
-              <span>其他部門</span>
+              <span>{opt}</span>
             </label>
-            {departments.includes(OTHER_DEPARTMENT) && (
-              <input
-                type="text"
-                value={companyInfo.departmentOther ?? ""}
-                onChange={(e) => setCompanyField("departmentOther", e.target.value)}
-                placeholder="請輸入其他部門"
-                className={inputClass}
-              />
-            )}
-          </div>
+          ))}
+          <label className="flex items-center gap-3 text-base text-black">
+            <input
+              type="checkbox"
+              checked={departments.includes(OTHER_DEPARTMENT)}
+              onChange={() => toggleDepartment(OTHER_DEPARTMENT)}
+              className="h-4 w-4 shrink-0 accent-emerald-600"
+            />
+            <span>其他部門</span>
+          </label>
+          {departments.includes(OTHER_DEPARTMENT) && (
+            <input
+              type="text"
+              value={companyInfo.departmentOther ?? ""}
+              onChange={(e) => setCompanyField("departmentOther", e.target.value)}
+              placeholder="請輸入其他部門"
+              className={inputClass}
+            />
+          )}
         </div>
+      </div>
 
+      <div className={CARD_CLASS}>
         <label className="block">
           <span className={labelClass}>10. 請問您的部門/職稱？</span>
           <input
@@ -192,7 +211,9 @@ export function CompanyInfoForm() {
             className={inputClass}
           />
         </label>
+      </div>
 
+      <div className={CARD_CLASS}>
         <label className="block">
           <span className={labelClass}>
             11. 請問您的E-mail？（請填寫正確聯絡資訊，以確保後續能收到完整AI量表分析報告）
@@ -204,7 +225,9 @@ export function CompanyInfoForm() {
             className={inputClass}
           />
         </label>
+      </div>
 
+      <div className={CARD_CLASS}>
         <label className="block">
           <span className={labelClass}>12. 請問您的電話？</span>
           <input
