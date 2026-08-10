@@ -400,9 +400,15 @@ function buildDocument(
 
   const companyDetailRows = [
     labelValueRow(COMPANY_FIELD_LABELS.subIndustry, companyInfo.subIndustry || "—"),
+    labelValueRow(COMPANY_FIELD_LABELS.city, companyInfo.city || "—"),
+    labelValueRow(COMPANY_FIELD_LABELS.address, companyInfo.address || "—"),
+    labelValueRow(COMPANY_FIELD_LABELS.employeeScale, companyInfo.employeeScale || "—"),
+    labelValueRow(COMPANY_FIELD_LABELS.respondentName, companyInfo.respondentName || "—"),
     labelValueRow(COMPANY_FIELD_LABELS.respondentLevel, companyInfo.respondentLevel || "—"),
     labelValueRow("填答部門", departmentText),
+    labelValueRow(COMPANY_FIELD_LABELS.departmentTitle, companyInfo.departmentTitle || "—"),
     labelValueRow(COMPANY_FIELD_LABELS.email, companyInfo.email || "—"),
+    labelValueRow(COMPANY_FIELD_LABELS.phone, companyInfo.phone || "—"),
   ];
   const companyDetailTable = new Table({
     width: { size: 100, type: WidthType.PERCENTAGE },

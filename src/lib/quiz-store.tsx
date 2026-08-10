@@ -4,17 +4,54 @@ import { createContext, useContext, useEffect, useMemo, useReducer } from "react
 import type { Answers } from "./scoring/types";
 
 /**
- * page0（公司基本資料）欄位。
- * companyName / taxId 已從原站截圖的正式填答結果 PDF 逐字確認（PDF 表頭直接印出
- * 「公司名稱：X　統編：Y　填答日期：Z」）。
- * subIndustry / respondentLevel / departments / email 這四個欄位——連同各自的完整
- * 選項清單——同樣是從那份 PDF 最後一頁「B.公司填答部門同仁」區塊逐字確認的。
+ * page0（公司基本資料）欄位，共 12 題，欄位文字與順序由使用者直接對照原站問卷逐字提供：
+ *   1.公司登記完整中文名稱 2.公司統一編號 3.次產業別(下拉) 4.登記地址所處縣市(下拉)
+ *   5.登記地址 6.員工人數規模(下拉) 7.姓名 8.公司職稱職級(下拉) 9.部門(可複選)
+ *   10.部門/職稱 11.E-mail 12.電話
+ * subIndustry / respondentLevel / departments 三個欄位的完整選項清單則是從使用者提供的
+ * 正式填答結果 PDF 最後一頁「B.公司填答部門同仁」區塊逐字確認的。
+ *
+ * city 的選項是台灣 22 縣市的標準行政區劃分，非猜測。employeeScale 的選項原站雖然也是
+ * 下拉選單，但確切級距文字沒有來源可以對照，這裡先沿用經濟部中小企業常見的員工規模級距
+ * 佔位，標記為未確認。
  *
  * 之前這裡放的 identityType（身份類型）／purpose（申請用途）等欄位是從原站 JS 打包檔
- * 的表單驗證文字猜測來的，現在對照這份真實填答結果後發現猜錯了——那組文字實際上屬於
- * 網站另一個「下載製造業AI導入指引」的聯絡資訊彈窗，不是這裡的公司填答部門同仁欄位，
- * 已經移除。
+ * 的表單驗證文字猜測來的，對照真實填答結果後發現猜錯了——那組文字實際上屬於網站另一個
+ * 「下載製造業AI導入指引」的聯絡資訊彈窗，不是這裡的欄位，已經移除。
  */
+export const CITY_OPTIONS = [
+  "臺北市",
+  "新北市",
+  "桃園市",
+  "臺中市",
+  "臺南市",
+  "高雄市",
+  "基隆市",
+  "新竹市",
+  "嘉義市",
+  "新竹縣",
+  "苗栗縣",
+  "彰化縣",
+  "南投縣",
+  "雲林縣",
+  "嘉義縣",
+  "屏東縣",
+  "宜蘭縣",
+  "花蓮縣",
+  "臺東縣",
+  "澎湖縣",
+  "金門縣",
+  "連江縣",
+] as const;
+
+/** 未在原站逐一確認，沿用經濟部中小企業常見的員工規模級距佔位 */
+export const EMPLOYEE_SCALE_OPTIONS = [
+  "未滿5人",
+  "5-29人",
+  "30-99人",
+  "100-199人",
+  "200人以上",
+] as const;
 export const SUB_INDUSTRY_OPTIONS = [
   "非C類製造業",
   "C08 食品及飼品製造業",
@@ -69,19 +106,31 @@ export interface CompanyInfo {
   companyName?: string;
   taxId?: string;
   subIndustry?: string;
+  city?: string;
+  address?: string;
+  employeeScale?: string;
+  respondentName?: string;
   respondentLevel?: string;
   departments?: string[];
   departmentOther?: string;
+  departmentTitle?: string;
   email?: string;
+  phone?: string;
 }
 
-/** 依原站欄位順序排列，供 Word 報告等需要「欄位 key → 中文標籤」對照的地方共用 */
+/** 依原站問卷第一頁的題目順序排列，供 Word 報告等需要「欄位 key → 中文標籤」對照的地方共用 */
 export const COMPANY_FIELD_LABELS: Record<Exclude<keyof CompanyInfo, "departments" | "departmentOther">, string> = {
   companyName: "公司名稱",
-  taxId: "統編",
+  taxId: "統一編號",
   subIndustry: "次產業別",
-  respondentLevel: "填答職級",
+  city: "縣市",
+  address: "地址",
+  employeeScale: "員工人數規模",
+  respondentName: "姓名",
+  respondentLevel: "職稱職級",
+  departmentTitle: "部門/職稱",
   email: "E-mail",
+  phone: "電話",
 };
 
 /** page6 結尾兩題複選題（Q18、Q19），已驗證不影響計分，純資訊蒐集用途 */

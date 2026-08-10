@@ -1,7 +1,9 @@
 "use client";
 
 import {
+  CITY_OPTIONS,
   DEPARTMENT_OPTIONS,
+  EMPLOYEE_SCALE_OPTIONS,
   RESPONDENT_LEVEL_OPTIONS,
   SUB_INDUSTRY_OPTIONS,
   useQuizStore,
@@ -33,7 +35,7 @@ export function CompanyInfoForm() {
 
       <div className="space-y-4">
         <label className="block">
-          <span className={labelClass}>公司名稱</span>
+          <span className={labelClass}>1. 請問您的公司登記完整中文名稱？</span>
           <input
             type="text"
             value={companyInfo.companyName ?? ""}
@@ -43,7 +45,7 @@ export function CompanyInfoForm() {
         </label>
 
         <label className="block">
-          <span className={labelClass}>統編</span>
+          <span className={labelClass}>2. 請問您的公司統一編號？</span>
           <input
             type="text"
             value={companyInfo.taxId ?? ""}
@@ -53,7 +55,9 @@ export function CompanyInfoForm() {
         </label>
 
         <label className="block">
-          <span className={labelClass}>次產業別</span>
+          <span className={labelClass}>
+            3. 請問貴公司於製造業所屬的主要次產業別？(依據行政院主計總處行業分類)
+          </span>
           <select
             value={companyInfo.subIndustry ?? ""}
             onChange={(e) => setCompanyField("subIndustry", e.target.value)}
@@ -71,7 +75,63 @@ export function CompanyInfoForm() {
         </label>
 
         <label className="block">
-          <span className={labelClass}>填答職級</span>
+          <span className={labelClass}>4. 請問貴公司登記地址所處縣市？</span>
+          <select
+            value={companyInfo.city ?? ""}
+            onChange={(e) => setCompanyField("city", e.target.value)}
+            className={inputClass}
+          >
+            <option value="" disabled>
+              請選擇
+            </option>
+            {CITY_OPTIONS.map((opt) => (
+              <option key={opt} value={opt}>
+                {opt}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label className="block">
+          <span className={labelClass}>5. 請問貴公司登記地址？</span>
+          <input
+            type="text"
+            value={companyInfo.address ?? ""}
+            onChange={(e) => setCompanyField("address", e.target.value)}
+            className={inputClass}
+          />
+        </label>
+
+        <label className="block">
+          <span className={labelClass}>6. 請問貴公司員工人數規模？</span>
+          <select
+            value={companyInfo.employeeScale ?? ""}
+            onChange={(e) => setCompanyField("employeeScale", e.target.value)}
+            className={inputClass}
+          >
+            <option value="" disabled>
+              請選擇
+            </option>
+            {EMPLOYEE_SCALE_OPTIONS.map((opt) => (
+              <option key={opt} value={opt}>
+                {opt}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label className="block">
+          <span className={labelClass}>7. 請問您的姓名？</span>
+          <input
+            type="text"
+            value={companyInfo.respondentName ?? ""}
+            onChange={(e) => setCompanyField("respondentName", e.target.value)}
+            className={inputClass}
+          />
+        </label>
+
+        <label className="block">
+          <span className={labelClass}>8. 請問您的公司職稱職級？</span>
           <select
             value={companyInfo.respondentLevel ?? ""}
             onChange={(e) => setCompanyField("respondentLevel", e.target.value)}
@@ -89,7 +149,7 @@ export function CompanyInfoForm() {
         </label>
 
         <div>
-          <span className={labelClass}>填答部門（可複選）</span>
+          <span className={labelClass}>9. 請問您的部門？（若共同填寫可填多個部門）</span>
           <div className="space-y-2">
             {DEPARTMENT_OPTIONS.map((opt) => (
               <label key={opt} className="flex items-center gap-3 text-base text-black">
@@ -124,11 +184,33 @@ export function CompanyInfoForm() {
         </div>
 
         <label className="block">
-          <span className={labelClass}>E-mail</span>
+          <span className={labelClass}>10. 請問您的部門/職稱？</span>
+          <input
+            type="text"
+            value={companyInfo.departmentTitle ?? ""}
+            onChange={(e) => setCompanyField("departmentTitle", e.target.value)}
+            className={inputClass}
+          />
+        </label>
+
+        <label className="block">
+          <span className={labelClass}>
+            11. 請問您的E-mail？（請填寫正確聯絡資訊，以確保後續能收到完整AI量表分析報告）
+          </span>
           <input
             type="email"
             value={companyInfo.email ?? ""}
             onChange={(e) => setCompanyField("email", e.target.value)}
+            className={inputClass}
+          />
+        </label>
+
+        <label className="block">
+          <span className={labelClass}>12. 請問您的電話？</span>
+          <input
+            type="tel"
+            value={companyInfo.phone ?? ""}
+            onChange={(e) => setCompanyField("phone", e.target.value)}
             className={inputClass}
           />
         </label>
