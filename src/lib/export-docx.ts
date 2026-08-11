@@ -469,7 +469,6 @@ function buildDocument(
     labelValueRow(COMPANY_FIELD_LABELS.respondentName, companyInfo.respondentName || "—"),
     labelValueRow(COMPANY_FIELD_LABELS.respondentLevel, companyInfo.respondentLevel || "—"),
     labelValueRow("填答部門", departmentText),
-    labelValueRow(COMPANY_FIELD_LABELS.departmentTitle, companyInfo.departmentTitle || "—"),
     labelValueRow(COMPANY_FIELD_LABELS.email, companyInfo.email || "—"),
     labelValueRow(COMPANY_FIELD_LABELS.phone, companyInfo.phone || "—"),
   ];

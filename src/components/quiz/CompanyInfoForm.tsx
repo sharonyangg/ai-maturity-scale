@@ -224,20 +224,7 @@ export function CompanyInfoForm({ showErrors = false }: { showErrors?: boolean }
 
       <div className={CARD_CLASS}>
         <label className="block">
-          <span className={labelClass}>10. 請問您的部門與職稱？</span>
-          <input
-            type="text"
-            value={companyInfo.departmentTitle ?? ""}
-            onChange={(e) => setCompanyField("departmentTitle", e.target.value)}
-            className={inputClass(Boolean(errors.departmentTitle))}
-          />
-        </label>
-        {errors.departmentTitle && <p className={ERROR_TEXT_CLASS}>{errors.departmentTitle}</p>}
-      </div>
-
-      <div className={CARD_CLASS}>
-        <label className="block">
-          <span className={labelClass}>11. 請問您的E-mail？</span>
+          <span className={labelClass}>10. 請問您的E-mail？</span>
           <input
             type="email"
             value={companyInfo.email ?? ""}
@@ -250,7 +237,7 @@ export function CompanyInfoForm({ showErrors = false }: { showErrors?: boolean }
 
       <div className={CARD_CLASS}>
         <label className="block">
-          <span className={labelClass}>12. 請問您的電話是？</span>
+          <span className={labelClass}>11. 請問您的電話是？</span>
           <input
             type="tel"
             value={companyInfo.phone ?? ""}

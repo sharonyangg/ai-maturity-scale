@@ -30,8 +30,6 @@ export function validateCompanyInfo(info: CompanyInfo): CompanyInfoErrors {
     errors.departmentOther = "請填寫其他部門名稱";
   }
 
-  if (!info.departmentTitle?.trim()) errors.departmentTitle = "請填寫部門/職稱";
-
   if (!info.email?.trim()) errors.email = "請填寫 E-mail";
   else if (!EMAIL_RE.test(info.email.trim())) errors.email = "格式錯誤，請輸入正確的 E-mail";
 

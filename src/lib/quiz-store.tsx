@@ -95,7 +95,6 @@ export interface CompanyInfo {
   respondentLevel?: string;
   departments?: string[];
   departmentOther?: string;
-  departmentTitle?: string;
   email?: string;
   phone?: string;
 }
@@ -109,7 +108,6 @@ export const COMPANY_FIELD_LABELS: Record<Exclude<keyof CompanyInfo, "department
   employeeScale: "員工人數規模",
   respondentName: "姓名",
   respondentLevel: "職稱職級",
-  departmentTitle: "部門/職稱",
   email: "E-mail",
   phone: "電話",
 };
