@@ -7,6 +7,7 @@ import {
   Paragraph,
   Table,
   TableCell,
+  TableLayoutType,
   TableRow,
   TextRun,
   WidthType,
@@ -37,6 +38,23 @@ const FONT = "標楷體";
 
 const CHECKED = "☑";
 const UNCHECKED = "☐";
+
+/**
+ * A4 版面扣掉左右各 1440 twips（1 吋）邊界的可用內容寬度。
+ * 只靠 TableCell 的百分比寬度、不搭配 layout:FIXED + 明確的 columnWidths 時，
+ * 部分手機上的文件檢視器（例如 iOS 內建的 QuickLook 預覽）不會照百分比分配欄寬，
+ * 而是把每欄擠成極窄的寬度，導致中文字被迫一字一行、整個表格跑版。
+ * 明確指定以 twips 為單位的欄寬可以讓各種檢視器都照同一份數字算，行為才會一致。
+ */
+const CONTENT_WIDTH_TWIPS = 9026;
+
+/** 把百分比陣列（總和需為 100）換算成 twips 陣列，最後一欄吸收四捨五入的誤差 */
+function pctToTwips(percentages: number[]): number[] {
+  const widths = percentages.map((p) => Math.round((p / 100) * CONTENT_WIDTH_TWIPS));
+  const diff = CONTENT_WIDTH_TWIPS - widths.reduce((a, b) => a + b, 0);
+  widths[widths.length - 1] += diff;
+  return widths;
+}
 
 const EXTERNAL_RESOURCES = [
   {
@@ -105,13 +123,18 @@ function matrixAnswerTable(question: Extract<Question, { type: "matrix" }>, answ
     answer && typeof answer === "object" && !Array.isArray(answer) ? answer : {}
   ) as Record<string, string>;
 
+  const labelPct = 30;
+  const optionPct = (100 - labelPct) / question.subItemOptions.length;
+  const columnWidths = pctToTwips([labelPct, ...question.subItemOptions.map(() => optionPct)]);
+
   const headerRow = new TableRow({
     tableHeader: true,
     children: [
-      new TableCell({ children: [new Paragraph("")] }),
+      new TableCell({ width: { size: labelPct, type: WidthType.PERCENTAGE }, children: [new Paragraph("")] }),
       ...question.subItemOptions.map(
         (opt) =>
           new TableCell({
+            width: { size: optionPct, type: WidthType.PERCENTAGE },
             shading: { fill: ACCENT_SOFT },
             children: [
               new Paragraph({
@@ -129,11 +152,13 @@ function matrixAnswerTable(question: Extract<Question, { type: "matrix" }>, answ
       new TableRow({
         children: [
           new TableCell({
+            width: { size: labelPct, type: WidthType.PERCENTAGE },
             children: [new Paragraph({ children: [new TextRun({ text: sub.label, size: 20, font: FONT })] })],
           }),
           ...question.subItemOptions.map(
             (opt) =>
               new TableCell({
+                width: { size: optionPct, type: WidthType.PERCENTAGE },
                 children: [
                   new Paragraph({
                     alignment: AlignmentType.CENTER,
@@ -151,7 +176,12 @@ function matrixAnswerTable(question: Extract<Question, { type: "matrix" }>, answ
       })
   );
 
-  return new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: [headerRow, ...rows] });
+  return new Table({
+    width: { size: 100, type: WidthType.PERCENTAGE },
+    layout: TableLayoutType.FIXED,
+    columnWidths,
+    rows: [headerRow, ...rows],
+  });
 }
 
 function questionContent(question: Question, answer: Answers[string], questionNumber: number): (Paragraph | Table)[] {
@@ -220,7 +250,12 @@ function dimensionAnswerTable(dimension: DimensionKey, answers: Answers): Table 
     });
   });
 
-  return new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows });
+  return new Table({
+    width: { size: 100, type: WidthType.PERCENTAGE },
+    layout: TableLayoutType.FIXED,
+    columnWidths: pctToTwips([15, 85]),
+    rows,
+  });
 }
 
 function closingQuestionCell(
@@ -340,6 +375,8 @@ function buildDocument(
 
   const summaryTable = new Table({
     width: { size: 100, type: WidthType.PERCENTAGE },
+    layout: TableLayoutType.FIXED,
+    columnWidths: pctToTwips([34, 33, 33]),
     rows: [summaryHeaderRow],
   });
 
@@ -368,6 +405,8 @@ function buildDocument(
   });
   const dimensionNotesTable = new Table({
     width: { size: 100, type: WidthType.PERCENTAGE },
+    layout: TableLayoutType.FIXED,
+    columnWidths: pctToTwips([20, 80]),
     rows: dimensionNotesRows,
   });
 
@@ -378,6 +417,8 @@ function buildDocument(
 
   const closingTable = new Table({
     width: { size: 100, type: WidthType.PERCENTAGE },
+    layout: TableLayoutType.FIXED,
+    columnWidths: pctToTwips([15, 85]),
     rows: [
       new TableRow({
         children: [
@@ -434,6 +475,8 @@ function buildDocument(
   ];
   const companyDetailTable = new Table({
     width: { size: 100, type: WidthType.PERCENTAGE },
+    layout: TableLayoutType.FIXED,
+    columnWidths: pctToTwips([25, 75]),
     rows: companyDetailRows,
   });
 
@@ -466,7 +509,12 @@ function buildDocument(
           summaryTable,
           shadedBar(`AI 成熟度等級：${result.levelName}`),
           bodyParagraph(commentary.overall),
-          new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: [summaryChartRow] }),
+          new Table({
+            width: { size: 100, type: WidthType.PERCENTAGE },
+            layout: TableLayoutType.FIXED,
+            columnWidths: pctToTwips([50, 50]),
+            rows: [summaryChartRow],
+          }),
 
           sectionHeading("五大構面程度說明"),
           dimensionNotesTable,

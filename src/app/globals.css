@@ -16,6 +16,13 @@ html {
   font-size: 18px;
 }
 
+/* 手機螢幕上根字級跟著縮小一階，讓所有用 rem 單位的 Tailwind 文字級距一起等比縮小 */
+@media (max-width: 640px) {
+  html {
+    font-size: 15px;
+  }
+}
+
 body {
   background: radial-gradient(circle at 50% -10%, #d7ecdf 0%, #e9f2ec 55%) fixed;
   color: var(--foreground);
