@@ -49,7 +49,7 @@ export function DimensionRadarChart({ scores, containerRef }: DimensionRadarChar
             dataKey="dimension"
             tick={{ fontSize: 18, fontWeight: 600, fill: "#1f2937" }}
           />
-          <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fontSize: 14, fill: "#9ca3af" }} />
+          <PolarRadiusAxis angle={90} domain={[0, 100]} tick={false} axisLine={false} />
           <Tooltip content={<ChartTooltip />} />
           <Radar
             name="成熟度分數"

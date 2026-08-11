@@ -42,17 +42,23 @@ export default function ResultPage() {
   const commentary = LEVEL_COMMENTARY[result.level];
 
   const handleDownload = async () => {
+    const companyInfo = getStoredCompanyInfo();
+    const closing = getStoredClosingAnswers();
+    // 公司資料跟結尾兩題只存在填答當下那個瀏覽器分頁的 sessionStorage 裡；如果現在開啟
+    // 結果頁的瀏覽器（例如從 App 內建瀏覽器跳出、換成手機預設瀏覽器）跟當初填答的不是
+    // 同一個分頁，這裡就會是空的——先提醒使用者，而不是默默產出一份缺資料的報告。
+    if (Object.keys(companyInfo).length === 0) {
+      const proceed = window.confirm(
+        "偵測不到公司資料與結尾兩題的作答內容（可能是換了瀏覽器或用 App 內建瀏覽器開啟），匯出的報告裡「公司經營目標與痛點」「公司填答部門同仁」會是空的。要繼續下載嗎？"
+      );
+      if (!proceed) return;
+    }
+
     setDownloading(true);
     try {
       const svg = chartContainerRef.current?.querySelector("svg") ?? null;
       const chartSnapshot = svg ? await svgElementToPngBytes(svg) : null;
-      await downloadResultDocx(
-        result,
-        getStoredCompanyInfo(),
-        answers,
-        getStoredClosingAnswers(),
-        chartSnapshot
-      );
+      await downloadResultDocx(result, companyInfo, answers, closing, chartSnapshot);
     } finally {
       setDownloading(false);
     }
