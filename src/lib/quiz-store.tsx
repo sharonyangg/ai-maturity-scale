@@ -130,13 +130,13 @@ interface QuizState {
 const STORAGE_KEY = "ai-maturity-quiz-state";
 
 export function clearStoredQuizState() {
-  if (typeof window !== "undefined") window.localStorage.removeItem(STORAGE_KEY);
+  if (typeof window !== "undefined") window.sessionStorage.removeItem(STORAGE_KEY);
 }
 
 export function getStoredCompanyInfo(): CompanyInfo {
   if (typeof window === "undefined") return {};
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
+    const raw = window.sessionStorage.getItem(STORAGE_KEY);
     if (!raw) return {};
     const state = JSON.parse(raw) as QuizState;
     return state.companyInfo ?? {};
@@ -150,7 +150,7 @@ const EMPTY_CLOSING: ClosingAnswers = { q1: [], q1Other: "", q2: [], q2Other: ""
 export function getStoredClosingAnswers(): ClosingAnswers {
   if (typeof window === "undefined") return EMPTY_CLOSING;
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
+    const raw = window.sessionStorage.getItem(STORAGE_KEY);
     if (!raw) return EMPTY_CLOSING;
     const state = JSON.parse(raw) as QuizState;
     return state.closing ?? EMPTY_CLOSING;
@@ -212,7 +212,7 @@ export function QuizProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
+    const raw = window.sessionStorage.getItem(STORAGE_KEY);
     if (raw) {
       try {
         dispatch({ type: "HYDRATE", state: JSON.parse(raw) as QuizState });
@@ -222,7 +222,7 @@ export function QuizProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   }, [state]);
 
   const value = useMemo<QuizContextValue>(
@@ -235,7 +235,7 @@ export function QuizProvider({ children }: { children: React.ReactNode }) {
       setClosingOther: (field, value) => dispatch({ type: "SET_CLOSING_OTHER", field, value }),
       reset: () => {
         dispatch({ type: "RESET" });
-        window.localStorage.removeItem(STORAGE_KEY);
+        window.sessionStorage.removeItem(STORAGE_KEY);
       },
     }),
     [state]
