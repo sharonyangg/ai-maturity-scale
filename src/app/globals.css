@@ -13,13 +13,13 @@
 }
 
 html {
-  font-size: 18px;
+  font-size: 16px;
 }
 
 /* 手機螢幕上根字級跟著縮小一階，讓所有用 rem 單位的 Tailwind 文字級距一起等比縮小 */
 @media (max-width: 640px) {
   html {
-    font-size: 15px;
+    font-size: 14px;
   }
 }
 
