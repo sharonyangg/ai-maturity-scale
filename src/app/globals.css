@@ -12,18 +12,10 @@
   --font-mono: var(--font-geist-mono);
 }
 
-/* 全站文字整體偏小，把根字級調大，讓所有用 rem 單位的 Tailwind 文字級距一起放大 */
 html {
   font-size: 18px;
 }
 
-/*
- * 淺色版型：文字顏色都用明確的 class 指定，刻意不跟隨系統深色模式偏好——
- * 之前跟隨系統偏好時，白色卡片裡的文字會被瀏覽器自動換成淺色，幾乎看不見。
- * 背景是畫在 body 本身的一層漸層（不是額外疊加的定位圖層，避免出現蓋住
- * 內頁內容的浮動框），刻意用帶綠灰調的底色而非趨近全白，讓白色卡片能
- * 從背景中浮出來，不會整頁糊成一片白。
- */
 body {
   background: radial-gradient(circle at 50% -10%, #d7ecdf 0%, #e9f2ec 55%) fixed;
   color: var(--foreground);

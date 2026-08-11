@@ -15,6 +15,14 @@ export default function Home() {
         >
           開始測驗
         </Link>
+
+        <Link
+          href="/scoring"
+          style={{ animationDelay: "220ms" }}
+          className="animate-fade-up mt-4 rounded-full border border-emerald-600 bg-[#f7faf8] px-10 py-3 text-lg font-medium text-emerald-700 shadow-[0_8px_30px_rgba(5,150,105,0.15)] transition-all hover:scale-[1.03] hover:bg-emerald-50 active:scale-[0.97]"
+        >
+          評分說明
+        </Link>
       </div>
     </div>
   );

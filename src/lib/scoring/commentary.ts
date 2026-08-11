@@ -1,16 +1,8 @@
 import type { DimensionKey, Level } from "./types";
 
 export interface LevelCommentary {
-  /** 整體評語：網站依等級固定顯示的文字（同等級測試多次結果相同） */
   overall: string;
-  /** 五大構面程度說明：同樣是依等級固定顯示的文字 */
   dimensionNotes: Record<DimensionKey, string>;
-  /**
-   * AI 導入策略建議：原站是依填答的五大構面「分數組合」客製化產生，並非單純依等級。
-   * 這裡只有每個等級各一組代表性樣本（分數落在該等級區間中段、且五大構面皆非 0 分），
-   * 不是完整的生成規則，因此同一等級的不同使用者在原站可能會看到不同的建議文字，
-   * 這裡先以樣本文字呈現，並在畫面上加註說明。
-   */
   strategyAdvice: string;
 }
 

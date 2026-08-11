@@ -1,11 +1,13 @@
-/**
- * 把畫面上已經渲染好的 SVG（例如 Recharts 的雷達圖）轉成 PNG bytes，純瀏覽器端操作
- * （序列化 SVG → 畫進 canvas → 輸出 PNG），供 docx 的 ImageRun 使用。
- */
+export interface PngSnapshot {
+  bytes: Uint8Array;
+  width: number;
+  height: number;
+}
+
 export async function svgElementToPngBytes(
   svg: SVGSVGElement,
   options?: { scale?: number; backgroundColor?: string }
-): Promise<Uint8Array> {
+): Promise<PngSnapshot> {
   const scale = options?.scale ?? 2;
   const backgroundColor = options?.backgroundColor ?? "#ffffff";
 
@@ -40,7 +42,7 @@ export async function svgElementToPngBytes(
 
     const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/png"));
     if (!blob) throw new Error("canvas 轉 PNG 失敗");
-    return new Uint8Array(await blob.arrayBuffer());
+    return { bytes: new Uint8Array(await blob.arrayBuffer()), width, height };
   } finally {
     URL.revokeObjectURL(svgUrl);
   }

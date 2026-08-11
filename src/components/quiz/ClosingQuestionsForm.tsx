@@ -1,6 +1,8 @@
 "use client";
 
 import { useQuizStore } from "@/lib/quiz-store";
+import { QuestionNumberBadge } from "@/components/quiz/QuestionField";
+import { validateClosingAnswer } from "@/lib/validation";
 import {
   CLOSING_MAX_SELECT,
   CLOSING_OTHER_VALUE,
@@ -10,7 +12,7 @@ import {
   Q19_TITLE,
 } from "@/lib/closing-questions";
 
-export function ClosingQuestionsForm() {
+export function ClosingQuestionsForm({ showErrors = false }: { showErrors?: boolean }) {
   const { closing, setClosing, setClosingOther } = useQuizStore();
 
   const renderQuestion = (
@@ -23,22 +25,31 @@ export function ClosingQuestionsForm() {
     const selected = closing[field];
     const otherText = closing[otherField];
     const atLimit = selected.length >= CLOSING_MAX_SELECT;
+    const error = showErrors ? validateClosingAnswer(selected, CLOSING_OTHER_VALUE, otherText) : null;
 
     const toggle = (value: string) => {
       const isSelected = selected.includes(value);
-      if (!isSelected && atLimit) return; // 最多選 CLOSING_MAX_SELECT 個
+      if (!isSelected && atLimit) return;
       const next = isSelected ? selected.filter((v) => v !== value) : [...selected, value];
       setClosing(field, next);
     };
 
     return (
-      <div key={field} className="rounded-2xl bg-[#f7faf8] p-6 shadow-[0_2px_16px_rgba(15,23,42,0.08)]">
-        <p className="mb-4 text-lg font-semibold text-black break-words">
-          {index}.{title}
-          <span className="ml-2 text-sm font-normal text-gray-500">
-            【複選，最多選{CLOSING_MAX_SELECT}個】
-          </span>
-        </p>
+      <div
+        key={field}
+        className={`rounded-2xl bg-[#f7faf8] p-5 shadow-[0_2px_16px_rgba(15,23,42,0.08)] sm:p-6${
+          error ? " ring-2 ring-red-500" : ""
+        }`}
+      >
+        <div className="mb-5 flex items-start gap-3 border-b border-emerald-900/10 pb-4">
+          <QuestionNumberBadge number={index} />
+          <p className="min-w-0 break-words text-lg font-semibold text-black">
+            {title}
+            <span className="ml-2 text-sm font-normal text-gray-500">
+              【複選，最多選{CLOSING_MAX_SELECT}個】
+            </span>
+          </p>
+        </div>
         <div className="space-y-3">
           {options.map((label) => {
             const disabled = !selected.includes(label) && atLimit;
@@ -54,7 +65,7 @@ export function ClosingQuestionsForm() {
                   checked={selected.includes(label)}
                   disabled={disabled}
                   onChange={() => toggle(label)}
-                  className="mt-1 h-4 w-4 shrink-0 accent-emerald-600"
+                  className="mt-1 h-5 w-5 shrink-0 accent-emerald-600"
                 />
                 <span className="min-w-0 break-words">{label}</span>
               </label>
@@ -72,7 +83,7 @@ export function ClosingQuestionsForm() {
               checked={selected.includes(CLOSING_OTHER_VALUE)}
               disabled={!selected.includes(CLOSING_OTHER_VALUE) && atLimit}
               onChange={() => toggle(CLOSING_OTHER_VALUE)}
-              className="mt-1 h-4 w-4 shrink-0 accent-emerald-600"
+              className="mt-1 h-5 w-5 shrink-0 accent-emerald-600"
             />
             <span className="min-w-0 break-words">其他</span>
           </label>
@@ -86,6 +97,7 @@ export function ClosingQuestionsForm() {
             />
           )}
         </div>
+        {error && <p className="mt-3 text-sm font-medium text-red-600">{error}</p>}
       </div>
     );
   };

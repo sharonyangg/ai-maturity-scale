@@ -28,10 +28,12 @@ import {
   REPORT_SECTION_TITLES,
 } from "./scoring/questions";
 import type { Answers, DimensionKey, Question, QuizResult } from "./scoring/types";
+import type { PngSnapshot } from "./svg-to-png";
 
 const ACCENT = "047857"; // emerald-700，docx 顏色字串不含 #
 const ACCENT_SOFT = "ECFDF5"; // emerald-50
 const MUTED = "6B7280";
+const FONT = "標楷體";
 
 const CHECKED = "☑";
 const UNCHECKED = "☐";
@@ -55,7 +57,7 @@ function sectionHeading(text: string): Paragraph {
   return new Paragraph({
     heading: HeadingLevel.HEADING_2,
     spacing: { before: 300, after: 150 },
-    children: [new TextRun({ text, bold: true, color: ACCENT })],
+    children: [new TextRun({ text, bold: true, color: ACCENT, font: FONT })],
   });
 }
 
@@ -64,14 +66,14 @@ function shadedBar(text: string): Paragraph {
     alignment: AlignmentType.CENTER,
     spacing: { before: 200, after: 150 },
     shading: { fill: ACCENT_SOFT },
-    children: [new TextRun({ text, bold: true, size: 26 })],
+    children: [new TextRun({ text, bold: true, size: 26, font: FONT })],
   });
 }
 
 function bodyParagraph(text: string, opts?: { color?: string; size?: number }): Paragraph {
   return new Paragraph({
     spacing: { after: 150 },
-    children: [new TextRun({ text, color: opts?.color, size: opts?.size ?? 22 })],
+    children: [new TextRun({ text, color: opts?.color, size: opts?.size ?? 22, font: FONT })],
   });
 }
 
@@ -81,11 +83,11 @@ function labelValueRow(label: string, value: string): TableRow {
       new TableCell({
         width: { size: 25, type: WidthType.PERCENTAGE },
         shading: { fill: ACCENT_SOFT },
-        children: [new Paragraph({ children: [new TextRun({ text: label, bold: true })] })],
+        children: [new Paragraph({ children: [new TextRun({ text: label, bold: true, font: FONT })] })],
       }),
       new TableCell({
         width: { size: 75, type: WidthType.PERCENTAGE },
-        children: [new Paragraph({ children: [new TextRun({ text: value })] })],
+        children: [new Paragraph({ children: [new TextRun({ text: value, font: FONT })] })],
       }),
     ],
   });
@@ -94,11 +96,10 @@ function labelValueRow(label: string, value: string): TableRow {
 function checkboxLine(checked: boolean, label: string): Paragraph {
   return new Paragraph({
     spacing: { after: 40 },
-    children: [new TextRun({ text: `${checked ? CHECKED : UNCHECKED} ${label}`, size: 20 })],
+    children: [new TextRun({ text: `${checked ? CHECKED : UNCHECKED} ${label}`, size: 20, font: FONT })],
   });
 }
 
-/** Q1 矩陣題：子項 x（低/中/高）三欄的勾選表 */
 function matrixAnswerTable(question: Extract<Question, { type: "matrix" }>, answer: Answers[string]): Table {
   const selections = (
     answer && typeof answer === "object" && !Array.isArray(answer) ? answer : {}
@@ -115,7 +116,7 @@ function matrixAnswerTable(question: Extract<Question, { type: "matrix" }>, answ
             children: [
               new Paragraph({
                 alignment: AlignmentType.CENTER,
-                children: [new TextRun({ text: opt.label, bold: true, size: 18 })],
+                children: [new TextRun({ text: opt.label, bold: true, size: 18, font: FONT })],
               }),
             ],
           })
@@ -128,7 +129,7 @@ function matrixAnswerTable(question: Extract<Question, { type: "matrix" }>, answ
       new TableRow({
         children: [
           new TableCell({
-            children: [new Paragraph({ children: [new TextRun({ text: sub.label, size: 20 })] })],
+            children: [new Paragraph({ children: [new TextRun({ text: sub.label, size: 20, font: FONT })] })],
           }),
           ...question.subItemOptions.map(
             (opt) =>
@@ -137,7 +138,10 @@ function matrixAnswerTable(question: Extract<Question, { type: "matrix" }>, answ
                   new Paragraph({
                     alignment: AlignmentType.CENTER,
                     children: [
-                      new TextRun({ text: selections[sub.id] === opt.value ? CHECKED : UNCHECKED }),
+                      new TextRun({
+                        text: selections[sub.id] === opt.value ? CHECKED : UNCHECKED,
+                        font: FONT,
+                      }),
                     ],
                   }),
                 ],
@@ -150,11 +154,12 @@ function matrixAnswerTable(question: Extract<Question, { type: "matrix" }>, answ
   return new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: [headerRow, ...rows] });
 }
 
-/** 單一題目的完整內容（題號+題目文字+題型標籤+選項勾選狀態），組成表格右欄的內容陣列 */
 function questionContent(question: Question, answer: Answers[string], questionNumber: number): (Paragraph | Table)[] {
   const titleParagraph = new Paragraph({
     spacing: { after: 60 },
-    children: [new TextRun({ text: `${questionNumber}.${question.title}`, bold: true, size: 22 })],
+    children: [
+      new TextRun({ text: `${questionNumber}.${question.title}`, bold: true, size: 22, font: FONT }),
+    ],
   });
 
   if (question.type === "matrix") {
@@ -167,7 +172,7 @@ function questionContent(question: Question, answer: Answers[string], questionNu
       titleParagraph,
       new Paragraph({
         spacing: { after: 40 },
-        children: [new TextRun({ text: "單選", italics: true, color: MUTED, size: 16 })],
+        children: [new TextRun({ text: "單選", italics: true, color: MUTED, size: 16, font: FONT })],
       }),
       ...question.options.map((opt) => checkboxLine(opt.value === selected, opt.label)),
     ];
@@ -179,7 +184,7 @@ function questionContent(question: Question, answer: Answers[string], questionNu
     titleParagraph,
     new Paragraph({
       spacing: { after: 40 },
-      children: [new TextRun({ text: "複選", italics: true, color: MUTED, size: 16 })],
+      children: [new TextRun({ text: "複選", italics: true, color: MUTED, size: 16, font: FONT })],
     }),
     ...question.options.map((opt) => checkboxLine(selected.includes(opt.value), opt.label)),
   ];
@@ -189,7 +194,6 @@ function questionContent(question: Question, answer: Answers[string], questionNu
   return lines;
 }
 
-/** 一個構面的完整逐題作答表格（左欄子題號、右欄題目內容） */
 function dimensionAnswerTable(dimension: DimensionKey, answers: Answers): Table {
   const questionIds = QUESTION_PAGES.find((p) => p.dimension === dimension)!.questionIds;
 
@@ -204,8 +208,8 @@ function dimensionAnswerTable(dimension: DimensionKey, answers: Answers): Table 
           width: { size: 15, type: WidthType.PERCENTAGE },
           shading: { fill: ACCENT_SOFT },
           children: [
-            new Paragraph({ children: [new TextRun({ text: sub.code, bold: true })] }),
-            new Paragraph({ children: [new TextRun({ text: sub.label, size: 18 })] }),
+            new Paragraph({ children: [new TextRun({ text: sub.code, bold: true, font: FONT })] }),
+            new Paragraph({ children: [new TextRun({ text: sub.label, size: 18, font: FONT })] }),
           ],
         }),
         new TableCell({
@@ -229,11 +233,11 @@ function closingQuestionCell(
   const lines: Paragraph[] = [
     new Paragraph({
       spacing: { after: 60 },
-      children: [new TextRun({ text: `${index}.${title}`, bold: true, size: 22 })],
+      children: [new TextRun({ text: `${index}.${title}`, bold: true, size: 22, font: FONT })],
     }),
     new Paragraph({
       spacing: { after: 40 },
-      children: [new TextRun({ text: "複選", italics: true, color: MUTED, size: 16 })],
+      children: [new TextRun({ text: "複選", italics: true, color: MUTED, size: 16, font: FONT })],
     }),
     ...options.map((opt) => checkboxLine(selected.includes(opt), opt)),
     checkboxLine(
@@ -244,12 +248,22 @@ function closingQuestionCell(
   return lines;
 }
 
+function fitWithinBox(
+  sourceWidth: number,
+  sourceHeight: number,
+  maxWidth: number,
+  maxHeight: number
+): { width: number; height: number } {
+  const scale = Math.min(maxWidth / sourceWidth, maxHeight / sourceHeight, 1);
+  return { width: Math.round(sourceWidth * scale), height: Math.round(sourceHeight * scale) };
+}
+
 function buildDocument(
   result: QuizResult,
   companyInfo: CompanyInfo,
   answers: Answers,
   closing: ClosingAnswers,
-  chartImageBytes: Uint8Array | null
+  chartSnapshot: PngSnapshot | null
 ): Document {
   const commentary = LEVEL_COMMENTARY[result.level];
   const dateStamp = new Date().toLocaleDateString("zh-TW", {
@@ -258,7 +272,6 @@ function buildDocument(
     day: "2-digit",
   });
 
-  // ---- 評量結果框：公司資訊列 + 等級橫幅 + 整體評語 + (雷達圖 | 五大構面百分比) ----
   const summaryHeaderRow = new TableRow({
     children: [
       labelCell("公司名稱", companyInfo.companyName || "—", 34),
@@ -272,7 +285,10 @@ function buildDocument(
       width: { size: widthPct, type: WidthType.PERCENTAGE },
       children: [
         new Paragraph({
-          children: [new TextRun({ text: `${label}：`, bold: true }), new TextRun({ text: value })],
+          children: [
+            new TextRun({ text: `${label}：`, bold: true, font: FONT }),
+            new TextRun({ text: value, font: FONT }),
+          ],
         }),
       ],
     });
@@ -284,24 +300,24 @@ function buildDocument(
     const title = REPORT_SECTION_TITLES[dim].replace(/^[一二三四五]、/, "");
     return new Paragraph({
       spacing: { after: 100 },
-      children: [new TextRun({ text: `${label}、${title}：${score}%` })],
+      children: [new TextRun({ text: `${label}、${title}：${score}%`, font: FONT })],
     });
   });
 
-  const chartCellContent: (Paragraph)[] = chartImageBytes
+  const chartCellContent: (Paragraph)[] = chartSnapshot
     ? [
         new Paragraph({
           alignment: AlignmentType.CENTER,
           children: [
             new ImageRun({
               type: "png",
-              data: chartImageBytes,
-              transformation: { width: 320, height: 320 },
+              data: chartSnapshot.bytes,
+              transformation: fitWithinBox(chartSnapshot.width, chartSnapshot.height, 280, 280),
             }),
           ],
         }),
       ]
-    : [new Paragraph("（雷達圖）")];
+    : [new Paragraph({ children: [new TextRun({ text: "（雷達圖）", font: FONT })] })];
 
   const summaryChartRow = new TableRow({
     children: [
@@ -314,7 +330,7 @@ function buildDocument(
         children: [
           new Paragraph({
             spacing: { after: 100 },
-            children: [new TextRun({ text: "五大構面個別成熟度：", bold: true })],
+            children: [new TextRun({ text: "五大構面個別成熟度：", bold: true, font: FONT })],
           }),
           ...dimensionBulletList,
         ],
@@ -327,7 +343,6 @@ function buildDocument(
     rows: [summaryHeaderRow],
   });
 
-  // ---- 五大構面程度說明表格 ----
   const dimensionNotesRows = DIMENSION_ORDER.map((dim, i) => {
     const label = ["一", "二", "三", "四", "五"][i];
     const title = REPORT_SECTION_TITLES[dim].replace(/^[一二三四五]、/, "");
@@ -336,11 +351,17 @@ function buildDocument(
         new TableCell({
           width: { size: 20, type: WidthType.PERCENTAGE },
           shading: { fill: ACCENT_SOFT },
-          children: [new Paragraph({ children: [new TextRun({ text: `${label}、${title}`, bold: true })] })],
+          children: [
+            new Paragraph({
+              children: [new TextRun({ text: `${label}、${title}`, bold: true, font: FONT })],
+            }),
+          ],
         }),
         new TableCell({
           width: { size: 80, type: WidthType.PERCENTAGE },
-          children: [new Paragraph(commentary.dimensionNotes[dim])],
+          children: [
+            new Paragraph({ children: [new TextRun({ text: commentary.dimensionNotes[dim], font: FONT })] }),
+          ],
         }),
       ],
     });
@@ -350,13 +371,11 @@ function buildDocument(
     rows: dimensionNotesRows,
   });
 
-  // ---- 完整逐題作答清單（五大構面） ----
   const answerSheetBlocks = DIMENSION_ORDER.flatMap((dim) => [
     shadedBar(REPORT_SECTION_TITLES[dim]),
     dimensionAnswerTable(dim, answers),
   ]);
 
-  // ---- A. 公司經營目標與痛點（Q18、Q19） ----
   const closingTable = new Table({
     width: { size: 100, type: WidthType.PERCENTAGE },
     rows: [
@@ -365,7 +384,9 @@ function buildDocument(
           new TableCell({
             width: { size: 15, type: WidthType.PERCENTAGE },
             shading: { fill: ACCENT_SOFT },
-            children: [new Paragraph({ children: [new TextRun({ text: "A-1 公司營運痛點發生場域", size: 18 })] })],
+            children: [
+              new Paragraph({ children: [new TextRun({ text: "A-1 公司營運痛點發生場域", size: 18, font: FONT })] }),
+            ],
           }),
           new TableCell({
             width: { size: 85, type: WidthType.PERCENTAGE },
@@ -378,7 +399,9 @@ function buildDocument(
           new TableCell({
             width: { size: 15, type: WidthType.PERCENTAGE },
             shading: { fill: ACCENT_SOFT },
-            children: [new Paragraph({ children: [new TextRun({ text: "A-2 公司導入AI面臨挑戰", size: 18 })] })],
+            children: [
+              new Paragraph({ children: [new TextRun({ text: "A-2 公司導入AI面臨挑戰", size: 18, font: FONT })] }),
+            ],
           }),
           new TableCell({
             width: { size: 85, type: WidthType.PERCENTAGE },
@@ -389,7 +412,6 @@ function buildDocument(
     ],
   });
 
-  // ---- B. 公司填答部門同仁 ----
   const departments = companyInfo.departments ?? [];
   const departmentText =
     departments.length > 0
@@ -416,6 +438,14 @@ function buildDocument(
   });
 
   return new Document({
+    styles: {
+      default: {
+        document: { run: { font: FONT } },
+        heading1: { run: { font: FONT } },
+        heading2: { run: { font: FONT } },
+        heading3: { run: { font: FONT } },
+      },
+    },
     sections: [
       {
         children: [
@@ -423,7 +453,12 @@ function buildDocument(
             alignment: AlignmentType.CENTER,
             spacing: { after: 200 },
             children: [
-              new TextRun({ text: "經濟部產業競爭力輔導團－製造業AI成熟度量表", bold: true, size: 32 }),
+              new TextRun({
+                text: "經濟部產業競爭力輔導團－製造業AI成熟度量表",
+                bold: true,
+                size: 32,
+                font: FONT,
+              }),
             ],
           }),
 
@@ -439,12 +474,10 @@ function buildDocument(
           sectionHeading("改善建議與推薦政策資源資訊"),
           new Paragraph({
             spacing: { after: 100 },
-            children: [new TextRun({ text: `${result.levelName}　AI 導入策略建議`, bold: true })],
+            children: [
+              new TextRun({ text: `${result.levelName}　AI 導入策略建議`, bold: true, font: FONT }),
+            ],
           }),
-          bodyParagraph(
-            "此建議依所屬的成熟度等級提供代表性參考內容；原站會再依五大構面的實際分數組合進一步客製化，因此與您在原站看到的文字可能略有不同。",
-            { color: "9CA3AF", size: 16 }
-          ),
           bodyParagraph(commentary.strategyAdvice),
           ...EXTERNAL_RESOURCES.flatMap((r) => [
             bodyParagraph(r.label, { size: 18 }),
@@ -467,6 +500,7 @@ function buildDocument(
                 text: "本報告由「AI成熟度量表」線上問卷自動產生，僅供企業自我評估參考。",
                 color: "9CA3AF",
                 size: 18,
+                font: FONT,
               }),
             ],
           }),
@@ -476,20 +510,19 @@ function buildDocument(
   });
 }
 
-/** 在瀏覽器端組出診斷結果 Word 檔並觸發下載，純前端、不經過任何伺服器 */
 export async function downloadResultDocx(
   result: QuizResult,
   companyInfo: CompanyInfo,
   answers: Answers,
   closing: ClosingAnswers,
-  chartImageBytes: Uint8Array | null
+  chartSnapshot: PngSnapshot | null
 ): Promise<void> {
-  const doc = buildDocument(result, companyInfo, answers, closing, chartImageBytes);
+  const doc = buildDocument(result, companyInfo, answers, closing, chartSnapshot);
   const blob = await Packer.toBlob(doc);
 
   const dateStamp = new Date().toISOString().slice(0, 10);
-  const companyPart = companyInfo.companyName ? `_${companyInfo.companyName}` : "";
-  const filename = `AI成熟度診斷報告${companyPart}_${dateStamp}.docx`;
+  const namePart = companyInfo.companyName ? `${companyInfo.companyName}_` : "";
+  const filename = `${namePart}AI成熟度診斷報告_${dateStamp}.docx`;
 
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");

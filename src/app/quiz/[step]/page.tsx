@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { CompanyInfoForm } from "@/components/quiz/CompanyInfoForm";
 import { ClosingQuestionsForm } from "@/components/quiz/ClosingQuestionsForm";
@@ -7,19 +8,44 @@ import { QuestionField } from "@/components/quiz/QuestionField";
 import { useQuizStore } from "@/lib/quiz-store";
 import { QUESTIONS_BY_ID, QUESTION_PAGES } from "@/lib/scoring/questions";
 import { encodeAnswers } from "@/lib/answer-codec";
+import { CLOSING_OTHER_VALUE } from "@/lib/closing-questions";
+import { isCompanyInfoValid, validateClosingAnswer, validateQuestionAnswer } from "@/lib/validation";
 
 export default function QuizStepPage() {
   const params = useParams<{ step: string }>();
   const router = useRouter();
-  const { answers } = useQuizStore();
+  const { companyInfo, answers, closing } = useQuizStore();
   const step = Number(params.step);
+  const [showErrors, setShowErrors] = useState(false);
 
   if (!Number.isInteger(step) || step < 0 || step > 6) {
     return <p className="text-slate-500">找不到這個步驟。</p>;
   }
 
+  const dimensionPage = step >= 1 && step <= 5 ? QUESTION_PAGES[step - 1] : null;
+
+  const isStepValid = (): boolean => {
+    if (step === 0) return isCompanyInfoValid(companyInfo);
+    if (dimensionPage) {
+      return dimensionPage.questionIds.every(
+        (id) => validateQuestionAnswer(QUESTIONS_BY_ID[id], answers[id]) === null
+      );
+    }
+    if (step === 6) {
+      return (
+        validateClosingAnswer(closing.q1, CLOSING_OTHER_VALUE, closing.q1Other) === null &&
+        validateClosingAnswer(closing.q2, CLOSING_OTHER_VALUE, closing.q2Other) === null
+      );
+    }
+    return true;
+  };
+
   const goPrev = () => step > 0 && router.push(`/quiz/${step - 1}`);
   const goNext = () => {
+    if (!isStepValid()) {
+      setShowErrors(true);
+      return;
+    }
     if (step === 6) {
       const code = encodeAnswers(answers);
       router.push(`/result/${code}`);
@@ -28,11 +54,9 @@ export default function QuizStepPage() {
     router.push(`/quiz/${step + 1}`);
   };
 
-  const dimensionPage = step >= 1 && step <= 5 ? QUESTION_PAGES[step - 1] : null;
-
   return (
     <div className="space-y-8">
-      {step === 0 && <CompanyInfoForm />}
+      {step === 0 && <CompanyInfoForm showErrors={showErrors} />}
 
       {dimensionPage && (
         <div className="space-y-6">
@@ -46,14 +70,20 @@ export default function QuizStepPage() {
                 className="animate-fade-up"
                 style={{ animationDelay: `${index * 60}ms` }}
               >
-                <QuestionField question={QUESTIONS_BY_ID[id]} />
+                <QuestionField question={QUESTIONS_BY_ID[id]} showError={showErrors} />
               </div>
             ))}
           </div>
         </div>
       )}
 
-      {step === 6 && <ClosingQuestionsForm />}
+      {step === 6 && <ClosingQuestionsForm showErrors={showErrors} />}
+
+      {showErrors && !isStepValid() && (
+        <p className="text-center text-base font-medium text-red-600">
+          還有題目尚未完成或格式不正確，請檢查上方紅框標示的欄位。
+        </p>
+      )}
 
       <div className="flex justify-between pt-4">
         <button

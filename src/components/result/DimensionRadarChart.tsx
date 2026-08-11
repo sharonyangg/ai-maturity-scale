@@ -7,14 +7,25 @@ import {
   Radar,
   RadarChart,
   ResponsiveContainer,
+  Tooltip,
 } from "recharts";
 import { DIMENSION_LABELS, DIMENSION_ORDER } from "@/lib/scoring/dimensions";
 import type { DimensionKey } from "@/lib/scoring/types";
 
 interface DimensionRadarChartProps {
   scores: Record<DimensionKey, number>;
-  /** 掛在圖表外層容器上，供下載 Word 報告時抓取內部渲染出的 <svg> 轉成圖片 */
   containerRef?: React.RefObject<HTMLDivElement | null>;
+}
+
+function ChartTooltip({ active, payload }: { active?: boolean; payload?: { payload: { dimension: string; score: number } }[] }) {
+  if (!active || !payload?.length) return null;
+  const { dimension, score } = payload[0].payload;
+  return (
+    <div className="rounded-lg bg-white px-3 py-2 text-lg shadow-[0_4px_16px_rgba(15,23,42,0.15)]">
+      <span className="font-medium text-black">{dimension}</span>
+      <span className="ml-2 font-bold text-emerald-700">{score}%</span>
+    </div>
+  );
 }
 
 export function DimensionRadarChart({ scores, containerRef }: DimensionRadarChartProps) {
@@ -24,25 +35,30 @@ export function DimensionRadarChart({ scores, containerRef }: DimensionRadarChar
   }));
 
   return (
-    <div ref={containerRef} className="h-96 w-full">
+    <div ref={containerRef} className="h-80 w-full sm:h-[26rem]">
       <ResponsiveContainer width="100%" height="100%">
-        <RadarChart data={data} outerRadius="75%">
+        <RadarChart data={data} outerRadius="58%">
           <defs>
             <radialGradient id="radarFill" cx="50%" cy="50%" r="70%">
-              <stop offset="0%" stopColor="#34d399" stopOpacity={0.55} />
-              <stop offset="100%" stopColor="#047857" stopOpacity={0.25} />
+              <stop offset="0%" stopColor="#34d399" stopOpacity={0.6} />
+              <stop offset="100%" stopColor="#047857" stopOpacity={0.3} />
             </radialGradient>
           </defs>
-          <PolarGrid stroke="#e1e0d9" />
-          <PolarAngleAxis dataKey="dimension" tick={{ fontSize: 15, fill: "#0b0b0b" }} />
-          <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fontSize: 12, fill: "#898781" }} />
+          <PolarGrid stroke="#d7ded9" />
+          <PolarAngleAxis
+            dataKey="dimension"
+            tick={{ fontSize: 18, fontWeight: 600, fill: "#1f2937" }}
+          />
+          <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fontSize: 14, fill: "#9ca3af" }} />
+          <Tooltip content={<ChartTooltip />} />
           <Radar
             name="成熟度分數"
             dataKey="score"
             stroke="#059669"
-            strokeWidth={2}
+            strokeWidth={2.5}
             fill="url(#radarFill)"
-            animationDuration={700}
+            dot={{ r: 4, fill: "#047857", stroke: "#ffffff", strokeWidth: 2 }}
+            animationDuration={900}
             animationEasing="ease-out"
           />
         </RadarChart>

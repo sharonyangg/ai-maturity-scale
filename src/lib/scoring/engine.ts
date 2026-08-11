@@ -31,7 +31,6 @@ function scoreQuestion(question: Question, answers: Answers): number {
   return thresholdScore(achievedCount, question.subItems.length, question.weight, question.baselineAtOne);
 }
 
-/** 計算五大構面各自分數（0-100，允許因四捨五入誤差略超過100，如實保留基礎數據構面101%的現象） */
 export function computeDimensionScores(answers: Answers): Record<DimensionKey, number> {
   const totals: Record<DimensionKey, number> = {
     baseData: 0,

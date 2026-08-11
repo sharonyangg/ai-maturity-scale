@@ -7,15 +7,6 @@ import type {
   SingleChoiceQuestion,
 } from "./types";
 
-/**
- * 題目與選項文字為使用者親自截圖原站問卷後逐字轉錄，2026-08-06。
- *
- * 分數來源標記：
- *   verified: true  → 該題（或該選項組合）分數已透過黑箱測試逐一驗證
- *   verified: false → 目前用「選項等差線性分布」佔位，真實非線性曲線尚未逐一測出
- *     （已知 Q5/Q6/Q7 選項分數確定非線性，但校正後數值未保留在交接文件中）
- */
-
 function linearOptions(labels: string[]): ChoiceOption[] {
   const step = 100 / (labels.length - 1);
   return labels.map((label, i) => ({
@@ -67,8 +58,6 @@ function multiChoice(
   };
 }
 
-// ---- 第一部分：數據與基礎設施（Q1-Q4，權重合計 101%，四捨五入誤差，如實保留） ----
-
 const Q1_SUB_ITEM_LABELS = [
   "製造執行管理相關系統(MES)",
   "設備機台管理相關系統(EMS)",
@@ -99,7 +88,6 @@ const Q1: MatrixQuestion = {
     { value: "2", label: "系統尚在建置中" },
     { value: "3", label: "系統已導入使用中" },
   ],
-  // 實測：單一子項選最高 → 9%（子項1、子項5皆驗證過，數值一致）
   baselineAtOne: 9,
   baselineVerified: true,
 };
@@ -146,9 +134,6 @@ const Q4 = singleChoice(
   ]
 );
 
-// ---- 第二部分：企業AI投入資源（Q5-Q7）----
-// 交接文件標註 Q5/Q6/Q7 選項分數「已校正過非線性數值」，但校正後的實際數字
-// 未保留在交接文件與測試報告中，目前仍用線性佔位，待補實測數字。
 const Q5 = singleChoice(
   "Q5",
   "inputResource",
@@ -191,7 +176,6 @@ const Q7 = singleChoice(
   ]
 );
 
-// ---- 第三部分：企業AI策略規劃與管理（Q8-Q11）----
 const Q8 = singleChoice(
   "Q8",
   "strategy",
@@ -220,7 +204,6 @@ const Q9 = singleChoice(
   ]
 );
 
-// 實測：8選項，門檻4項；1/2/3/4項 = 6%/13%/19%/23%（見 curve.ts 常數）
 const Q10 = multiChoice(
   "Q10",
   "strategy",
@@ -241,7 +224,6 @@ const Q10 = multiChoice(
   "以上皆無。"
 );
 
-// 實測：7選項，門檻4項；1項=6%、4項=12%（滿分），中間值未逐一測
 const Q11 = multiChoice(
   "Q11",
   "strategy",
@@ -261,7 +243,6 @@ const Q11 = multiChoice(
   "以上皆無。"
 );
 
-// ---- 第四部分：製造業AI應用與落地（Q12-Q15）----
 const Q12 = singleChoice(
   "Q12",
   "application",
@@ -276,7 +257,6 @@ const Q12 = singleChoice(
   ]
 );
 
-// 實測：11選項，門檻6項=39%（滿分）；勾1項分數未逐一測，依 Q10 的 baseline/max 比例（6/23）估算
 const Q13 = multiChoice(
   "Q13",
   "application",
@@ -328,7 +308,6 @@ const Q15 = singleChoice(
   ]
 );
 
-// ---- 第五部分：企業AI數位轉型營運效益（Q16-Q17）----
 const Q16 = singleChoice(
   "Q16",
   "diffusion",
@@ -369,11 +348,10 @@ export const QUESTIONS_BY_ID: Record<string, Question> = Object.fromEntries(
   QUESTIONS.map((q) => [q.id, q])
 );
 
-/** 問卷分頁分組（比照原站 page1~page5 = 五大構面各一頁） */
 export const QUESTION_PAGES: {
   page: string;
   dimension: Question["dimension"];
-  /** 原站該部分的正式標題（例：「第一部分：數據與基礎設施」） */
+
   sectionTitle: string;
   questionIds: string[];
 }[] = [
@@ -384,10 +362,6 @@ export const QUESTION_PAGES: {
   { page: "page5", dimension: "diffusion", sectionTitle: "第五部分：企業AI數位轉型營運效益", questionIds: ["Q16", "Q17"] },
 ];
 
-/**
- * 官方正式報告（PDF）使用的子題編號與構面中文編號標題，逐字對照自使用者提供的
- * 真實填答結果 PDF 範本，Word 匯出報告的完整逐題作答清單依此呈現。
- */
 export const REPORT_SECTION_TITLES: Record<Question["dimension"], string> = {
   baseData: "一、數據與基礎設施",
   inputResource: "二、企業AI投入資源",

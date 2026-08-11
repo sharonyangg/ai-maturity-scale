@@ -1,9 +1,3 @@
-/**
- * 原站 page6（第五部分之後的結尾兩題，Q18、Q19），已驗證勾任何組合都不影響
- * 五大構面分數與等級，純粹是資訊蒐集用途。題目與選項文字為使用者親自截圖
- * 原站問卷後逐字轉錄。獨立成檔供 ClosingQuestionsForm（畫面）與 export-docx
- * （Word 報告）共用，避免兩處各存一份選項清單。
- */
 export const CLOSING_MAX_SELECT = 5;
 export const CLOSING_OTHER_VALUE = "其他";
 

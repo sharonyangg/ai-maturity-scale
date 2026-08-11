@@ -2,21 +2,52 @@
 
 import type { Question } from "@/lib/scoring/types";
 import { useQuizStore } from "@/lib/quiz-store";
+import { validateQuestionAnswer } from "@/lib/validation";
 
-const CARD_CLASS = "rounded-2xl bg-[#f7faf8] p-6 shadow-[0_2px_16px_rgba(15,23,42,0.08)]";
-const TITLE_CLASS = "mb-4 text-lg font-semibold text-black break-words";
+const CARD_CLASS = "rounded-2xl bg-[#f7faf8] p-5 shadow-[0_2px_16px_rgba(15,23,42,0.08)] sm:p-6";
 const OPTION_LABEL_CLASS =
   "flex items-start gap-3 cursor-pointer text-base text-black transition-colors has-checked:text-emerald-700 has-checked:font-medium";
 
-export function QuestionField({ question }: { question: Question }) {
+function ErrorText({ message }: { message: string | null }) {
+  if (!message) return null;
+  return <p className="mt-3 text-sm font-medium text-red-600">{message}</p>;
+}
+
+export function QuestionNumberBadge({ number }: { number: string | number }) {
+  return (
+    <span className="inline-block h-7 w-7 shrink-0 rounded-full bg-emerald-600 text-center text-sm leading-7 font-bold text-white tabular-nums">
+      {number}
+    </span>
+  );
+}
+
+function QuestionHeader({ number, title }: { number: string; title: string }) {
+  return (
+    <div className="mb-5 flex items-start gap-3 border-b border-emerald-900/10 pb-4">
+      <QuestionNumberBadge number={number} />
+      <p className="min-w-0 break-words text-lg font-semibold text-black">{title}</p>
+    </div>
+  );
+}
+
+export function QuestionField({
+  question,
+  showError = false,
+}: {
+  question: Question;
+  showError?: boolean;
+}) {
   const { answers, setAnswer } = useQuizStore();
   const answer = answers[question.id];
+  const number = question.id.replace(/^Q/, "");
+  const error = showError ? validateQuestionAnswer(question, answer) : null;
+  const cardClass = `${CARD_CLASS}${error ? " ring-2 ring-red-500" : ""}`;
 
   if (question.type === "single") {
     const selected = typeof answer === "string" ? answer : undefined;
     return (
-      <div className={CARD_CLASS}>
-        <p className={TITLE_CLASS}>{question.title}</p>
+      <div className={cardClass}>
+        <QuestionHeader number={number} title={question.title} />
         <div className="space-y-3">
           {question.options.map((option) => (
             <label key={option.value} className={OPTION_LABEL_CLASS}>
@@ -26,12 +57,13 @@ export function QuestionField({ question }: { question: Question }) {
                 value={option.value}
                 checked={selected === option.value}
                 onChange={() => setAnswer(question.id, option.value)}
-                className="mt-1 h-4 w-4 shrink-0 accent-emerald-600"
+                className="mt-1 h-5 w-5 shrink-0 accent-emerald-600"
               />
               <span className="min-w-0 break-words">{option.label}</span>
             </label>
           ))}
         </div>
+        <ErrorText message={error} />
       </div>
     );
   }
@@ -55,8 +87,8 @@ export function QuestionField({ question }: { question: Question }) {
     };
 
     return (
-      <div className={CARD_CLASS}>
-        <p className={TITLE_CLASS}>{question.title}</p>
+      <div className={cardClass}>
+        <QuestionHeader number={number} title={question.title} />
         <div className="space-y-3">
           {question.options.map((option) => (
             <label key={option.value} className={OPTION_LABEL_CLASS}>
@@ -64,7 +96,7 @@ export function QuestionField({ question }: { question: Question }) {
                 type="checkbox"
                 checked={selected.includes(option.value)}
                 onChange={() => toggle(option.value)}
-                className="mt-1 h-4 w-4 shrink-0 accent-emerald-600"
+                className="mt-1 h-5 w-5 shrink-0 accent-emerald-600"
               />
               <span className="min-w-0 break-words">{option.label}</span>
             </label>
@@ -75,12 +107,13 @@ export function QuestionField({ question }: { question: Question }) {
                 type="checkbox"
                 checked={isNoneSelected}
                 onChange={() => toggle(question.noneOption!.value)}
-                className="mt-1 h-4 w-4 shrink-0 accent-emerald-600"
+                className="mt-1 h-5 w-5 shrink-0 accent-emerald-600"
               />
               <span className="min-w-0 break-words">{question.noneOption.label}</span>
             </label>
           )}
         </div>
+        <ErrorText message={error} />
       </div>
     );
   }
@@ -95,8 +128,8 @@ export function QuestionField({ question }: { question: Question }) {
   };
 
   return (
-    <div className={CARD_CLASS}>
-      <p className={TITLE_CLASS}>{question.title}</p>
+    <div className={cardClass}>
+      <QuestionHeader number={number} title={question.title} />
       <div className="overflow-x-auto">
         <table className="w-full text-base border-collapse">
           <thead>
@@ -124,7 +157,7 @@ export function QuestionField({ question }: { question: Question }) {
                       value={opt.value}
                       checked={selections[sub.id] === opt.value}
                       onChange={() => setSubItem(sub.id, opt.value)}
-                      className="h-4 w-4 accent-emerald-600"
+                      className="h-5 w-5 accent-emerald-600"
                     />
                   </td>
                 ))}
@@ -133,6 +166,7 @@ export function QuestionField({ question }: { question: Question }) {
           </tbody>
         </table>
       </div>
+      <ErrorText message={error} />
     </div>
   );
 }

@@ -8,17 +8,26 @@ import {
   SUB_INDUSTRY_OPTIONS,
   useQuizStore,
 } from "@/lib/quiz-store";
+import { OTHER_DEPARTMENT, validateCompanyInfo } from "@/lib/validation";
 
-const CARD_CLASS = "rounded-2xl bg-[#f7faf8] p-6 shadow-[0_2px_16px_rgba(15,23,42,0.08)]";
-const inputClass =
-  "w-full rounded-lg border border-gray-300 px-3 py-2 text-base text-black focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20";
+const CARD_CLASS = "rounded-2xl bg-[#f7faf8] p-5 shadow-[0_2px_16px_rgba(15,23,42,0.08)] sm:p-6";
+const BASE_INPUT_CLASS =
+  "w-full rounded-lg border px-3 py-2 text-base text-black focus:outline-none focus:ring-2";
 const labelClass = "mb-3 block text-lg font-semibold text-black";
+const ERROR_TEXT_CLASS = "mt-1.5 text-sm font-medium text-red-600";
 
-const OTHER_DEPARTMENT = "其他部門";
+function inputClass(hasError: boolean): string {
+  return `${BASE_INPUT_CLASS} ${
+    hasError
+      ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
+      : "border-gray-300 focus:border-emerald-500 focus:ring-emerald-500/20"
+  }`;
+}
 
-export function CompanyInfoForm() {
+export function CompanyInfoForm({ showErrors = false }: { showErrors?: boolean }) {
   const { companyInfo, setCompanyField, setCompanyDepartments } = useQuizStore();
   const departments = companyInfo.departments ?? [];
+  const errors = showErrors ? validateCompanyInfo(companyInfo) : {};
 
   const toggleDepartment = (value: string) => {
     const next = departments.includes(value)
@@ -43,9 +52,10 @@ export function CompanyInfoForm() {
             type="text"
             value={companyInfo.companyName ?? ""}
             onChange={(e) => setCompanyField("companyName", e.target.value)}
-            className={inputClass}
+            className={inputClass(Boolean(errors.companyName))}
           />
         </label>
+        {errors.companyName && <p className={ERROR_TEXT_CLASS}>{errors.companyName}</p>}
       </div>
 
       <div className={CARD_CLASS}>
@@ -55,9 +65,10 @@ export function CompanyInfoForm() {
             type="text"
             value={companyInfo.taxId ?? ""}
             onChange={(e) => setCompanyField("taxId", e.target.value)}
-            className={inputClass}
+            className={inputClass(Boolean(errors.taxId))}
           />
         </label>
+        {errors.taxId && <p className={ERROR_TEXT_CLASS}>{errors.taxId}</p>}
       </div>
 
       <div className={CARD_CLASS}>
@@ -68,7 +79,7 @@ export function CompanyInfoForm() {
           <select
             value={companyInfo.subIndustry ?? ""}
             onChange={(e) => setCompanyField("subIndustry", e.target.value)}
-            className={inputClass}
+            className={inputClass(Boolean(errors.subIndustry))}
           >
             <option value="" disabled>
               請選擇
@@ -80,6 +91,7 @@ export function CompanyInfoForm() {
             ))}
           </select>
         </label>
+        {errors.subIndustry && <p className={ERROR_TEXT_CLASS}>{errors.subIndustry}</p>}
       </div>
 
       <div className={CARD_CLASS}>
@@ -88,7 +100,7 @@ export function CompanyInfoForm() {
           <select
             value={companyInfo.city ?? ""}
             onChange={(e) => setCompanyField("city", e.target.value)}
-            className={inputClass}
+            className={inputClass(Boolean(errors.city))}
           >
             <option value="" disabled>
               請選擇
@@ -100,6 +112,7 @@ export function CompanyInfoForm() {
             ))}
           </select>
         </label>
+        {errors.city && <p className={ERROR_TEXT_CLASS}>{errors.city}</p>}
       </div>
 
       <div className={CARD_CLASS}>
@@ -109,9 +122,10 @@ export function CompanyInfoForm() {
             type="text"
             value={companyInfo.address ?? ""}
             onChange={(e) => setCompanyField("address", e.target.value)}
-            className={inputClass}
+            className={inputClass(Boolean(errors.address))}
           />
         </label>
+        {errors.address && <p className={ERROR_TEXT_CLASS}>{errors.address}</p>}
       </div>
 
       <div className={CARD_CLASS}>
@@ -120,7 +134,7 @@ export function CompanyInfoForm() {
           <select
             value={companyInfo.employeeScale ?? ""}
             onChange={(e) => setCompanyField("employeeScale", e.target.value)}
-            className={inputClass}
+            className={inputClass(Boolean(errors.employeeScale))}
           >
             <option value="" disabled>
               請選擇
@@ -132,6 +146,7 @@ export function CompanyInfoForm() {
             ))}
           </select>
         </label>
+        {errors.employeeScale && <p className={ERROR_TEXT_CLASS}>{errors.employeeScale}</p>}
       </div>
 
       <div className={CARD_CLASS}>
@@ -141,9 +156,10 @@ export function CompanyInfoForm() {
             type="text"
             value={companyInfo.respondentName ?? ""}
             onChange={(e) => setCompanyField("respondentName", e.target.value)}
-            className={inputClass}
+            className={inputClass(Boolean(errors.respondentName))}
           />
         </label>
+        {errors.respondentName && <p className={ERROR_TEXT_CLASS}>{errors.respondentName}</p>}
       </div>
 
       <div className={CARD_CLASS}>
@@ -152,7 +168,7 @@ export function CompanyInfoForm() {
           <select
             value={companyInfo.respondentLevel ?? ""}
             onChange={(e) => setCompanyField("respondentLevel", e.target.value)}
-            className={inputClass}
+            className={inputClass(Boolean(errors.respondentLevel))}
           >
             <option value="" disabled>
               請選擇
@@ -164,6 +180,7 @@ export function CompanyInfoForm() {
             ))}
           </select>
         </label>
+        {errors.respondentLevel && <p className={ERROR_TEXT_CLASS}>{errors.respondentLevel}</p>}
       </div>
 
       <div className={CARD_CLASS}>
@@ -175,7 +192,7 @@ export function CompanyInfoForm() {
                 type="checkbox"
                 checked={departments.includes(opt)}
                 onChange={() => toggleDepartment(opt)}
-                className="h-4 w-4 shrink-0 accent-emerald-600"
+                className="h-5 w-5 shrink-0 accent-emerald-600"
               />
               <span>{opt}</span>
             </label>
@@ -185,58 +202,63 @@ export function CompanyInfoForm() {
               type="checkbox"
               checked={departments.includes(OTHER_DEPARTMENT)}
               onChange={() => toggleDepartment(OTHER_DEPARTMENT)}
-              className="h-4 w-4 shrink-0 accent-emerald-600"
+              className="h-5 w-5 shrink-0 accent-emerald-600"
             />
             <span>其他部門</span>
           </label>
           {departments.includes(OTHER_DEPARTMENT) && (
-            <input
-              type="text"
-              value={companyInfo.departmentOther ?? ""}
-              onChange={(e) => setCompanyField("departmentOther", e.target.value)}
-              placeholder="請輸入其他部門"
-              className={inputClass}
-            />
+            <div>
+              <input
+                type="text"
+                value={companyInfo.departmentOther ?? ""}
+                onChange={(e) => setCompanyField("departmentOther", e.target.value)}
+                placeholder="請輸入其他部門"
+                className={inputClass(Boolean(errors.departmentOther))}
+              />
+              {errors.departmentOther && <p className={ERROR_TEXT_CLASS}>{errors.departmentOther}</p>}
+            </div>
           )}
         </div>
+        {errors.departments && <p className={ERROR_TEXT_CLASS}>{errors.departments}</p>}
       </div>
 
       <div className={CARD_CLASS}>
         <label className="block">
-          <span className={labelClass}>10. 請問您的部門/職稱？</span>
+          <span className={labelClass}>10. 請問您的部門與職稱？</span>
           <input
             type="text"
             value={companyInfo.departmentTitle ?? ""}
             onChange={(e) => setCompanyField("departmentTitle", e.target.value)}
-            className={inputClass}
+            className={inputClass(Boolean(errors.departmentTitle))}
           />
         </label>
+        {errors.departmentTitle && <p className={ERROR_TEXT_CLASS}>{errors.departmentTitle}</p>}
       </div>
 
       <div className={CARD_CLASS}>
         <label className="block">
-          <span className={labelClass}>
-            11. 請問您的E-mail？（請填寫正確聯絡資訊，以確保後續能收到完整AI量表分析報告）
-          </span>
+          <span className={labelClass}>11. 請問您的E-mail？</span>
           <input
             type="email"
             value={companyInfo.email ?? ""}
             onChange={(e) => setCompanyField("email", e.target.value)}
-            className={inputClass}
+            className={inputClass(Boolean(errors.email))}
           />
         </label>
+        {errors.email && <p className={ERROR_TEXT_CLASS}>{errors.email}</p>}
       </div>
 
       <div className={CARD_CLASS}>
         <label className="block">
-          <span className={labelClass}>12. 請問您的電話？</span>
+          <span className={labelClass}>12. 請問您的電話是？</span>
           <input
             type="tel"
             value={companyInfo.phone ?? ""}
             onChange={(e) => setCompanyField("phone", e.target.value)}
-            className={inputClass}
+            className={inputClass(Boolean(errors.phone))}
           />
         </label>
+        {errors.phone && <p className={ERROR_TEXT_CLASS}>{errors.phone}</p>}
       </div>
     </div>
   );

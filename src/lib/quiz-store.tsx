@@ -3,21 +3,6 @@
 import { createContext, useContext, useEffect, useMemo, useReducer } from "react";
 import type { Answers } from "./scoring/types";
 
-/**
- * page0（公司基本資料）欄位，共 12 題，欄位文字與順序由使用者直接對照原站問卷逐字提供：
- *   1.公司登記完整中文名稱 2.公司統一編號 3.次產業別(下拉) 4.登記地址所處縣市(下拉)
- *   5.登記地址 6.員工人數規模(下拉) 7.姓名 8.公司職稱職級(下拉) 9.部門(可複選)
- *   10.部門/職稱 11.E-mail 12.電話
- * subIndustry / respondentLevel / departments 三個欄位的完整選項清單則是從使用者提供的
- * 正式填答結果 PDF 最後一頁「B.公司填答部門同仁」區塊逐字確認的。
- *
- * city 的選項是台灣 22 縣市的標準行政區劃分，非猜測。employeeScale 的選項已對照使用者
- * 提供的原站截圖逐字確認。
- *
- * 之前這裡放的 identityType（身份類型）／purpose（申請用途）等欄位是從原站 JS 打包檔
- * 的表單驗證文字猜測來的，對照真實填答結果後發現猜錯了——那組文字實際上屬於網站另一個
- * 「下載製造業AI導入指引」的聯絡資訊彈窗，不是這裡的欄位，已經移除。
- */
 export const CITY_OPTIONS = [
   "臺北市",
   "新北市",
@@ -115,7 +100,6 @@ export interface CompanyInfo {
   phone?: string;
 }
 
-/** 依原站問卷第一頁的題目順序排列，供 Word 報告等需要「欄位 key → 中文標籤」對照的地方共用 */
 export const COMPANY_FIELD_LABELS: Record<Exclude<keyof CompanyInfo, "departments" | "departmentOther">, string> = {
   companyName: "公司名稱",
   taxId: "統一編號",
@@ -130,7 +114,6 @@ export const COMPANY_FIELD_LABELS: Record<Exclude<keyof CompanyInfo, "department
   phone: "電話",
 };
 
-/** page6 結尾兩題複選題（Q18、Q19），已驗證不影響計分，純資訊蒐集用途 */
 export interface ClosingAnswers {
   q1: string[];
   q1Other: string;
@@ -146,19 +129,10 @@ interface QuizState {
 
 const STORAGE_KEY = "ai-maturity-quiz-state";
 
-/**
- * 結果頁不在 QuizProvider 底下（它是獨立路由，答案已經編碼進 URL 了），
- * 所以「回到首頁」要清掉暫存進度時，直接操作 localStorage，而不是透過 context。
- */
 export function clearStoredQuizState() {
   if (typeof window !== "undefined") window.localStorage.removeItem(STORAGE_KEY);
 }
 
-/**
- * 結果頁下載 Word 報告時想帶上公司資訊，但結果頁本身不在 QuizProvider 底下，
- * 所以一樣直接讀 localStorage。只在剛完成問卷、同一台裝置的情境下才讀得到；
- * 純靠 URL 分享出去的結果連結不會有這份資料，屬預期行為。
- */
 export function getStoredCompanyInfo(): CompanyInfo {
   if (typeof window === "undefined") return {};
   try {
@@ -173,7 +147,6 @@ export function getStoredCompanyInfo(): CompanyInfo {
 
 const EMPTY_CLOSING: ClosingAnswers = { q1: [], q1Other: "", q2: [], q2Other: "" };
 
-/** 同上，取回結尾兩題（Q18、Q19）的暫存作答，供 Word 報告的完整逐題清單使用 */
 export function getStoredClosingAnswers(): ClosingAnswers {
   if (typeof window === "undefined") return EMPTY_CLOSING;
   try {
@@ -244,7 +217,6 @@ export function QuizProvider({ children }: { children: React.ReactNode }) {
       try {
         dispatch({ type: "HYDRATE", state: JSON.parse(raw) as QuizState });
       } catch {
-        // 忽略壞掉的暫存資料
       }
     }
   }, []);
