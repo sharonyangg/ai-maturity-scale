@@ -42,8 +42,7 @@ export function InAppBrowserBanner() {
       <div className="mx-auto flex max-w-4xl items-start gap-3">
         <span className="mt-0.5 shrink-0">⚠️</span>
         <p className="flex-1 leading-relaxed">
-          偵測到您正在用 {appName} 內建瀏覽器開啟本頁，填答與下載報告可能會失敗（例如報告裡「公司經營目標與痛點」「公司填答部門同仁」空白）。
-          建議點右上角「⋯」選擇「在瀏覽器中開啟」，改用手機預設瀏覽器（Safari／Chrome）重新開始填答。
+          偵測到您正在用{appName}內建瀏覽器開啟本頁，可能造成填答與下載報告失敗，建議使用手機預設瀏覽器開啟(Safari/Chrome)。
         </p>
         <button
           type="button"
