@@ -1,11 +1,9 @@
 export type DimensionKey =
-  | "baseData" // 基礎數據
-  | "inputResource" // 投入資源
-  | "strategy" // 策略管理
-  | "application" // 應用落地
-  | "diffusion"; // 效益擴散
-
-export type QuestionType = "single" | "multi" | "matrix";
+  | "organization" // 組織能力
+  | "service" // 服務能力
+  | "businessModel" // 商業模式
+  | "digital" // 數位能力
+  | "sustainability"; // 永續能力
 
 export interface ChoiceOption {
   value: string;
@@ -13,48 +11,15 @@ export interface ChoiceOption {
   score: number;
 }
 
-export interface SingleChoiceQuestion {
+export interface Question {
   id: string;
   dimension: DimensionKey;
-  type: "single";
   title: string;
   weight: number;
   options: ChoiceOption[];
-  verified: boolean;
 }
 
-export interface MultiChoiceQuestion {
-  id: string;
-  dimension: DimensionKey;
-  type: "multi";
-  title: string;
-  weight: number;
-  options: { value: string; label: string }[];
-  noneOption?: { value: string; label: string };
-  baselineAtOne: number;
-  baselineVerified: boolean;
-}
-
-export interface MatrixSubItem {
-  id: string;
-  label: string;
-}
-
-export interface MatrixQuestion {
-  id: string;
-  dimension: DimensionKey;
-  type: "matrix";
-  title: string;
-  weight: number;
-  subItems: MatrixSubItem[];
-  subItemOptions: { value: string; label: string }[];
-  baselineAtOne: number;
-  baselineVerified: boolean;
-}
-
-export type Question = SingleChoiceQuestion | MultiChoiceQuestion | MatrixQuestion;
-
-export type AnswerValue = string | string[] | Record<string, string>;
+export type AnswerValue = string;
 
 export type Answers = Record<string, AnswerValue>;
 

@@ -3,38 +3,32 @@
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { CompanyInfoForm } from "@/components/quiz/CompanyInfoForm";
-import { ClosingQuestionsForm } from "@/components/quiz/ClosingQuestionsForm";
 import { QuestionField } from "@/components/quiz/QuestionField";
 import { useQuizStore } from "@/lib/quiz-store";
 import { QUESTIONS_BY_ID, QUESTION_PAGES } from "@/lib/scoring/questions";
 import { encodeAnswers } from "@/lib/answer-codec";
-import { CLOSING_OTHER_VALUE } from "@/lib/closing-questions";
-import { isCompanyInfoValid, validateClosingAnswer, validateQuestionAnswer } from "@/lib/validation";
+import { isCompanyInfoValid, validateQuestionAnswer } from "@/lib/validation";
+
+const LAST_STEP = QUESTION_PAGES.length; // 5
 
 export default function QuizStepPage() {
   const params = useParams<{ step: string }>();
   const router = useRouter();
-  const { companyInfo, answers, closing } = useQuizStore();
+  const { companyInfo, answers } = useQuizStore();
   const step = Number(params.step);
   const [showErrors, setShowErrors] = useState(false);
 
-  if (!Number.isInteger(step) || step < 0 || step > 6) {
+  if (!Number.isInteger(step) || step < 0 || step > LAST_STEP) {
     return <p className="text-slate-500">找不到這個步驟。</p>;
   }
 
-  const dimensionPage = step >= 1 && step <= 5 ? QUESTION_PAGES[step - 1] : null;
+  const dimensionPage = step >= 1 && step <= LAST_STEP ? QUESTION_PAGES[step - 1] : null;
 
   const isStepValid = (): boolean => {
     if (step === 0) return isCompanyInfoValid(companyInfo);
     if (dimensionPage) {
       return dimensionPage.questionIds.every(
         (id) => validateQuestionAnswer(QUESTIONS_BY_ID[id], answers[id]) === null
-      );
-    }
-    if (step === 6) {
-      return (
-        validateClosingAnswer(closing.q1, CLOSING_OTHER_VALUE, closing.q1Other) === null &&
-        validateClosingAnswer(closing.q2, CLOSING_OTHER_VALUE, closing.q2Other) === null
       );
     }
     return true;
@@ -46,7 +40,7 @@ export default function QuizStepPage() {
       setShowErrors(true);
       return;
     }
-    if (step === 6) {
+    if (step === LAST_STEP) {
       const code = encodeAnswers(answers);
       router.push(`/result/${code}`);
       return;
@@ -77,8 +71,6 @@ export default function QuizStepPage() {
         </div>
       )}
 
-      {step === 6 && <ClosingQuestionsForm showErrors={showErrors} />}
-
       {showErrors && !isStepValid() && (
         <p className="text-center text-base font-medium text-red-600">
           還有題目尚未完成或格式不正確，請檢查上方紅框標示的欄位。
@@ -99,7 +91,7 @@ export default function QuizStepPage() {
           onClick={goNext}
           className="rounded-full bg-gradient-to-r from-emerald-500 to-emerald-700 px-8 py-2.5 font-medium text-white shadow-[0_4px_20px_rgba(5,150,105,0.35)] transition-all hover:scale-[1.03] hover:shadow-[0_4px_28px_rgba(5,150,105,0.5)] active:scale-[0.97]"
         >
-          {step === 6 ? "確認送出" : "下一步"}
+          {step === LAST_STEP ? "確認送出" : "下一步"}
         </button>
       </div>
     </div>

@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AI成熟度量表",
-  description: "製造業AI成熟度自我評估",
+  title: "企業成熟度診斷問卷",
+  description: "身心障礙友善組織經營能力自我評估",
   robots: {
     index: false,
     follow: false,

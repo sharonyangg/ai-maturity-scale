@@ -5,7 +5,7 @@ export default function Home() {
     <div className="relative flex min-h-screen items-center justify-center px-6">
       <div className="relative flex flex-col items-center text-center">
         <h1 className="animate-fade-up text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
-          AI成熟度量表
+          企業成熟度診斷問卷
         </h1>
 
         <Link

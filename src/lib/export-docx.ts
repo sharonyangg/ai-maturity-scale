@@ -12,28 +12,15 @@ import {
   TextRun,
   WidthType,
 } from "docx";
-import { COMPANY_FIELD_LABELS, type CompanyInfo, type ClosingAnswers } from "./quiz-store";
-import {
-  CLOSING_OTHER_VALUE,
-  Q18_OPTIONS,
-  Q18_TITLE,
-  Q19_OPTIONS,
-  Q19_TITLE,
-} from "./closing-questions";
-import { DIMENSION_ORDER } from "./scoring/dimensions";
+import { COMPANY_FIELD_LABELS, type CompanyInfo } from "./quiz-store";
+import { DIMENSION_DESCRIPTIONS, DIMENSION_ORDER } from "./scoring/dimensions";
 import { LEVEL_COMMENTARY } from "./scoring/commentary";
-import {
-  QUESTIONS_BY_ID,
-  QUESTION_PAGES,
-  QUESTION_SUBCODES,
-  REPORT_SECTION_TITLES,
-} from "./scoring/questions";
+import { QUESTIONS_BY_ID, QUESTION_PAGES, REPORT_SECTION_TITLES } from "./scoring/questions";
 import type { Answers, DimensionKey, Question, QuizResult } from "./scoring/types";
 import type { PngSnapshot } from "./svg-to-png";
 
 const ACCENT = "047857"; // emerald-700，docx 顏色字串不含 #
 const ACCENT_SOFT = "ECFDF5"; // emerald-50
-const MUTED = "6B7280";
 const FONT = "標楷體";
 
 const CHECKED = "☑";
@@ -55,21 +42,6 @@ function pctToTwips(percentages: number[]): number[] {
   widths[widths.length - 1] += diff;
   return widths;
 }
-
-const EXTERNAL_RESOURCES = [
-  {
-    label: "※AI 專家輔導團：由製造業AI化專家進廠提供公司營運痛點與AI導入需求之免費諮詢診斷服務。",
-    url: "https://eii.nat.gov.tw/moeai-plus/#apply",
-  },
-  {
-    label: "※AI 工具庫：提供企業申請AI模型應用工具補助資源，加速AI導入速度並降低導入成本。",
-    url: "https://eii.nat.gov.tw/moeai-plus/ai-tools",
-  },
-  {
-    label: "※AI 人才培訓：提供AI線上課程、學習券、企業內訓等資源與補助資訊。",
-    url: "https://eii.nat.gov.tw/moeai-plus/#class",
-  },
-];
 
 function sectionHeading(text: string): Paragraph {
   return new Paragraph({
@@ -118,73 +90,7 @@ function checkboxLine(checked: boolean, label: string): Paragraph {
   });
 }
 
-function matrixAnswerTable(question: Extract<Question, { type: "matrix" }>, answer: Answers[string]): Table {
-  const selections = (
-    answer && typeof answer === "object" && !Array.isArray(answer) ? answer : {}
-  ) as Record<string, string>;
-
-  const labelPct = 30;
-  const optionPct = (100 - labelPct) / question.subItemOptions.length;
-  const columnWidths = pctToTwips([labelPct, ...question.subItemOptions.map(() => optionPct)]);
-
-  const headerRow = new TableRow({
-    tableHeader: true,
-    children: [
-      new TableCell({ width: { size: labelPct, type: WidthType.PERCENTAGE }, children: [new Paragraph("")] }),
-      ...question.subItemOptions.map(
-        (opt) =>
-          new TableCell({
-            width: { size: optionPct, type: WidthType.PERCENTAGE },
-            shading: { fill: ACCENT_SOFT },
-            children: [
-              new Paragraph({
-                alignment: AlignmentType.CENTER,
-                children: [new TextRun({ text: opt.label, bold: true, size: 18, font: FONT })],
-              }),
-            ],
-          })
-      ),
-    ],
-  });
-
-  const rows = question.subItems.map(
-    (sub) =>
-      new TableRow({
-        children: [
-          new TableCell({
-            width: { size: labelPct, type: WidthType.PERCENTAGE },
-            children: [new Paragraph({ children: [new TextRun({ text: sub.label, size: 20, font: FONT })] })],
-          }),
-          ...question.subItemOptions.map(
-            (opt) =>
-              new TableCell({
-                width: { size: optionPct, type: WidthType.PERCENTAGE },
-                children: [
-                  new Paragraph({
-                    alignment: AlignmentType.CENTER,
-                    children: [
-                      new TextRun({
-                        text: selections[sub.id] === opt.value ? CHECKED : UNCHECKED,
-                        font: FONT,
-                      }),
-                    ],
-                  }),
-                ],
-              })
-          ),
-        ],
-      })
-  );
-
-  return new Table({
-    width: { size: 100, type: WidthType.PERCENTAGE },
-    layout: TableLayoutType.FIXED,
-    columnWidths,
-    rows: [headerRow, ...rows],
-  });
-}
-
-function questionContent(question: Question, answer: Answers[string], questionNumber: number): (Paragraph | Table)[] {
+function questionContent(question: Question, answer: Answers[string], questionNumber: string): (Paragraph | Table)[] {
   const titleParagraph = new Paragraph({
     spacing: { after: 60 },
     children: [
@@ -192,36 +98,8 @@ function questionContent(question: Question, answer: Answers[string], questionNu
     ],
   });
 
-  if (question.type === "matrix") {
-    return [titleParagraph, matrixAnswerTable(question, answer)];
-  }
-
-  if (question.type === "single") {
-    const selected = typeof answer === "string" ? answer : undefined;
-    return [
-      titleParagraph,
-      new Paragraph({
-        spacing: { after: 40 },
-        children: [new TextRun({ text: "單選", italics: true, color: MUTED, size: 16, font: FONT })],
-      }),
-      ...question.options.map((opt) => checkboxLine(opt.value === selected, opt.label)),
-    ];
-  }
-
-  // multi
-  const selected = Array.isArray(answer) ? answer : [];
-  const lines = [
-    titleParagraph,
-    new Paragraph({
-      spacing: { after: 40 },
-      children: [new TextRun({ text: "複選", italics: true, color: MUTED, size: 16, font: FONT })],
-    }),
-    ...question.options.map((opt) => checkboxLine(selected.includes(opt.value), opt.label)),
-  ];
-  if (question.noneOption) {
-    lines.push(checkboxLine(selected.includes(question.noneOption.value), question.noneOption.label));
-  }
-  return lines;
+  const selected = typeof answer === "string" ? answer : undefined;
+  return [titleParagraph, ...question.options.map((opt) => checkboxLine(opt.value === selected, opt.label))];
 }
 
 function dimensionAnswerTable(dimension: DimensionKey, answers: Answers): Table {
@@ -229,8 +107,6 @@ function dimensionAnswerTable(dimension: DimensionKey, answers: Answers): Table 
 
   const rows = questionIds.map((id) => {
     const question = QUESTIONS_BY_ID[id];
-    const sub = QUESTION_SUBCODES[id];
-    const questionNumber = Number(id.replace("Q", ""));
 
     return new TableRow({
       children: [
@@ -238,13 +114,12 @@ function dimensionAnswerTable(dimension: DimensionKey, answers: Answers): Table 
           width: { size: 15, type: WidthType.PERCENTAGE },
           shading: { fill: ACCENT_SOFT },
           children: [
-            new Paragraph({ children: [new TextRun({ text: sub.code, bold: true, font: FONT })] }),
-            new Paragraph({ children: [new TextRun({ text: sub.label, size: 18, font: FONT })] }),
+            new Paragraph({ children: [new TextRun({ text: id, bold: true, font: FONT })] }),
           ],
         }),
         new TableCell({
           width: { size: 85, type: WidthType.PERCENTAGE },
-          children: questionContent(question, answers[id], questionNumber),
+          children: questionContent(question, answers[id], id),
         }),
       ],
     });
@@ -256,31 +131,6 @@ function dimensionAnswerTable(dimension: DimensionKey, answers: Answers): Table 
     columnWidths: pctToTwips([15, 85]),
     rows,
   });
-}
-
-function closingQuestionCell(
-  index: number,
-  title: string,
-  options: string[],
-  selected: string[],
-  otherText: string
-): (Paragraph | Table)[] {
-  const lines: Paragraph[] = [
-    new Paragraph({
-      spacing: { after: 60 },
-      children: [new TextRun({ text: `${index}.${title}`, bold: true, size: 22, font: FONT })],
-    }),
-    new Paragraph({
-      spacing: { after: 40 },
-      children: [new TextRun({ text: "複選", italics: true, color: MUTED, size: 16, font: FONT })],
-    }),
-    ...options.map((opt) => checkboxLine(selected.includes(opt), opt)),
-    checkboxLine(
-      selected.includes(CLOSING_OTHER_VALUE),
-      `其他：${selected.includes(CLOSING_OTHER_VALUE) ? otherText : ""}`
-    ),
-  ];
-  return lines;
 }
 
 function fitWithinBox(
@@ -297,7 +147,6 @@ function buildDocument(
   result: QuizResult,
   companyInfo: CompanyInfo,
   answers: Answers,
-  closing: ClosingAnswers,
   chartSnapshot: PngSnapshot | null
 ): Document {
   const commentary = LEVEL_COMMENTARY[result.level];
@@ -309,9 +158,8 @@ function buildDocument(
 
   const summaryHeaderRow = new TableRow({
     children: [
-      labelCell("公司名稱", companyInfo.companyName || "—", 34),
-      labelCell("統編", companyInfo.taxId || "—", 33),
-      labelCell("填答日期", dateStamp, 33),
+      labelCell("公司/機構名稱", companyInfo.companyName || "—", 50),
+      labelCell("填答日期", dateStamp, 50),
     ],
   });
 
@@ -339,7 +187,7 @@ function buildDocument(
     });
   });
 
-  const chartCellContent: (Paragraph)[] = chartSnapshot
+  const chartCellContent: Paragraph[] = chartSnapshot
     ? [
         new Paragraph({
           alignment: AlignmentType.CENTER,
@@ -376,7 +224,7 @@ function buildDocument(
   const summaryTable = new Table({
     width: { size: 100, type: WidthType.PERCENTAGE },
     layout: TableLayoutType.FIXED,
-    columnWidths: pctToTwips([34, 33, 33]),
+    columnWidths: pctToTwips([50, 50]),
     rows: [summaryHeaderRow],
   });
 
@@ -397,7 +245,7 @@ function buildDocument(
         new TableCell({
           width: { size: 80, type: WidthType.PERCENTAGE },
           children: [
-            new Paragraph({ children: [new TextRun({ text: commentary.dimensionNotes[dim], font: FONT })] }),
+            new Paragraph({ children: [new TextRun({ text: DIMENSION_DESCRIPTIONS[dim], font: FONT })] }),
           ],
         }),
       ],
@@ -415,60 +263,11 @@ function buildDocument(
     dimensionAnswerTable(dim, answers),
   ]);
 
-  const closingTable = new Table({
-    width: { size: 100, type: WidthType.PERCENTAGE },
-    layout: TableLayoutType.FIXED,
-    columnWidths: pctToTwips([15, 85]),
-    rows: [
-      new TableRow({
-        children: [
-          new TableCell({
-            width: { size: 15, type: WidthType.PERCENTAGE },
-            shading: { fill: ACCENT_SOFT },
-            children: [
-              new Paragraph({ children: [new TextRun({ text: "A-1 公司營運痛點發生場域", size: 18, font: FONT })] }),
-            ],
-          }),
-          new TableCell({
-            width: { size: 85, type: WidthType.PERCENTAGE },
-            children: closingQuestionCell(18, Q18_TITLE, Q18_OPTIONS, closing.q1, closing.q1Other),
-          }),
-        ],
-      }),
-      new TableRow({
-        children: [
-          new TableCell({
-            width: { size: 15, type: WidthType.PERCENTAGE },
-            shading: { fill: ACCENT_SOFT },
-            children: [
-              new Paragraph({ children: [new TextRun({ text: "A-2 公司導入AI面臨挑戰", size: 18, font: FONT })] }),
-            ],
-          }),
-          new TableCell({
-            width: { size: 85, type: WidthType.PERCENTAGE },
-            children: closingQuestionCell(19, Q19_TITLE, Q19_OPTIONS, closing.q2, closing.q2Other),
-          }),
-        ],
-      }),
-    ],
-  });
-
-  const departments = companyInfo.departments ?? [];
-  const departmentText =
-    departments.length > 0
-      ? departments
-          .map((d) => (d === "其他部門" && companyInfo.departmentOther ? `其他部門：${companyInfo.departmentOther}` : d))
-          .join("、")
-      : "—";
-
   const companyDetailRows = [
-    labelValueRow(COMPANY_FIELD_LABELS.subIndustry, companyInfo.subIndustry || "—"),
     labelValueRow(COMPANY_FIELD_LABELS.city, companyInfo.city || "—"),
-    labelValueRow(COMPANY_FIELD_LABELS.address, companyInfo.address || "—"),
     labelValueRow(COMPANY_FIELD_LABELS.employeeScale, companyInfo.employeeScale || "—"),
     labelValueRow(COMPANY_FIELD_LABELS.respondentName, companyInfo.respondentName || "—"),
-    labelValueRow(COMPANY_FIELD_LABELS.respondentLevel, companyInfo.respondentLevel || "—"),
-    labelValueRow("填答部門", departmentText),
+    labelValueRow(COMPANY_FIELD_LABELS.respondentTitle, companyInfo.respondentTitle || "—"),
     labelValueRow(COMPANY_FIELD_LABELS.email, companyInfo.email || "—"),
     labelValueRow(COMPANY_FIELD_LABELS.phone, companyInfo.phone || "—"),
   ];
@@ -496,7 +295,7 @@ function buildDocument(
             spacing: { after: 200 },
             children: [
               new TextRun({
-                text: "經濟部產業競爭力輔導團－製造業AI成熟度量表",
+                text: "企業成熟度診斷問卷",
                 bold: true,
                 size: 32,
                 font: FONT,
@@ -506,7 +305,7 @@ function buildDocument(
 
           shadedBar("評量結果"),
           summaryTable,
-          shadedBar(`AI 成熟度等級：${result.levelName}`),
+          shadedBar(`企業成熟度等級：${result.levelName}`),
           bodyParagraph(commentary.overall),
           new Table({
             width: { size: 100, type: WidthType.PERCENTAGE },
@@ -518,33 +317,26 @@ function buildDocument(
           sectionHeading("五大構面程度說明"),
           dimensionNotesTable,
 
-          sectionHeading("改善建議與推薦政策資源資訊"),
+          sectionHeading("建議行動"),
           new Paragraph({
             spacing: { after: 100 },
             children: [
-              new TextRun({ text: `${result.levelName}　AI 導入策略建議`, bold: true, font: FONT }),
+              new TextRun({ text: `${result.levelName}　建議行動`, bold: true, font: FONT }),
             ],
           }),
           bodyParagraph(commentary.strategyAdvice),
-          ...EXTERNAL_RESOURCES.flatMap((r) => [
-            bodyParagraph(r.label, { size: 18 }),
-            bodyParagraph(r.url, { color: "2563EB", size: 18 }),
-          ]),
 
           sectionHeading("完整填答內容"),
           ...answerSheetBlocks,
 
-          shadedBar("A. 公司經營目標與痛點"),
-          closingTable,
-
-          shadedBar("B. 公司填答部門同仁"),
+          shadedBar("公司個人資料"),
           companyDetailTable,
 
           new Paragraph({
             spacing: { before: 400 },
             children: [
               new TextRun({
-                text: "本報告由「AI成熟度量表」線上問卷自動產生，僅供企業自我評估參考。",
+                text: "本報告由「企業成熟度診斷問卷」線上問卷自動產生，僅供組織自我評估參考。",
                 color: "9CA3AF",
                 size: 18,
                 font: FONT,
@@ -561,15 +353,14 @@ export async function downloadResultDocx(
   result: QuizResult,
   companyInfo: CompanyInfo,
   answers: Answers,
-  closing: ClosingAnswers,
   chartSnapshot: PngSnapshot | null
 ): Promise<void> {
-  const doc = buildDocument(result, companyInfo, answers, closing, chartSnapshot);
+  const doc = buildDocument(result, companyInfo, answers, chartSnapshot);
   const blob = await Packer.toBlob(doc);
 
   const dateStamp = new Date().toISOString().slice(0, 10);
   const namePart = companyInfo.companyName ? `${companyInfo.companyName}_` : "";
-  const filename = `${namePart}AI成熟度診斷報告_${dateStamp}.docx`;
+  const filename = `${namePart}企業成熟度診斷報告_${dateStamp}.docx`;
 
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");

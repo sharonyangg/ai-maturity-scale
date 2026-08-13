@@ -4,11 +4,11 @@ import { useRef, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { decodeAnswers } from "@/lib/answer-codec";
-import { clearStoredQuizState, getStoredClosingAnswers, getStoredCompanyInfo } from "@/lib/quiz-store";
+import { clearStoredQuizState, getStoredCompanyInfo } from "@/lib/quiz-store";
 import { downloadResultDocx } from "@/lib/export-docx";
 import { svgElementToPngBytes } from "@/lib/svg-to-png";
 import { computeResult } from "@/lib/scoring/engine";
-import { LEVEL_COLORS, LEVEL_DESCRIPTIONS } from "@/lib/scoring/dimensions";
+import { DIMENSION_DESCRIPTIONS, LEVEL_COLORS, LEVEL_DESCRIPTIONS } from "@/lib/scoring/dimensions";
 import { LEVEL_COMMENTARY } from "@/lib/scoring/commentary";
 import { DimensionRadarChart } from "@/components/result/DimensionRadarChart";
 import { DimensionBreakdown } from "@/components/result/DimensionBreakdown";
@@ -43,13 +43,12 @@ export default function ResultPage() {
 
   const handleDownload = async () => {
     const companyInfo = getStoredCompanyInfo();
-    const closing = getStoredClosingAnswers();
-    // 公司資料跟結尾兩題只存在填答當下那個瀏覽器分頁的 sessionStorage 裡；如果現在開啟
-    // 結果頁的瀏覽器（例如從 App 內建瀏覽器跳出、換成手機預設瀏覽器）跟當初填答的不是
-    // 同一個分頁，這裡就會是空的——先提醒使用者，而不是默默產出一份缺資料的報告。
+    // 公司資料只存在填答當下那個瀏覽器分頁的 sessionStorage 裡；如果現在開啟結果頁的瀏覽器
+    // （例如從 App 內建瀏覽器跳出、換成手機預設瀏覽器）跟當初填答的不是同一個分頁，這裡就會
+    // 是空的——先提醒使用者，而不是默默產出一份缺資料的報告。
     if (Object.keys(companyInfo).length === 0) {
       const proceed = window.confirm(
-        "偵測不到公司資料與結尾兩題的作答內容（可能是換了瀏覽器或用 App 內建瀏覽器開啟），匯出的報告裡「公司經營目標與痛點」「公司填答部門同仁」會是空的。要繼續下載嗎？"
+        "偵測不到公司資料的作答內容（可能是換了瀏覽器或用 App 內建瀏覽器開啟），匯出的報告裡「公司個人資料」會是空的。要繼續下載嗎？"
       );
       if (!proceed) return;
     }
@@ -58,7 +57,7 @@ export default function ResultPage() {
     try {
       const svg = chartContainerRef.current?.querySelector("svg") ?? null;
       const chartSnapshot = svg ? await svgElementToPngBytes(svg) : null;
-      await downloadResultDocx(result, companyInfo, answers, closing, chartSnapshot);
+      await downloadResultDocx(result, companyInfo, answers, chartSnapshot);
     } finally {
       setDownloading(false);
     }
@@ -77,7 +76,7 @@ export default function ResultPage() {
           }
         >
           <div className="text-center">
-            <p className="text-lg font-medium text-white/80">您的 AI 成熟度等級</p>
+            <p className="text-lg font-medium text-white/80">您的企業成熟度等級</p>
             <h1 className="mt-2 text-4xl font-bold break-words sm:text-5xl">{result.levelName}</h1>
             <p className="mt-1 text-lg text-white/90">{LEVEL_DESCRIPTIONS[result.level]}</p>
             <div className="mx-auto mt-6 max-w-xs">
@@ -111,11 +110,11 @@ export default function ResultPage() {
 
         <div className={CARD_CLASS} style={{ animationDelay: "240ms" }}>
           <h2 className="mb-4 text-2xl font-semibold text-black">五大構面說明</h2>
-          <DimensionNotes notes={commentary.dimensionNotes} />
+          <DimensionNotes notes={DIMENSION_DESCRIPTIONS} />
         </div>
 
         <div className={CARD_CLASS} style={{ animationDelay: "320ms" }}>
-          <h2 className="mb-3 text-2xl font-semibold text-black">AI 導入策略建議</h2>
+          <h2 className="mb-3 text-2xl font-semibold text-black">建議行動</h2>
           <p className="text-lg leading-relaxed text-gray-600">{commentary.strategyAdvice}</p>
         </div>
 

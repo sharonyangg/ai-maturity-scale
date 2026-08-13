@@ -16,13 +16,13 @@ const CARD_CLASS =
 const LEVELS: Level[] = [1, 2, 3, 4];
 const MAX_WEIGHT = Math.max(...Object.values(DIMENSION_WEIGHTS));
 
-/** 依 LEVEL_THRESHOLDS 換算成給使用者看的約略分數區間（四捨五入，避免呈現假精確度） */
+/** 依 LEVEL_THRESHOLDS 換算成給使用者看的分數區間 */
 function levelScoreRange(level: Level): string {
   const [t1, t2, t3] = LEVEL_THRESHOLDS;
   if (level === 1) return `0 ~ ${Math.round(t1)} 分`;
-  if (level === 2) return `${Math.round(t1)} ~ ${Math.round(t2)} 分`;
-  if (level === 3) return `${Math.round(t2)} ~ ${Math.round(t3)} 分`;
-  return `${Math.round(t3)} ~ 100 分`;
+  if (level === 2) return `${Math.round(t1) + 1} ~ ${Math.round(t2)} 分`;
+  if (level === 3) return `${Math.round(t2) + 1} ~ ${Math.round(t3)} 分`;
+  return `${Math.round(t3) + 1} ~ 100 分`;
 }
 
 export default function ScoringGuidePage() {
@@ -31,13 +31,13 @@ export default function ScoringGuidePage() {
       <div className="mx-auto max-w-4xl space-y-6">
         <div className="animate-fade-up text-center">
           <h1 className="text-4xl font-bold text-slate-900">評分說明</h1>
-          <p className="mt-2 text-lg text-slate-500">了解「AI成熟度量表」如何從您的作答算出分數與等級</p>
+          <p className="mt-2 text-lg text-slate-500">了解本量表如何從您的作答算出分數與等級</p>
         </div>
 
         <div className={CARD_CLASS} style={{ animationDelay: "80ms" }}>
           <h2 className="mb-3 text-2xl font-semibold text-black">五大構面與權重</h2>
           <p className="mb-4 text-lg leading-relaxed text-gray-600">
-            問卷的 17 道題目分屬五個構面，每個構面各自算出 0～100 分，再依權重加總成最終的「加權分數」。
+            問卷的 20 道題目平均分屬五個構面（每構面 4 題），每個構面各自算出 0～100 分，再依權重加總成最終的「加權分數」。
           </p>
           <div className="space-y-3">
             {DIMENSION_ORDER.map((dim) => (
@@ -62,10 +62,10 @@ export default function ScoringGuidePage() {
         <div className={CARD_CLASS} style={{ animationDelay: "160ms" }}>
           <h2 className="mb-3 text-2xl font-semibold text-black">計分方式</h2>
           <ul className="list-disc space-y-2 pl-5 text-lg leading-relaxed text-gray-600">
-            <li>每題依您選擇的選項換算成 0～100 分，複選 / 矩陣題則依勾選的數量與組合換算。</li>
-            <li>同構面底下的題目分數依各自權重加總，得到該構面 0～100 分的「構面分數」。</li>
-            <li>五個構面分數再依上方權重加權平均，得到 0～100 分的「加權分數」。</li>
-            <li>加權分數對應到四個成熟度等級之一，分數越高代表企業在 AI 導入上越成熟。</li>
+            <li>每題採「非常不同意」到「非常同意」5 級量表作答，每題最高 5%，換算成 0、25、50、75、100 分。</li>
+            <li>同構面底下的 4 題分數加總，得到該構面 0～100 分的「構面分數」（每構面權重 20%）。</li>
+            <li>五個構面分數依上方權重加權平均，得到 0～100 分的「加權分數」。</li>
+            <li>加權分數對應到四個成熟度等級之一，分數越高代表組織在各項能力上越成熟。</li>
           </ul>
         </div>
 

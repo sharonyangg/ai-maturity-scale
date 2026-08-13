@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 
-const TOTAL_STEPS = 7; 
+const TOTAL_STEPS = 6;
 
 export function QuizChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
