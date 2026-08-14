@@ -7,8 +7,18 @@ export default function Home() {
         <h1 className="animate-fade-up text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
           企業成熟度診斷問卷
         </h1>
-        <p className="animate-fade-up mt-3 max-w-md text-base text-slate-500" style={{ animationDelay: "80ms" }}>
-          第一次填答請選擇「開始前測」；完成輔導後回來比較成效，請選擇「開始後測」。
+        <div
+          className="animate-fade-up mt-6 max-w-2xl rounded-2xl bg-[#faf7ea] p-6 text-left shadow-[0_2px_16px_rgba(21,31,30,0.08)]"
+          style={{ animationDelay: "80ms" }}
+        >
+          <p className="text-base leading-relaxed text-slate-600">
+            「企業成熟度診斷問卷」旨在協助進駐團隊透過簡易的自我評估，快速掌握組織目前的營運現況與發展階段。本系統將依據客觀的評分模型，全面檢視貴單位在「組織能力、服務能力、商業模式、數位能力與永續能力」等五大核心構面之成熟度。完成測驗後，系統會即時產出視覺化的雷達圖與專屬評估報告，為您建立明確的前測基準。此診斷結果將直接作為後續分配輔導資源、媒合適切領域專家，以及規劃一對一輔導重點的重要依據。
+          </p>
+        </div>
+        <p className="animate-fade-up mt-3 max-w-md text-base text-slate-500" style={{ animationDelay: "110ms" }}>
+          第一次填答請選擇「開始前測」；
+          <br />
+          完成輔導後回來比較成效，請選擇「開始後測」。
         </p>
 
         <Link
