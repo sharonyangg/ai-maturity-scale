@@ -163,7 +163,8 @@ export interface DocxExportParams {
   prevAnswers?: Answers;
 }
 
-function buildDocument(params: DocxExportParams): Document {
+/** 純 docx 物件組裝，不碰任何瀏覽器專屬 API，client（下載）與 server（寄信）都能用 */
+export function buildResultDocument(params: DocxExportParams): Document {
   const { result, companyInfo, answers, chartSnapshot, prevAnswers } = params;
   const isPost = Boolean(prevAnswers);
   const prevResult = prevAnswers ? computeResult(prevAnswers) : null;
@@ -440,14 +441,23 @@ function buildDocument(params: DocxExportParams): Document {
   });
 }
 
-export async function downloadResultDocx(params: DocxExportParams): Promise<void> {
-  const doc = buildDocument(params);
-  const blob = await Packer.toBlob(doc);
-
+export function resultDocxFilename(params: Pick<DocxExportParams, "companyInfo" | "prevAnswers">): string {
   const dateStamp = new Date().toISOString().slice(0, 10);
   const namePart = params.companyInfo.companyName ? `${params.companyInfo.companyName}_` : "";
   const roundLabel = params.prevAnswers ? "後測" : "前測";
-  const filename = `${namePart}企業成熟度診斷報告_${roundLabel}_${dateStamp}.docx`;
+  return `${namePart}企業成熟度診斷報告_${roundLabel}_${dateStamp}.docx`;
+}
+
+/** server 端（API route）用：組出 docx 並打包成 Buffer，供寄信附件使用 */
+export async function buildResultDocxBuffer(params: DocxExportParams): Promise<Buffer> {
+  const doc = buildResultDocument(params);
+  return Packer.toBuffer(doc);
+}
+
+export async function downloadResultDocx(params: DocxExportParams): Promise<void> {
+  const doc = buildResultDocument(params);
+  const blob = await Packer.toBlob(doc);
+  const filename = resultDocxFilename(params);
 
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");

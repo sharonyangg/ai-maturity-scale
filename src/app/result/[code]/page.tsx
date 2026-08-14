@@ -1,12 +1,12 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import { decodeAnswers, decodePostResult } from "@/lib/answer-codec";
 import { clearStoredQuizState, getStoredCompanyInfo } from "@/lib/quiz-store";
 import { downloadResultDocx } from "@/lib/export-docx";
-import { svgElementToPngBytes } from "@/lib/svg-to-png";
+import { captureLargestChartSvg, pngBytesToBase64 } from "@/lib/chart-snapshot";
 import { compareDimensionScores, computeResult } from "@/lib/scoring/engine";
 import {
   DIMENSION_DESCRIPTIONS,
@@ -35,7 +35,67 @@ export default function ResultPage() {
   const prevAnswers = isPost ? payload?.prevAnswers ?? null : null;
 
   const [downloading, setDownloading] = useState(false);
+  const [emailStatus, setEmailStatus] = useState<"idle" | "sending" | "sent" | "skipped" | "failed">("idle");
   const chartContainerRef = useRef<HTMLDivElement>(null);
+
+  // 測驗一送出、結果頁一打開就自動把報告寄到填答時留的 email；用 sessionStorage 記錄
+  // 這個結果連結是否已經寄過，避免重新整理頁面就再寄一次。
+  useEffect(() => {
+    if (!answers || typeof window === "undefined") return;
+    const sentKey = `emailed:${params.code}${isPost ? ":post" : ":pre"}`;
+
+    let cancelled = false;
+    (async () => {
+      const stored = window.sessionStorage.getItem(sentKey);
+      if (stored === "sent" || stored === "skipped" || stored === "failed") {
+        if (!cancelled) setEmailStatus(stored);
+        return;
+      }
+
+      const companyInfo = getStoredCompanyInfo();
+      if (!companyInfo.email?.trim()) {
+        if (!cancelled) {
+          setEmailStatus("skipped");
+          window.sessionStorage.setItem(sentKey, "skipped");
+        }
+        return;
+      }
+
+      setEmailStatus("sending");
+      const snapshot = await captureLargestChartSvg(chartContainerRef.current);
+      if (cancelled) return;
+
+      try {
+        const res = await fetch("/api/send-report", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            companyInfo,
+            answers,
+            prevAnswers: prevAnswers ?? undefined,
+            chartPngBase64: snapshot ? pngBytesToBase64(snapshot.bytes) : undefined,
+            chartWidth: snapshot?.width,
+            chartHeight: snapshot?.height,
+          }),
+        });
+        const data = (await res.json().catch(() => ({ ok: false }))) as { ok: boolean };
+        if (cancelled) return;
+        const nextStatus = data.ok ? "sent" : "failed";
+        setEmailStatus(nextStatus);
+        window.sessionStorage.setItem(sentKey, nextStatus);
+      } catch {
+        if (!cancelled) {
+          setEmailStatus("failed");
+          window.sessionStorage.setItem(sentKey, "failed");
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- 每個結果連結只在第一次載入時嘗試寄送一次
+  }, [params.code, isPost]);
 
   if (!answers) {
     return (
@@ -77,14 +137,7 @@ export default function ResultPage() {
 
     setDownloading(true);
     try {
-      // 加了圖例（Legend）之後，容器內會多一顆 recharts 用來畫圖例色塊的迷你 <svg>；
-      // 直接抓「第一個 svg」常常抓到那顆色塊而不是雷達圖本體，改成挑面積最大的那顆。
-      const svgs = chartContainerRef.current
-        ? Array.from(chartContainerRef.current.querySelectorAll("svg"))
-        : [];
-      const svg =
-        svgs.sort((a, b) => b.clientWidth * b.clientHeight - a.clientWidth * a.clientHeight)[0] ?? null;
-      const chartSnapshot = svg ? await svgElementToPngBytes(svg) : null;
+      const chartSnapshot = await captureLargestChartSvg(chartContainerRef.current);
       await downloadResultDocx({
         result,
         companyInfo,
@@ -220,6 +273,17 @@ export default function ResultPage() {
             下一步：請依據上述弱項構面，聯繫窗口安排後續一對一輔導，共同擬定包含具體任務、負責人與期限的改善行動計畫。
           </p>
         </div>
+
+        {emailStatus !== "idle" && emailStatus !== "skipped" && (
+          <p
+            className="animate-fade-up text-center text-sm text-gray-500"
+            style={{ animationDelay: "380ms" }}
+          >
+            {emailStatus === "sending" && "報告寄送中…"}
+            {emailStatus === "sent" && "✓ 報告已寄送至您填答時留下的 email"}
+            {emailStatus === "failed" && "自動寄送失敗，請改用下方按鈕下載報告"}
+          </p>
+        )}
 
         <div
           className="animate-fade-up flex flex-col items-center justify-center gap-3 pt-2 sm:flex-row"
