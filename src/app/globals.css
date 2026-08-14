@@ -1,15 +1,28 @@
 @import "tailwindcss";
 
 :root {
-  --background: #e9f2ec;
-  --foreground: #0f172a;
+  --background: #fbf8ec;
+  --foreground: #151f1e;
 }
 
+/*
+ * 「光彩百合花」配色：淺乳黃、金黃、深橄欖綠、近黑。
+ * 分區使用原則：互動按鈕走「橄欖綠」家族，數據／進度類元件走「金黃」家族，
+ * 同一個物件（同一個漸層或色塊）不同時混用金黃＋橄欖綠，靠區塊本身的顏色做區隔。
+ */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  --color-gold-50: #fbf3d2;
+  --color-gold-300: #ede599;
+  --color-gold-500: #c7a003;
+  --color-gold-700: #6d5802;
+  --color-olive-500: #5a6d24;
+  --color-olive-700: #3d4e17;
+  --color-olive-900: #151f1e;
 }
 
 html {
@@ -24,7 +37,7 @@ html {
 }
 
 body {
-  background: radial-gradient(circle at 50% -10%, #d7ecdf 0%, #e9f2ec 55%) fixed;
+  background: radial-gradient(circle at 50% -10%, #f5ebbd 0%, #fbf8ec 55%) fixed;
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }

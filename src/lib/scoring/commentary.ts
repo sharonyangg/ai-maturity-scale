@@ -1,8 +1,23 @@
-import type { Level } from "./types";
+import { DIMENSION_LABELS } from "./dimensions";
+import { getWeakestDimensions } from "./engine";
+import type { DimensionKey, Level } from "./types";
 
 export interface LevelCommentary {
   overall: string;
   strategyAdvice: string;
+}
+
+/**
+ * 依實際作答動態產生「最弱構面」提醒，取代靜態範本裡籠統的「最弱構面」字樣。
+ * 對應 SOP 要求：後續輔導須針對評估結果的最弱構面安排資源。
+ */
+export function buildWeakestDimensionNote(dimensionScores: Record<DimensionKey, number>): string {
+  const weakest = getWeakestDimensions(dimensionScores);
+  if (weakest.length === 0) {
+    return "本次評估五大構面發展相對均衡，尚無明顯落後之單一構面。";
+  }
+  const names = weakest.map((d) => `『${DIMENSION_LABELS[d]}』`).join("與");
+  return `資料顯示貴單位目前在${names}尚有成長空間，建議後續優先針對此弱項安排輔導資源。`;
 }
 
 /**

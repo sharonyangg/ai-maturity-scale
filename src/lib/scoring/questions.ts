@@ -5,18 +5,13 @@ const LIKERT_LABELS = ["非常不同意", "不同意", "普通", "同意", "非�
 const LIKERT_OPTIONS: ChoiceOption[] = LIKERT_LABELS.map((label, i) => ({
   value: String(i + 1),
   label,
-  score: i * 25,
 }));
-
-/** 每構面 4 題，每題等權重 25 分，滿分加總為該構面 0～100 分 */
-const QUESTION_WEIGHT = 25;
 
 function likert(id: string, dimension: Question["dimension"], title: string): Question {
   return {
     id,
     dimension,
     title,
-    weight: QUESTION_WEIGHT,
     options: LIKERT_OPTIONS,
   };
 }

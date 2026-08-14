@@ -4,9 +4,9 @@ import type { Question } from "@/lib/scoring/types";
 import { useQuizStore } from "@/lib/quiz-store";
 import { validateQuestionAnswer } from "@/lib/validation";
 
-const CARD_CLASS = "rounded-2xl bg-[#f7faf8] p-5 shadow-[0_2px_16px_rgba(15,23,42,0.08)] sm:p-6";
+const CARD_CLASS = "rounded-2xl bg-[#faf7ea] p-5 shadow-[0_2px_16px_rgba(21,31,30,0.08)] sm:p-6";
 const OPTION_LABEL_CLASS =
-  "flex items-start gap-3 cursor-pointer text-base text-black transition-colors has-checked:text-emerald-700 has-checked:font-medium";
+  "flex items-start gap-3 cursor-pointer text-base text-black transition-colors has-checked:text-olive-700 has-checked:font-medium";
 
 function ErrorText({ message }: { message: string | null }) {
   if (!message) return null;
@@ -15,7 +15,7 @@ function ErrorText({ message }: { message: string | null }) {
 
 export function QuestionNumberBadge({ number }: { number: string | number }) {
   return (
-    <span className="inline-block h-7 w-7 shrink-0 rounded-full bg-emerald-600 text-center text-sm leading-7 font-bold text-white tabular-nums">
+    <span className="inline-block h-7 w-7 shrink-0 rounded-full bg-olive-700 text-center text-sm leading-7 font-bold text-white tabular-nums">
       {number}
     </span>
   );
@@ -23,7 +23,7 @@ export function QuestionNumberBadge({ number }: { number: string | number }) {
 
 function QuestionHeader({ number, title }: { number: string; title: string }) {
   return (
-    <div className="mb-5 flex items-start gap-3 border-b border-emerald-900/10 pb-4">
+    <div className="mb-5 flex items-start gap-3 border-b border-olive-900/10 pb-4">
       <QuestionNumberBadge number={number} />
       <p className="min-w-0 break-words text-lg font-semibold text-black">{title}</p>
     </div>
@@ -55,7 +55,7 @@ export function QuestionField({
               value={option.value}
               checked={selected === option.value}
               onChange={() => setAnswer(question.id, option.value)}
-              className="h-5 w-5 shrink-0 accent-emerald-600"
+              className="h-5 w-5 shrink-0 accent-olive-700"
             />
             <span className="min-w-0 break-words">{option.label}</span>
           </label>

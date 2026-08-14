@@ -19,8 +19,8 @@ export const DIMENSION_ORDER: DimensionKey[] = [
 export const DIMENSION_WEIGHTS: Record<DimensionKey, number> = {
   organization: 0.2,
   service: 0.2,
-  businessModel: 0.2,
-  digital: 0.2,
+  businessModel: 0.25,
+  digital: 0.15,
   sustainability: 0.2,
 };
 
@@ -58,6 +58,7 @@ export const LEVEL_COLORS: Record<Level, { from: string; to: string; glow: strin
   4: { from: "#10b981", to: "#047857", glow: "rgba(4,120,87,0.45)" }, // emerald-500 → 700，成熟期
 };
 
+/** 加權總分（0～100 分）分級門檻：0~19／20~44／45~56／57~100 */
 export const LEVEL_THRESHOLDS: [number, number, number] = [19, 44, 56];
 
 export function levelFromWeightedScore(weightedScore: number): Level {

@@ -58,6 +58,8 @@ export const COMPANY_FIELD_LABELS: Record<keyof CompanyInfo, string> = {
 interface QuizState {
   companyInfo: CompanyInfo;
   answers: Answers;
+  /** 後測流程中，從上傳的前測 Word 報告解析出的前測作答內容 */
+  prevAnswers: Answers | null;
 }
 
 const STORAGE_KEY = "ai-maturity-quiz-state";
@@ -81,11 +83,13 @@ export function getStoredCompanyInfo(): CompanyInfo {
 const initialState: QuizState = {
   companyInfo: {},
   answers: {},
+  prevAnswers: null,
 };
 
 type Action =
   | { type: "SET_COMPANY_FIELD"; field: keyof CompanyInfo; value: string }
   | { type: "SET_ANSWER"; questionId: string; value: Answers[string] }
+  | { type: "SET_PREV_ANSWERS"; value: Answers | null }
   | { type: "HYDRATE"; state: QuizState }
   | { type: "RESET" };
 
@@ -95,6 +99,8 @@ function reducer(state: QuizState, action: Action): QuizState {
       return { ...state, companyInfo: { ...state.companyInfo, [action.field]: action.value } };
     case "SET_ANSWER":
       return { ...state, answers: { ...state.answers, [action.questionId]: action.value } };
+    case "SET_PREV_ANSWERS":
+      return { ...state, prevAnswers: action.value };
     case "HYDRATE":
       return action.state;
     case "RESET":
@@ -107,6 +113,7 @@ function reducer(state: QuizState, action: Action): QuizState {
 interface QuizContextValue extends QuizState {
   setCompanyField: (field: keyof CompanyInfo, value: string) => void;
   setAnswer: (questionId: string, value: Answers[string]) => void;
+  setPrevAnswers: (value: Answers | null) => void;
   reset: () => void;
 }
 
@@ -134,6 +141,7 @@ export function QuizProvider({ children }: { children: React.ReactNode }) {
       ...state,
       setCompanyField: (field, value) => dispatch({ type: "SET_COMPANY_FIELD", field, value }),
       setAnswer: (questionId, value) => dispatch({ type: "SET_ANSWER", questionId, value }),
+      setPrevAnswers: (value) => dispatch({ type: "SET_PREV_ANSWERS", value }),
       reset: () => {
         dispatch({ type: "RESET" });
         window.sessionStorage.removeItem(STORAGE_KEY);

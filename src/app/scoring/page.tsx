@@ -11,7 +11,7 @@ import {
 import type { Level } from "@/lib/scoring/types";
 
 const CARD_CLASS =
-  "animate-fade-up rounded-2xl bg-[#f7faf8] p-5 shadow-[0_2px_16px_rgba(15,23,42,0.08)] sm:p-6";
+  "animate-fade-up rounded-2xl bg-[#faf7ea] p-5 shadow-[0_2px_16px_rgba(21,31,30,0.08)] sm:p-6";
 
 const LEVELS: Level[] = [1, 2, 3, 4];
 const MAX_WEIGHT = Math.max(...Object.values(DIMENSION_WEIGHTS));
@@ -19,10 +19,10 @@ const MAX_WEIGHT = Math.max(...Object.values(DIMENSION_WEIGHTS));
 /** 依 LEVEL_THRESHOLDS 換算成給使用者看的分數區間 */
 function levelScoreRange(level: Level): string {
   const [t1, t2, t3] = LEVEL_THRESHOLDS;
-  if (level === 1) return `0 ~ ${Math.round(t1)} 分`;
-  if (level === 2) return `${Math.round(t1) + 1} ~ ${Math.round(t2)} 分`;
-  if (level === 3) return `${Math.round(t2) + 1} ~ ${Math.round(t3)} 分`;
-  return `${Math.round(t3) + 1} ~ 100 分`;
+  if (level === 1) return `0 ~ ${t1} 分`;
+  if (level === 2) return `${t1 + 1} ~ ${t2} 分`;
+  if (level === 3) return `${t2 + 1} ~ ${t3} 分`;
+  return `${t3 + 1} ~ 100 分`;
 }
 
 export default function ScoringGuidePage() {
@@ -37,20 +37,20 @@ export default function ScoringGuidePage() {
         <div className={CARD_CLASS} style={{ animationDelay: "80ms" }}>
           <h2 className="mb-3 text-2xl font-semibold text-black">五大構面與權重</h2>
           <p className="mb-4 text-lg leading-relaxed text-gray-600">
-            問卷的 20 道題目平均分屬五個構面（每構面 4 題），每個構面各自算出 0～100 分，再依權重加總成最終的「加權分數」。
+            問卷共 20 道題目，對應五大構面各 4 項指標。每個構面各自算出 0～100 分，再依權重加總成最終的「加權分數」。
           </p>
           <div className="space-y-3">
             {DIMENSION_ORDER.map((dim) => (
               <div key={dim} className="flex items-center justify-between">
                 <span className="text-lg font-medium text-black">{DIMENSION_LABELS[dim]}</span>
                 <div className="flex flex-1 items-center gap-3 pl-6">
-                  <div className="h-2.5 flex-1 rounded-full bg-[#e1e0d9]">
+                  <div className="h-2.5 flex-1 rounded-full bg-[#eae4c8]">
                     <div
-                      className="h-2.5 rounded-full bg-gradient-to-r from-emerald-400 to-emerald-700"
+                      className="h-2.5 rounded-full bg-gold-500"
                       style={{ width: `${(DIMENSION_WEIGHTS[dim] / MAX_WEIGHT) * 100}%` }}
                     />
                   </div>
-                  <span className="w-14 text-right text-lg font-bold tabular-nums text-emerald-700">
+                  <span className="w-14 text-right text-lg font-bold tabular-nums text-olive-700">
                     {DIMENSION_WEIGHTS[dim] * 100}%
                   </span>
                 </div>
@@ -62,9 +62,12 @@ export default function ScoringGuidePage() {
         <div className={CARD_CLASS} style={{ animationDelay: "160ms" }}>
           <h2 className="mb-3 text-2xl font-semibold text-black">計分方式</h2>
           <ul className="list-disc space-y-2 pl-5 text-lg leading-relaxed text-gray-600">
-            <li>每題採「非常不同意」到「非常同意」5 級量表作答，每題最高 5%，換算成 0、25、50、75、100 分。</li>
-            <li>同構面底下的 4 題分數加總，得到該構面 0～100 分的「構面分數」（每構面權重 20%）。</li>
-            <li>五個構面分數依上方權重加權平均，得到 0～100 分的「加權分數」。</li>
+            <li>每題採「非常不同意」到「非常同意」5 級量表作答，換算成 0、25、50、75、100 分。</li>
+            <li>構面分數：該構面 4 題換算後分數之算術平均數（0～100 分）。</li>
+            <li>
+              加權分數 ＝ 組織能力×20% ＋ 服務能力×20% ＋ 商業模式×25% ＋ 數位能力×15% ＋
+              永續能力×20%，滿分 100 分。
+            </li>
             <li>加權分數對應到四個成熟度等級之一，分數越高代表組織在各項能力上越成熟。</li>
           </ul>
         </div>
@@ -94,10 +97,19 @@ export default function ScoringGuidePage() {
           </div>
         </div>
 
-        <div className="animate-fade-up flex justify-center pt-2" style={{ animationDelay: "320ms" }}>
+        <div className={CARD_CLASS} style={{ animationDelay: "300ms" }}>
+          <h2 className="mb-3 text-2xl font-semibold text-black">前測與後測</h2>
+          <p className="text-lg leading-relaxed text-gray-600">
+            首次填答請選擇「開始前測」，完成後可下載 Word
+            報告作為輔導前之基準值。完成一對一輔導後，回到首頁選擇「開始後測」，並在填答前上傳先前的前測
+            Word 報告，系統會自動比對前後測分數，以雷達圖疊加呈現成長軌跡，並標示最大進步與仍待強化的構面。
+          </p>
+        </div>
+
+        <div className="animate-fade-up flex justify-center pt-2" style={{ animationDelay: "360ms" }}>
           <Link
             href="/"
-            className="rounded-full bg-gradient-to-r from-emerald-500 to-emerald-700 px-8 py-3 text-lg font-medium text-white shadow-[0_8px_30px_rgba(5,150,105,0.35)] transition-all hover:scale-[1.03] hover:shadow-[0_8px_40px_rgba(5,150,105,0.5)] active:scale-[0.97]"
+            className="rounded-full bg-gradient-to-r from-olive-500 to-olive-900 px-8 py-3 text-lg font-medium text-white shadow-[0_8px_30px_rgba(61,78,23,0.35)] transition-all hover:scale-[1.03] hover:shadow-[0_8px_40px_rgba(61,78,23,0.5)] active:scale-[0.97]"
           >
             回到首頁
           </Link>

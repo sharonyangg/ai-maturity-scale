@@ -3,7 +3,7 @@
 import { CITY_OPTIONS, EMPLOYEE_SCALE_OPTIONS, useQuizStore } from "@/lib/quiz-store";
 import { validateCompanyInfo } from "@/lib/validation";
 
-const CARD_CLASS = "rounded-2xl bg-[#f7faf8] p-5 shadow-[0_2px_16px_rgba(15,23,42,0.08)] sm:p-6";
+const CARD_CLASS = "rounded-2xl bg-[#faf7ea] p-5 shadow-[0_2px_16px_rgba(21,31,30,0.08)] sm:p-6";
 const BASE_INPUT_CLASS =
   "w-full rounded-lg border px-3 py-2 text-base text-black focus:outline-none focus:ring-2";
 const labelClass = "mb-3 block text-lg font-semibold text-black";
@@ -13,7 +13,7 @@ function inputClass(hasError: boolean): string {
   return `${BASE_INPUT_CLASS} ${
     hasError
       ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
-      : "border-gray-300 focus:border-emerald-500 focus:ring-emerald-500/20"
+      : "border-gray-300 focus:border-gold-500 focus:ring-gold-500/25"
   }`;
 }
 

@@ -2,24 +2,38 @@
 
 import { useRef, useState } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
-import { decodeAnswers } from "@/lib/answer-codec";
+import { useParams, useSearchParams } from "next/navigation";
+import { decodeAnswers, decodePostResult } from "@/lib/answer-codec";
 import { clearStoredQuizState, getStoredCompanyInfo } from "@/lib/quiz-store";
 import { downloadResultDocx } from "@/lib/export-docx";
 import { svgElementToPngBytes } from "@/lib/svg-to-png";
-import { computeResult } from "@/lib/scoring/engine";
-import { DIMENSION_DESCRIPTIONS, LEVEL_COLORS, LEVEL_DESCRIPTIONS } from "@/lib/scoring/dimensions";
-import { LEVEL_COMMENTARY } from "@/lib/scoring/commentary";
+import { compareDimensionScores, computeResult } from "@/lib/scoring/engine";
+import {
+  DIMENSION_DESCRIPTIONS,
+  DIMENSION_LABELS,
+  DIMENSION_ORDER,
+  DIMENSION_WEIGHTS,
+  LEVEL_COLORS,
+  LEVEL_DESCRIPTIONS,
+  LEVEL_NAMES,
+} from "@/lib/scoring/dimensions";
+import { buildWeakestDimensionNote, LEVEL_COMMENTARY } from "@/lib/scoring/commentary";
 import { DimensionRadarChart } from "@/components/result/DimensionRadarChart";
 import { DimensionBreakdown } from "@/components/result/DimensionBreakdown";
 import { DimensionNotes } from "@/components/result/DimensionNotes";
 
 const CARD_CLASS =
-  "animate-fade-up rounded-2xl bg-[#f7faf8] p-5 shadow-[0_2px_16px_rgba(15,23,42,0.08)] sm:p-6";
+  "animate-fade-up rounded-2xl bg-[#faf7ea] p-5 shadow-[0_2px_16px_rgba(21,31,30,0.08)] sm:p-6";
 
 export default function ResultPage() {
   const params = useParams<{ code: string }>();
-  const answers = decodeAnswers(params.code);
+  const searchParams = useSearchParams();
+  const isPost = searchParams.get("mode") === "post";
+
+  const payload = isPost ? decodePostResult(params.code) : null;
+  const answers = isPost ? payload?.answers ?? null : decodeAnswers(params.code);
+  const prevAnswers = isPost ? payload?.prevAnswers ?? null : null;
+
   const [downloading, setDownloading] = useState(false);
   const chartContainerRef = useRef<HTMLDivElement>(null);
 
@@ -29,7 +43,7 @@ export default function ResultPage() {
         <div className="max-w-xl text-center">
           <h1 className="text-2xl font-semibold text-slate-900">連結無法解析</h1>
           <p className="mt-2 text-lg text-slate-500">這個結果連結可能已損毀，請重新填寫問卷。</p>
-          <Link href="/" className="mt-6 inline-block text-emerald-700 hover:underline">
+          <Link href="/" className="mt-6 inline-block text-olive-700 hover:underline">
             回到首頁
           </Link>
         </div>
@@ -38,8 +52,16 @@ export default function ResultPage() {
   }
 
   const result = computeResult(answers);
+  const prevResult = prevAnswers ? computeResult(prevAnswers) : null;
   const color = LEVEL_COLORS[result.level];
   const commentary = LEVEL_COMMENTARY[result.level];
+  const weakestNote = buildWeakestDimensionNote(result.dimensionScores);
+  const weightSummary = DIMENSION_ORDER.map(
+    (dim) => `${DIMENSION_LABELS[dim]} ${DIMENSION_WEIGHTS[dim] * 100}%`
+  ).join("、");
+
+  const comparison = prevResult ? compareDimensionScores(prevResult.dimensionScores, result.dimensionScores) : null;
+  const totalDelta = prevResult ? result.weightedScore - prevResult.weightedScore : null;
 
   const handleDownload = async () => {
     const companyInfo = getStoredCompanyInfo();
@@ -55,9 +77,21 @@ export default function ResultPage() {
 
     setDownloading(true);
     try {
-      const svg = chartContainerRef.current?.querySelector("svg") ?? null;
+      // 加了圖例（Legend）之後，容器內會多一顆 recharts 用來畫圖例色塊的迷你 <svg>；
+      // 直接抓「第一個 svg」常常抓到那顆色塊而不是雷達圖本體，改成挑面積最大的那顆。
+      const svgs = chartContainerRef.current
+        ? Array.from(chartContainerRef.current.querySelectorAll("svg"))
+        : [];
+      const svg =
+        svgs.sort((a, b) => b.clientWidth * b.clientHeight - a.clientWidth * a.clientHeight)[0] ?? null;
       const chartSnapshot = svg ? await svgElementToPngBytes(svg) : null;
-      await downloadResultDocx(result, companyInfo, answers, chartSnapshot);
+      await downloadResultDocx({
+        result,
+        companyInfo,
+        answers,
+        chartSnapshot,
+        prevAnswers: prevAnswers ?? undefined,
+      });
     } finally {
       setDownloading(false);
     }
@@ -76,7 +110,9 @@ export default function ResultPage() {
           }
         >
           <div className="text-center">
-            <p className="text-lg font-medium text-white/80">您的企業成熟度等級</p>
+            <p className="text-lg font-medium text-white/80">
+              您的企業成熟度等級{isPost ? "（後測）" : "（前測）"}
+            </p>
             <h1 className="mt-2 text-4xl font-bold break-words sm:text-5xl">{result.levelName}</h1>
             <p className="mt-1 text-lg text-white/90">{LEVEL_DESCRIPTIONS[result.level]}</p>
             <div className="mx-auto mt-6 max-w-xs">
@@ -86,24 +122,88 @@ export default function ResultPage() {
                   style={{ width: `${Math.min(100, Math.max(0, result.weightedScore))}%` }}
                 />
               </div>
-              <p className="mt-2 text-lg text-white/80">
-                加權分數 {result.weightedScore.toFixed(1)} / 100
-              </p>
+              <p className="mt-2 text-lg text-white/80">加權分數 {result.weightedScore.toFixed(1)} / 100</p>
+              {prevResult && totalDelta !== null && (
+                <p className="mt-1 text-base text-white/80">
+                  較前測（{prevResult.weightedScore.toFixed(1)} 分／{prevResult.levelName}）
+                  {totalDelta >= 0 ? "成長" : "下降"} {Math.abs(totalDelta).toFixed(1)} 分
+                </p>
+              )}
             </div>
           </div>
 
           <div className="mt-8 border-t border-white/25 pt-6">
             <h2 className="mb-2 text-xl font-semibold">整體評語</h2>
             <p className="text-lg leading-relaxed text-white/90">{commentary.overall}</p>
+            <p className="mt-4 rounded-xl bg-white/15 p-4 text-lg leading-relaxed font-medium text-white">
+              {weakestNote}
+            </p>
           </div>
         </div>
 
+        {comparison && prevResult && (
+          <div className={CARD_CLASS} style={{ animationDelay: "120ms" }}>
+            <h2 className="mb-4 text-2xl font-semibold text-black">前測後測比較彙總</h2>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="rounded-xl bg-olive-900/5 p-4">
+                <p className="text-sm text-gray-500">前測加權總分／分級</p>
+                <p className="mt-1 text-xl font-bold text-olive-700">
+                  {prevResult.weightedScore.toFixed(1)} 分／{LEVEL_NAMES[prevResult.level]}
+                </p>
+              </div>
+              <div className="rounded-xl bg-olive-900/5 p-4">
+                <p className="text-sm text-gray-500">後測加權總分／分級</p>
+                <p className="mt-1 text-xl font-bold text-olive-700">
+                  {result.weightedScore.toFixed(1)} 分／{LEVEL_NAMES[result.level]}
+                </p>
+              </div>
+              <div className="rounded-xl bg-gold-50 p-4">
+                <p className="text-sm text-gray-500">最大進步構面</p>
+                <p className="mt-1 text-xl font-bold text-gold-700">
+                  {DIMENSION_LABELS[comparison.mostImproved]}
+                  <span className="ml-2 text-base font-medium">
+                    {comparison.deltas[comparison.mostImproved] >= 0 ? "+" : ""}
+                    {comparison.deltas[comparison.mostImproved].toFixed(1)} 分
+                  </span>
+                </p>
+              </div>
+              <div className="rounded-xl bg-gold-50 p-4">
+                <p className="text-sm text-gray-500">仍待強化構面</p>
+                <p className="mt-1 text-xl font-bold text-gold-700">
+                  {DIMENSION_LABELS[comparison.stillWeak]}
+                  <span className="ml-2 text-base font-medium">
+                    現為 {result.dimensionScores[comparison.stillWeak].toFixed(1)} 分
+                  </span>
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className={CARD_CLASS} style={{ animationDelay: "160ms" }}>
           <div className="grid grid-cols-1 items-center gap-6 md:grid-cols-2 md:gap-8">
-            <DimensionRadarChart scores={result.dimensionScores} containerRef={chartContainerRef} />
+            <div>
+              <div className="mb-2 flex items-center gap-2">
+                <span className="rounded-full bg-olive-900/5 px-2 py-0.5 text-sm font-medium text-olive-700">
+                  {isPost ? "前測 vs 後測對照" : "前測（Baseline）"}
+                </span>
+              </div>
+              <DimensionRadarChart
+                scores={result.dimensionScores}
+                prevScores={prevResult?.dimensionScores}
+                containerRef={chartContainerRef}
+              />
+              {!isPost && (
+                <p className="mt-1 text-sm text-gray-500">
+                  本圖為本次測驗的前測數據；未來完成輔導後，於首頁選擇「開始後測」並上傳這份前測 Word
+                  報告，即可疊加後測分數比較前後差異。
+                </p>
+              )}
+            </div>
             <div>
               <h2 className="mb-4 text-2xl font-semibold text-black">五大構面數據</h2>
-              <DimensionBreakdown scores={result.dimensionScores} />
+              <DimensionBreakdown scores={result.dimensionScores} prevScores={prevResult?.dimensionScores} />
+              <p className="mt-4 text-sm text-gray-500">各構面權重：{weightSummary}。</p>
             </div>
           </div>
         </div>
@@ -116,6 +216,9 @@ export default function ResultPage() {
         <div className={CARD_CLASS} style={{ animationDelay: "320ms" }}>
           <h2 className="mb-3 text-2xl font-semibold text-black">建議行動</h2>
           <p className="text-lg leading-relaxed text-gray-600">{commentary.strategyAdvice}</p>
+          <p className="mt-4 rounded-xl border border-gold-500 bg-gold-50 p-4 text-lg leading-relaxed font-medium text-olive-900">
+            下一步：請依據上述弱項構面，聯繫窗口安排後續一對一輔導，共同擬定包含具體任務、負責人與期限的改善行動計畫。
+          </p>
         </div>
 
         <div
@@ -126,14 +229,14 @@ export default function ResultPage() {
             type="button"
             onClick={handleDownload}
             disabled={downloading}
-            className="w-full rounded-full border border-emerald-600 px-8 py-3 text-center font-medium text-emerald-700 transition-all hover:scale-[1.03] hover:bg-emerald-50 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+            className="w-full rounded-full border border-gold-500 px-8 py-3 text-center font-medium text-gold-700 transition-all hover:scale-[1.03] hover:bg-gold-50 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
           >
             {downloading ? "產生中…" : "下載 Word 報告"}
           </button>
           <Link
             href="/"
             onClick={clearStoredQuizState}
-            className="w-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-700 px-8 py-3 text-center font-medium text-white shadow-[0_8px_30px_rgba(5,150,105,0.35)] transition-all hover:scale-[1.03] hover:shadow-[0_8px_40px_rgba(5,150,105,0.5)] active:scale-[0.97] sm:w-auto"
+            className="w-full rounded-full bg-gradient-to-r from-olive-500 to-olive-900 px-8 py-3 text-center font-medium text-white shadow-[0_8px_30px_rgba(61,78,23,0.35)] transition-all hover:scale-[1.03] hover:shadow-[0_8px_40px_rgba(61,78,23,0.5)] active:scale-[0.97] sm:w-auto"
           >
             回到首頁
           </Link>

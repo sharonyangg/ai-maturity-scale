@@ -8,14 +8,12 @@ export type DimensionKey =
 export interface ChoiceOption {
   value: string;
   label: string;
-  score: number;
 }
 
 export interface Question {
   id: string;
   dimension: DimensionKey;
   title: string;
-  weight: number;
   options: ChoiceOption[];
 }
 
