@@ -9,7 +9,7 @@ function toPercent(rawValue: number): number {
 
 /**
  * 構面分數（0～100 分）= 該構面 4 題答案換算成百分制後之算術平均數。
- * 加權總分（0～100 分）= 各構面分數 × 對應權重後加總（組織20% + 服務20% + 商業模式25% + 數位15% + 永續20%）。
+ * 加權總分（0～100 分）= 各構面分數 × 對應權重後加總（五大構面權重均為 20%）。
  */
 export function computeDimensionScores(answers: Answers): Record<DimensionKey, number> {
   const totals: Record<DimensionKey, number> = {

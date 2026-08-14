@@ -19,8 +19,8 @@ export const DIMENSION_ORDER: DimensionKey[] = [
 export const DIMENSION_WEIGHTS: Record<DimensionKey, number> = {
   organization: 0.2,
   service: 0.2,
-  businessModel: 0.25,
-  digital: 0.15,
+  businessModel: 0.2,
+  digital: 0.2,
   sustainability: 0.2,
 };
 
