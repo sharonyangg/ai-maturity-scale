@@ -27,7 +27,7 @@ export function useScoringConfig(): { config: EffectiveScoringConfig; loaded: bo
 
   useEffect(() => {
     let cancelled = false;
-    fetch("/api/config")
+    fetch("/api/config", { cache: "no-store" })
       .then((res) => (res.ok ? res.json() : null))
       .then((data: EffectiveScoringConfig | null) => {
         if (!cancelled && data) {

@@ -37,7 +37,7 @@ export default function ResultPage() {
   const [downloading, setDownloading] = useState(false);
   const [emailStatus, setEmailStatus] = useState<"idle" | "sending" | "sent" | "skipped" | "failed">("idle");
   const chartContainerRef = useRef<HTMLDivElement>(null);
-  const { config } = useScoringConfig();
+  const { config, loaded: configLoaded } = useScoringConfig();
 
   // 測驗一送出、結果頁一打開就自動把報告寄到填答時留的 email；用 sessionStorage 記錄
   // 這個結果連結是否已經寄過，避免重新整理頁面就再寄一次。
@@ -108,6 +108,16 @@ export default function ResultPage() {
             回到首頁
           </Link>
         </div>
+      </div>
+    );
+  }
+
+  if (!configLoaded) {
+    // 構面權重可能被後台改過，要等抓到最新設定才能算分數，
+    // 避免先用預設權重算一次、等一下又用新權重跳成另一個數字。
+    return (
+      <div className="flex min-h-screen items-center justify-center px-4">
+        <p className="text-lg text-slate-500">結果計算中…</p>
       </div>
     );
   }

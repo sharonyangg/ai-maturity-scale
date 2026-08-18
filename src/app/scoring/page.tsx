@@ -27,9 +27,9 @@ function levelScoreRange(level: Level): string {
   return `${t3 + 1} ~ 100 分`;
 }
 
-export default function ScoringGuidePage() {
+export default async function ScoringGuidePage() {
   // 這頁是 server component，可以直接讀後台設定檔，不用額外打 API。
-  const { dimensionWeights } = getEffectiveConfig();
+  const { dimensionWeights } = await getEffectiveConfig();
   const maxWeight = Math.max(...Object.values(dimensionWeights));
   const weightedFormula = DIMENSION_ORDER.map(
     (dim) => `${DIMENSION_LABELS[dim]}×${Math.round(dimensionWeights[dim] * 100)}%`

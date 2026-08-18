@@ -9,7 +9,7 @@ export async function sendReportEmail(params: {
   text: string;
   attachment: { filename: string; content: Buffer };
 }): Promise<SendResult> {
-  const settings = getEffectiveMailSettings();
+  const settings = await getEffectiveMailSettings();
   if (!settings.smtpHost || !settings.smtpUser || !settings.smtpPass) {
     return { ok: false, error: "SMTP 尚未設定（後台「寄信設定」或環境變數缺少主機／帳號／密碼）" };
   }

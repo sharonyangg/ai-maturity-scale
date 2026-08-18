@@ -40,7 +40,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: "缺少作答資料" }, { status: 400 });
   }
 
-  const { questionTitles, dimensionWeights } = getEffectiveConfig();
+  const { questionTitles, dimensionWeights } = await getEffectiveConfig();
   const result = computeResult(body.answers, dimensionWeights);
   const chartSnapshot =
     body.chartPngBase64 && body.chartWidth && body.chartHeight

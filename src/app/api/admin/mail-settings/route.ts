@@ -29,8 +29,21 @@ function toPublicView(overrides: MailSettingsOverrides) {
   };
 }
 
+function noStore(body: unknown) {
+  return NextResponse.json(body, { headers: { "Cache-Control": "no-store" } });
+}
+
+function serverError(err: unknown) {
+  const message = err instanceof Error ? err.message : String(err);
+  return NextResponse.json({ ok: false, error: message }, { status: 500, headers: { "Cache-Control": "no-store" } });
+}
+
 export async function GET() {
-  return NextResponse.json(toPublicView(readMailSettings()));
+  try {
+    return noStore(toPublicView(await readMailSettings()));
+  } catch (err) {
+    return serverError(err);
+  }
 }
 
 interface MailSettingsBody {
@@ -59,22 +72,30 @@ export async function PUT(request: Request) {
     return NextResponse.json({ ok: false, error: "SMTP 連接埠必須是正整數" }, { status: 400 });
   }
 
-  const current = readMailSettings();
-  const next: MailSettingsOverrides = {
-    smtpHost: body.smtpHost?.trim() || undefined,
-    smtpPort: port,
-    smtpUser: body.smtpUser?.trim() || undefined,
-    // 密碼欄位留空＝不變更，沿用原本存的值（不管是後台設定過的，還是這次也還是空）
-    smtpPass: body.smtpPass?.trim() ? body.smtpPass.trim() : current.smtpPass,
-    smtpFrom: body.smtpFrom?.trim() || undefined,
-    ccEmail: body.ccEmail?.trim() || undefined,
-  };
+  try {
+    const current = await readMailSettings();
+    const next: MailSettingsOverrides = {
+      smtpHost: body.smtpHost?.trim() || undefined,
+      smtpPort: port,
+      smtpUser: body.smtpUser?.trim() || undefined,
+      // 密碼欄位留空＝不變更，沿用原本存的值（不管是後台設定過的，還是這次也還是空）
+      smtpPass: body.smtpPass?.trim() ? body.smtpPass.trim() : current.smtpPass,
+      smtpFrom: body.smtpFrom?.trim() || undefined,
+      ccEmail: body.ccEmail?.trim() || undefined,
+    };
 
-  writeMailSettings(next);
-  return NextResponse.json(toPublicView(next));
+    await writeMailSettings(next);
+    return noStore(toPublicView(next));
+  } catch (err) {
+    return serverError(err);
+  }
 }
 
 export async function DELETE() {
-  resetMailSettings();
-  return NextResponse.json(toPublicView({}));
+  try {
+    await resetMailSettings();
+    return noStore(toPublicView({}));
+  } catch (err) {
+    return serverError(err);
+  }
 }

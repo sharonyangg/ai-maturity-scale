@@ -15,8 +15,27 @@ export const dynamic = "force-dynamic";
 
 const QUESTION_IDS = new Set(QUESTIONS.map((q) => q.id));
 
+/**
+ * 內容會被後台改動，每次都要拿到最新的，所以明確關掉快取：
+ * `dynamic = "force-dynamic"` 只影響 Next.js 自己 server 端的資料快取，
+ * 瀏覽器對同一條 GET URL 還是可能套用預設的 HTTP 快取，導致改了設定、
+ * 但客戶端（填答頁、結果頁）用舊的 fetch 結果算分數。
+ */
+function noStore(body: unknown) {
+  return NextResponse.json(body, { headers: { "Cache-Control": "no-store" } });
+}
+
+function serverError(err: unknown) {
+  const message = err instanceof Error ? err.message : String(err);
+  return NextResponse.json({ ok: false, error: message }, { status: 500, headers: { "Cache-Control": "no-store" } });
+}
+
 export async function GET() {
-  return NextResponse.json(getEffectiveConfig());
+  try {
+    return noStore(await getEffectiveConfig());
+  } catch (err) {
+    return serverError(err);
+  }
 }
 
 export async function PUT(request: Request) {
@@ -52,11 +71,19 @@ export async function PUT(request: Request) {
     }
   }
 
-  writeOverrides({ questionTitles, dimensionWeights });
-  return NextResponse.json(getEffectiveConfig());
+  try {
+    await writeOverrides({ questionTitles, dimensionWeights });
+    return noStore(await getEffectiveConfig());
+  } catch (err) {
+    return serverError(err);
+  }
 }
 
 export async function DELETE() {
-  resetOverrides();
-  return NextResponse.json(getEffectiveConfig());
+  try {
+    await resetOverrides();
+    return noStore(await getEffectiveConfig());
+  } catch (err) {
+    return serverError(err);
+  }
 }

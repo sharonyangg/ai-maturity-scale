@@ -34,7 +34,7 @@ export function MailSettingsForm() {
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   const load = () => {
-    fetch("/api/admin/mail-settings")
+    fetch("/api/admin/mail-settings", { cache: "no-store" })
       .then((res) => (res.ok ? res.json() : null))
       .then((data: MailSettingsView | null) => {
         if (data) setView(data);
