@@ -115,30 +115,7 @@ export function MailSettingsForm() {
       <div className="space-y-4">
         <label className="block">
           <span className="mb-1 block text-sm font-medium text-gray-500">
-            SMTP 主機{view.usingEnvFallback.host && "（目前使用環境變數 SMTP_HOST）"}
-          </span>
-          <input
-            type="text"
-            value={view.smtpHost}
-            onChange={(e) => set("smtpHost", e.target.value)}
-            placeholder="例如 smtp.office365.com"
-            className={INPUT_CLASS}
-          />
-        </label>
-
-        <label className="block">
-          <span className="mb-1 block text-sm font-medium text-gray-500">SMTP 連接埠</span>
-          <input
-            type="number"
-            value={view.smtpPort}
-            onChange={(e) => set("smtpPort", Number(e.target.value))}
-            className={INPUT_CLASS}
-          />
-        </label>
-
-        <label className="block">
-          <span className="mb-1 block text-sm font-medium text-gray-500">
-            SMTP 帳號（發信信箱）{view.usingEnvFallback.user && "（目前使用環境變數 SMTP_USER）"}
+            發信信箱{view.usingEnvFallback.user && "（目前使用環境變數 SMTP_USER）"}
           </span>
           <input
             type="text"
@@ -151,7 +128,7 @@ export function MailSettingsForm() {
 
         <label className="block">
           <span className="mb-1 block text-sm font-medium text-gray-500">
-            SMTP 密碼{" "}
+            密碼{" "}
             {view.hasPassword
               ? view.usingEnvFallback.pass
                 ? "（目前使用環境變數 SMTP_PASS，留空表示不變更）"
@@ -163,16 +140,6 @@ export function MailSettingsForm() {
             value={smtpPassInput}
             onChange={(e) => setSmtpPassInput(e.target.value)}
             placeholder="留空＝不變更目前密碼"
-            className={INPUT_CLASS}
-          />
-        </label>
-
-        <label className="block">
-          <span className="mb-1 block text-sm font-medium text-gray-500">寄件人顯示（留空預設用 SMTP 帳號）</span>
-          <input
-            type="text"
-            value={view.smtpFrom}
-            onChange={(e) => set("smtpFrom", e.target.value)}
             className={INPUT_CLASS}
           />
         </label>
