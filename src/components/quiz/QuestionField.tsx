@@ -33,9 +33,12 @@ function QuestionHeader({ number, title }: { number: string; title: string }) {
 export function QuestionField({
   question,
   showError = false,
+  title,
 }: {
   question: Question;
   showError?: boolean;
+  /** 後台若有改過這題的文字，傳進來覆蓋 question.title */
+  title?: string;
 }) {
   const { answers, setAnswer } = useQuizStore();
   const answer = answers[question.id];
@@ -45,7 +48,7 @@ export function QuestionField({
 
   return (
     <div className={cardClass}>
-      <QuestionHeader number={question.id} title={question.title} />
+      <QuestionHeader number={question.id} title={title ?? question.title} />
       <div className="flex flex-wrap justify-between gap-3">
         {question.options.map((option) => (
           <label key={option.value} className={`${OPTION_LABEL_CLASS} flex-col items-center text-center`}>

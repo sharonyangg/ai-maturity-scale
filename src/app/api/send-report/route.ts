@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { buildResultDocxBuffer, resultDocxFilename } from "@/lib/export-docx";
 import { sendReportEmail } from "@/lib/mailer";
 import { computeResult } from "@/lib/scoring/engine";
+import { getEffectiveConfig } from "@/lib/scoring/config-store";
 import type { CompanyInfo } from "@/lib/quiz-store";
 import type { Answers } from "@/lib/scoring/types";
 
@@ -39,7 +40,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: "缺少作答資料" }, { status: 400 });
   }
 
-  const result = computeResult(body.answers);
+  const { questionTitles, dimensionWeights } = getEffectiveConfig();
+  const result = computeResult(body.answers, dimensionWeights);
   const chartSnapshot =
     body.chartPngBase64 && body.chartWidth && body.chartHeight
       ? {
@@ -56,6 +58,8 @@ export async function POST(request: Request) {
       answers: body.answers,
       chartSnapshot,
       prevAnswers: body.prevAnswers,
+      questionTitles,
+      dimensionWeights,
     };
     const buffer = await buildResultDocxBuffer(params);
     const filename = resultDocxFilename(params);

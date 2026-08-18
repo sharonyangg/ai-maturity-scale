@@ -2,19 +2,21 @@ import Link from "next/link";
 import {
   DIMENSION_LABELS,
   DIMENSION_ORDER,
-  DIMENSION_WEIGHTS,
   LEVEL_COLORS,
   LEVEL_DESCRIPTIONS,
   LEVEL_NAMES,
   LEVEL_THRESHOLDS,
 } from "@/lib/scoring/dimensions";
+import { getEffectiveConfig } from "@/lib/scoring/config-store";
 import type { Level } from "@/lib/scoring/types";
+
+// 權重會被後台改動，這頁不能在 build time 就把數字烤死成靜態頁面。
+export const dynamic = "force-dynamic";
 
 const CARD_CLASS =
   "animate-fade-up rounded-2xl bg-[#faf7ea] p-5 shadow-[0_2px_16px_rgba(21,31,30,0.08)] sm:p-6";
 
 const LEVELS: Level[] = [1, 2, 3, 4];
-const MAX_WEIGHT = Math.max(...Object.values(DIMENSION_WEIGHTS));
 
 /** 依 LEVEL_THRESHOLDS 換算成給使用者看的分數區間 */
 function levelScoreRange(level: Level): string {
@@ -26,6 +28,13 @@ function levelScoreRange(level: Level): string {
 }
 
 export default function ScoringGuidePage() {
+  // 這頁是 server component，可以直接讀後台設定檔，不用額外打 API。
+  const { dimensionWeights } = getEffectiveConfig();
+  const maxWeight = Math.max(...Object.values(dimensionWeights));
+  const weightedFormula = DIMENSION_ORDER.map(
+    (dim) => `${DIMENSION_LABELS[dim]}×${Math.round(dimensionWeights[dim] * 100)}%`
+  ).join(" ＋ ");
+
   return (
     <div className="min-h-screen px-4 py-8 sm:py-12">
       <div className="mx-auto max-w-4xl space-y-6">
@@ -47,11 +56,11 @@ export default function ScoringGuidePage() {
                   <div className="h-2.5 flex-1 rounded-full bg-[#eae4c8]">
                     <div
                       className="h-2.5 rounded-full bg-gold-500"
-                      style={{ width: `${(DIMENSION_WEIGHTS[dim] / MAX_WEIGHT) * 100}%` }}
+                      style={{ width: `${(dimensionWeights[dim] / maxWeight) * 100}%` }}
                     />
                   </div>
                   <span className="w-14 text-right text-lg font-bold tabular-nums text-olive-700">
-                    {DIMENSION_WEIGHTS[dim] * 100}%
+                    {Math.round(dimensionWeights[dim] * 100)}%
                   </span>
                 </div>
               </div>
@@ -64,10 +73,7 @@ export default function ScoringGuidePage() {
           <ul className="list-disc space-y-2 pl-5 text-lg leading-relaxed text-gray-600">
             <li>每題採「非常不同意」到「非常同意」5 級量表作答，換算成 0、25、50、75、100 分。</li>
             <li>構面分數：該構面 4 題換算後分數之算術平均數（0～100 分）。</li>
-            <li>
-              加權分數 ＝ 組織能力×20% ＋ 服務能力×20% ＋ 商業模式×20% ＋ 數位能力×20% ＋
-              永續能力×20%，滿分 100 分。
-            </li>
+            <li>加權分數 ＝ {weightedFormula}，滿分 100 分。</li>
             <li>加權分數對應到四個成熟度等級之一，分數越高代表組織在各項能力上越成熟。</li>
           </ul>
         </div>

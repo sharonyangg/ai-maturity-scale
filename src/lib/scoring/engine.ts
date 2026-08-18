@@ -43,16 +43,19 @@ export function computeDimensionScores(answers: Answers): Record<DimensionKey, n
   return averages;
 }
 
-export function computeWeightedScore(dimensionScores: Record<DimensionKey, number>): number {
-  return DIMENSION_ORDER.reduce(
-    (sum, dim) => sum + dimensionScores[dim] * DIMENSION_WEIGHTS[dim],
-    0
-  );
+export function computeWeightedScore(
+  dimensionScores: Record<DimensionKey, number>,
+  weights: Record<DimensionKey, number> = DIMENSION_WEIGHTS
+): number {
+  return DIMENSION_ORDER.reduce((sum, dim) => sum + dimensionScores[dim] * weights[dim], 0);
 }
 
-export function computeResult(answers: Answers): QuizResult {
+export function computeResult(
+  answers: Answers,
+  weights: Record<DimensionKey, number> = DIMENSION_WEIGHTS
+): QuizResult {
   const dimensionScores = computeDimensionScores(answers);
-  const weightedScore = computeWeightedScore(dimensionScores);
+  const weightedScore = computeWeightedScore(dimensionScores, weights);
   const level = levelFromWeightedScore(weightedScore);
   return {
     dimensionScores,

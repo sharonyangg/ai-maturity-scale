@@ -9,6 +9,7 @@ import { useQuizStore } from "@/lib/quiz-store";
 import { QUESTIONS_BY_ID, QUESTION_PAGES } from "@/lib/scoring/questions";
 import { encodeAnswers, encodePostResult } from "@/lib/answer-codec";
 import { isCompanyInfoValid, validateQuestionAnswer } from "@/lib/validation";
+import { useScoringConfig } from "@/lib/scoring/use-scoring-config";
 
 const DIMENSION_COUNT = QUESTION_PAGES.length;
 
@@ -16,6 +17,7 @@ export default function QuizStepPage() {
   const params = useParams<{ mode: string; step: string }>();
   const router = useRouter();
   const { companyInfo, answers, prevAnswers } = useQuizStore();
+  const { config } = useScoringConfig();
   const isPost = params.mode === "post";
   const uploadStep = isPost ? 1 : null;
   const dimensionOffset = isPost ? 2 : 1;
@@ -83,7 +85,11 @@ export default function QuizStepPage() {
                 className="animate-fade-up"
                 style={{ animationDelay: `${index * 60}ms` }}
               >
-                <QuestionField question={QUESTIONS_BY_ID[id]} showError={showErrors} />
+                <QuestionField
+                  question={QUESTIONS_BY_ID[id]}
+                  title={config.questionTitles[id]}
+                  showError={showErrors}
+                />
               </div>
             ))}
           </div>

@@ -21,9 +21,11 @@ function DeltaBadge({ delta }: { delta: number }) {
 export function DimensionBreakdown({
   scores,
   prevScores,
+  weights = DIMENSION_WEIGHTS,
 }: {
   scores: Record<DimensionKey, number>;
   prevScores?: Record<DimensionKey, number>;
+  weights?: Record<DimensionKey, number>;
 }) {
   return (
     <div className="space-y-4">
@@ -35,7 +37,7 @@ export function DimensionBreakdown({
               <span className="flex items-baseline gap-1.5">
                 <span className="text-lg font-medium text-black">{DIMENSION_LABELS[dim]}</span>
                 <span className="rounded-full bg-olive-900/5 px-1.5 py-0.5 text-base text-gray-500">
-                  權重 {DIMENSION_WEIGHTS[dim] * 100}%
+                  權重 {Math.round(weights[dim] * 100)}%
                 </span>
               </span>
               <span className="flex items-baseline gap-2">

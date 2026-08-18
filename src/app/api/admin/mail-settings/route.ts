@@ -1,0 +1,80 @@
+import { NextResponse } from "next/server";
+import {
+  readMailSettings,
+  resetMailSettings,
+  writeMailSettings,
+  type MailSettingsOverrides,
+} from "@/lib/mail-settings-store";
+
+// 要用 fs 讀寫本機檔案，不能跑在 edge runtime。
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/** 密碼絕不在 GET 回應裡明文帶出去，只回傳「有沒有設定」讓前端顯示提示 */
+function toPublicView(overrides: MailSettingsOverrides) {
+  return {
+    smtpHost: overrides.smtpHost ?? "",
+    smtpPort: overrides.smtpPort ?? Number(process.env.SMTP_PORT ?? 587),
+    smtpUser: overrides.smtpUser ?? "",
+    smtpFrom: overrides.smtpFrom ?? "",
+    ccEmail: overrides.ccEmail ?? "",
+    hasPassword: Boolean(overrides.smtpPass || process.env.SMTP_PASS),
+    usingEnvFallback: {
+      host: !overrides.smtpHost && Boolean(process.env.SMTP_HOST),
+      user: !overrides.smtpUser && Boolean(process.env.SMTP_USER),
+      pass: !overrides.smtpPass && Boolean(process.env.SMTP_PASS),
+    },
+  };
+}
+
+export async function GET() {
+  return NextResponse.json(toPublicView(readMailSettings()));
+}
+
+interface MailSettingsBody {
+  smtpHost?: string;
+  smtpPort?: number | string;
+  smtpUser?: string;
+  smtpPass?: string;
+  smtpFrom?: string;
+  ccEmail?: string;
+}
+
+export async function PUT(request: Request) {
+  let body: MailSettingsBody;
+  try {
+    body = (await request.json()) as MailSettingsBody;
+  } catch {
+    return NextResponse.json({ ok: false, error: "請求格式錯誤" }, { status: 400 });
+  }
+
+  if (body.ccEmail && body.ccEmail.trim() && !EMAIL_RE.test(body.ccEmail.trim())) {
+    return NextResponse.json({ ok: false, error: "副本收件 email 格式不正確" }, { status: 400 });
+  }
+
+  const port = body.smtpPort !== undefined && body.smtpPort !== "" ? Number(body.smtpPort) : undefined;
+  if (port !== undefined && (!Number.isFinite(port) || port <= 0)) {
+    return NextResponse.json({ ok: false, error: "SMTP 連接埠必須是正整數" }, { status: 400 });
+  }
+
+  const current = readMailSettings();
+  const next: MailSettingsOverrides = {
+    smtpHost: body.smtpHost?.trim() || undefined,
+    smtpPort: port,
+    smtpUser: body.smtpUser?.trim() || undefined,
+    // 密碼欄位留空＝不變更，沿用原本存的值（不管是後台設定過的，還是這次也還是空）
+    smtpPass: body.smtpPass?.trim() ? body.smtpPass.trim() : current.smtpPass,
+    smtpFrom: body.smtpFrom?.trim() || undefined,
+    ccEmail: body.ccEmail?.trim() || undefined,
+  };
+
+  writeMailSettings(next);
+  return NextResponse.json(toPublicView(next));
+}
+
+export async function DELETE() {
+  resetMailSettings();
+  return NextResponse.json(toPublicView({}));
+}

@@ -12,12 +12,12 @@ import {
   DIMENSION_DESCRIPTIONS,
   DIMENSION_LABELS,
   DIMENSION_ORDER,
-  DIMENSION_WEIGHTS,
   LEVEL_COLORS,
   LEVEL_DESCRIPTIONS,
   LEVEL_NAMES,
 } from "@/lib/scoring/dimensions";
 import { buildWeakestDimensionNote, LEVEL_COMMENTARY } from "@/lib/scoring/commentary";
+import { useScoringConfig } from "@/lib/scoring/use-scoring-config";
 import { DimensionRadarChart } from "@/components/result/DimensionRadarChart";
 import { DimensionBreakdown } from "@/components/result/DimensionBreakdown";
 import { DimensionNotes } from "@/components/result/DimensionNotes";
@@ -37,6 +37,7 @@ export default function ResultPage() {
   const [downloading, setDownloading] = useState(false);
   const [emailStatus, setEmailStatus] = useState<"idle" | "sending" | "sent" | "skipped" | "failed">("idle");
   const chartContainerRef = useRef<HTMLDivElement>(null);
+  const { config } = useScoringConfig();
 
   // 測驗一送出、結果頁一打開就自動把報告寄到填答時留的 email；用 sessionStorage 記錄
   // 這個結果連結是否已經寄過，避免重新整理頁面就再寄一次。
@@ -111,13 +112,13 @@ export default function ResultPage() {
     );
   }
 
-  const result = computeResult(answers);
-  const prevResult = prevAnswers ? computeResult(prevAnswers) : null;
+  const result = computeResult(answers, config.dimensionWeights);
+  const prevResult = prevAnswers ? computeResult(prevAnswers, config.dimensionWeights) : null;
   const color = LEVEL_COLORS[result.level];
   const commentary = LEVEL_COMMENTARY[result.level];
   const weakestNote = buildWeakestDimensionNote(result.dimensionScores);
   const weightSummary = DIMENSION_ORDER.map(
-    (dim) => `${DIMENSION_LABELS[dim]} ${DIMENSION_WEIGHTS[dim] * 100}%`
+    (dim) => `${DIMENSION_LABELS[dim]} ${Math.round(config.dimensionWeights[dim] * 100)}%`
   ).join("、");
 
   const comparison = prevResult ? compareDimensionScores(prevResult.dimensionScores, result.dimensionScores) : null;
@@ -144,6 +145,8 @@ export default function ResultPage() {
         answers,
         chartSnapshot,
         prevAnswers: prevAnswers ?? undefined,
+        questionTitles: config.questionTitles,
+        dimensionWeights: config.dimensionWeights,
       });
     } finally {
       setDownloading(false);
@@ -255,7 +258,11 @@ export default function ResultPage() {
             </div>
             <div>
               <h2 className="mb-4 text-2xl font-semibold text-black">五大構面數據</h2>
-              <DimensionBreakdown scores={result.dimensionScores} prevScores={prevResult?.dimensionScores} />
+              <DimensionBreakdown
+                scores={result.dimensionScores}
+                prevScores={prevResult?.dimensionScores}
+                weights={config.dimensionWeights}
+              />
               <p className="mt-4 text-sm text-gray-500">各構面權重：{weightSummary}。</p>
             </div>
           </div>

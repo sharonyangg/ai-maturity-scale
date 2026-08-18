@@ -101,19 +101,26 @@ function checkboxLine(checked: boolean, label: string): Paragraph {
   });
 }
 
-function questionContent(question: Question, answer: Answers[string], questionNumber: string): (Paragraph | Table)[] {
+function questionContent(
+  question: Question,
+  answer: Answers[string],
+  questionNumber: string,
+  title: string
+): (Paragraph | Table)[] {
   const titleParagraph = new Paragraph({
     spacing: { after: 60 },
-    children: [
-      new TextRun({ text: `${questionNumber}.${question.title}`, bold: true, size: 22, font: FONT }),
-    ],
+    children: [new TextRun({ text: `${questionNumber}.${title}`, bold: true, size: 22, font: FONT })],
   });
 
   const selected = typeof answer === "string" ? answer : undefined;
   return [titleParagraph, ...question.options.map((opt) => checkboxLine(opt.value === selected, opt.label))];
 }
 
-function dimensionAnswerTable(dimension: DimensionKey, answers: Answers): Table {
+function dimensionAnswerTable(
+  dimension: DimensionKey,
+  answers: Answers,
+  questionTitles: Record<string, string>
+): Table {
   const questionIds = QUESTION_PAGES.find((p) => p.dimension === dimension)!.questionIds;
 
   const rows = questionIds.map((id) => {
@@ -130,7 +137,7 @@ function dimensionAnswerTable(dimension: DimensionKey, answers: Answers): Table 
         }),
         new TableCell({
           width: { size: 85, type: WidthType.PERCENTAGE },
-          children: questionContent(question, answers[id], id),
+          children: questionContent(question, answers[id], id, questionTitles[id] ?? question.title),
         }),
       ],
     });
@@ -161,18 +168,23 @@ export interface DocxExportParams {
   chartSnapshot: PngSnapshot | null;
   /** 有值代表這是後測報告，會加上前測後測比較彙總表與比較雷達圖說明 */
   prevAnswers?: Answers;
+  /** 後台若有改過題目文字／構面權重，傳進來覆蓋預設值；沒傳就用 questions.ts / dimensions.ts 的預設值 */
+  questionTitles?: Record<string, string>;
+  dimensionWeights?: Record<DimensionKey, number>;
 }
 
 /** 純 docx 物件組裝，不碰任何瀏覽器專屬 API，client（下載）與 server（寄信）都能用 */
 export function buildResultDocument(params: DocxExportParams): Document {
   const { result, companyInfo, answers, chartSnapshot, prevAnswers } = params;
+  const questionTitles = params.questionTitles ?? {};
+  const dimensionWeights = params.dimensionWeights ?? DIMENSION_WEIGHTS;
   const isPost = Boolean(prevAnswers);
-  const prevResult = prevAnswers ? computeResult(prevAnswers) : null;
+  const prevResult = prevAnswers ? computeResult(prevAnswers, dimensionWeights) : null;
 
   const commentary = LEVEL_COMMENTARY[result.level];
   const weakestNote = buildWeakestDimensionNote(result.dimensionScores);
   const weightSummary = DIMENSION_ORDER.map(
-    (dim) => `${DIMENSION_LABELS[dim]} ${DIMENSION_WEIGHTS[dim] * 100}%`
+    (dim) => `${DIMENSION_LABELS[dim]} ${Math.round(dimensionWeights[dim] * 100)}%`
   ).join("、");
   const dateStamp = new Date().toLocaleDateString("zh-TW", {
     year: "numeric",
@@ -306,7 +318,7 @@ export function buildResultDocument(params: DocxExportParams): Document {
 
   const answerSheetBlocks = DIMENSION_ORDER.flatMap((dim) => [
     shadedBar(REPORT_SECTION_TITLES[dim]),
-    dimensionAnswerTable(dim, answers),
+    dimensionAnswerTable(dim, answers, questionTitles),
   ]);
 
   const companyDetailRows = [
