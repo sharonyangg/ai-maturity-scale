@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import {
+  getEffectiveMailSettings,
   readMailSettings,
   resetMailSettings,
   writeMailSettings,
@@ -12,20 +13,17 @@ export const dynamic = "force-dynamic";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-/** 密碼絕不在 GET 回應裡明文帶出去，只回傳「有沒有設定」讓前端顯示提示 */
-function toPublicView(overrides: MailSettingsOverrides) {
+/** 密碼絕不在回應裡明文帶出去，只回傳「有沒有設定」；其他欄位直接回傳目前真正生效的值
+ * （不管是後台設定過的，還是退回環境變數的），前端框框裡就能直接顯示現在用的是哪個。 */
+async function publicView() {
+  const effective = await getEffectiveMailSettings();
   return {
-    smtpHost: overrides.smtpHost ?? "",
-    smtpPort: overrides.smtpPort ?? Number(process.env.SMTP_PORT ?? 587),
-    smtpUser: overrides.smtpUser ?? "",
-    smtpFrom: overrides.smtpFrom ?? "",
-    ccEmail: overrides.ccEmail ?? "",
-    hasPassword: Boolean(overrides.smtpPass || process.env.SMTP_PASS),
-    usingEnvFallback: {
-      host: !overrides.smtpHost && Boolean(process.env.SMTP_HOST),
-      user: !overrides.smtpUser && Boolean(process.env.SMTP_USER),
-      pass: !overrides.smtpPass && Boolean(process.env.SMTP_PASS),
-    },
+    smtpHost: effective.smtpHost,
+    smtpPort: effective.smtpPort,
+    smtpUser: effective.smtpUser,
+    smtpFrom: effective.smtpFrom,
+    ccEmail: effective.ccEmail,
+    hasPassword: Boolean(effective.smtpPass),
   };
 }
 
@@ -40,7 +38,7 @@ function serverError(err: unknown) {
 
 export async function GET() {
   try {
-    return noStore(toPublicView(await readMailSettings()));
+    return noStore(await publicView());
   } catch (err) {
     return serverError(err);
   }
@@ -85,7 +83,7 @@ export async function PUT(request: Request) {
     };
 
     await writeMailSettings(next);
-    return noStore(toPublicView(next));
+    return noStore(await publicView());
   } catch (err) {
     return serverError(err);
   }
@@ -94,7 +92,7 @@ export async function PUT(request: Request) {
 export async function DELETE() {
   try {
     await resetMailSettings();
-    return noStore(toPublicView({}));
+    return noStore(await publicView());
   } catch (err) {
     return serverError(err);
   }

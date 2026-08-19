@@ -37,9 +37,10 @@ yarn-error.log*
 # vercel
 .vercel
 
-# 後台編輯的題目文字／權重覆寫檔、寄信帳密設定（執行期產生，不要進版控）
+# 後台編輯的題目文字／權重覆寫檔、寄信帳密設定、後台密碼（執行期產生，不要進版控）
 /data/scoring-config.json
 /data/mail-settings.json
+/data/admin-auth.json
 
 # typescript
 *.tsbuildinfo

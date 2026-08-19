@@ -6,12 +6,22 @@ import { DIMENSION_LABELS, DIMENSION_ORDER } from "@/lib/scoring/dimensions";
 import { QUESTION_PAGES } from "@/lib/scoring/questions";
 import { defaultScoringConfig, type EffectiveScoringConfig } from "@/lib/scoring/use-scoring-config";
 import { MailSettingsForm } from "@/components/admin/MailSettingsForm";
+import { ChangePasswordForm } from "@/components/admin/ChangePasswordForm";
+import { AdminAuthGate } from "@/components/admin/AdminAuthGate";
 import type { DimensionKey } from "@/lib/scoring/types";
 
 const CARD_CLASS =
   "rounded-[2rem] border border-white/60 bg-white/40 p-5 shadow-[0_8px_32px_rgba(148,163,223,0.15)] backdrop-blur-xl transition-all duration-300 sm:p-6";
 
 export default function AdminPage() {
+  return (
+    <AdminAuthGate>
+      <AdminPageContent />
+    </AdminAuthGate>
+  );
+}
+
+function AdminPageContent() {
   const [config, setConfig] = useState<EffectiveScoringConfig>(defaultScoringConfig);
   const [weightInputs, setWeightInputs] = useState<Record<DimensionKey, string>>(() =>
     Object.fromEntries(DIMENSION_ORDER.map((dim) => [dim, "20"])) as Record<DimensionKey, string>
@@ -115,6 +125,8 @@ export default function AdminPage() {
         </div>
 
         <MailSettingsForm />
+
+        <ChangePasswordForm />
 
         <div className={CARD_CLASS}>
           <h2 className="mb-3 text-2xl font-semibold text-slate-700">五大構面權重</h2>

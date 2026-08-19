@@ -41,16 +41,8 @@ html {
   }
 }
 
-html {
-  /* 手機瀏覽器（尤其 LINE／iOS 內建瀏覽器）的網址列、工具列會動態收合，
-   * background-attachment: fixed 在這種情況下常常在畫面上下緣露出沒蓋到的空白，
-   * 所以背景改鋪在 html、跟著文件捲動，並用 min-height 確保鋪滿整個頁面高度。 */
-  min-height: 100%;
-  background: linear-gradient(to bottom right, #ffe4e6, #ccfbf1, #ede9fe);
-}
-
 body {
-  min-height: 100%;
+  background: linear-gradient(to bottom right, #ffe4e6, #ccfbf1, #ede9fe) fixed;
   color: var(--foreground);
   font-family: var(--font-body);
 }
