@@ -58,8 +58,8 @@ export const LEVEL_COLORS: Record<Level, { from: string; to: string; glow: strin
   4: { from: "#5eead4", to: "#2dd4bf", glow: "rgba(45,212,191,0.45)" }, // teal-300 → teal-400，成熟期
 };
 
-/** 加權總分（0～100 分）分級門檻：0~19／20~44／45~56／57~100 */
-export const LEVEL_THRESHOLDS: [number, number, number] = [19, 44, 56];
+/** 加權總分（0～100 分）分級門檻：0~25／26~50／51~75／76~100 */
+export const LEVEL_THRESHOLDS: [number, number, number] = [25, 50, 75];
 
 export function levelFromWeightedScore(weightedScore: number): Level {
   const [t1, t2, t3] = LEVEL_THRESHOLDS;
