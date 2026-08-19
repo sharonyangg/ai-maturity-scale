@@ -237,7 +237,8 @@ export function MailSettingsForm() {
               <div>
                 <p className="font-semibold text-slate-700">Gmail：</p>
                 <p className="mt-1">
-                  Google 帳戶 → 安全性 → 兩步驟驗證 → 最下面「應用程式密碼」，一樣是產生一組專用密碼。
+                  Google 帳戶 → 安全性 → 兩步驟驗證 → 最下面「應用程式密碼」，一樣是產生一組專用密碼；找不到的話，也可以直接在 Google
+                  帳戶設定最上面的搜尋欄搜尋「應用程式密碼」。
                 </p>
               </div>
             </div>

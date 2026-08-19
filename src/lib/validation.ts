@@ -6,17 +6,24 @@ export type CompanyInfoErrors = Partial<Record<keyof CompanyInfo, string>>;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_RE = /^[0-9+\-() ]{7,20}$/;
 
-/**
- * 目前先不強制必填（方便測試），只在有填寫時檢查 email／電話格式。
- * 之後要恢復必填檢查時，把對應欄位的 `if (!info.xxx) errors.xxx = "..."` 加回來即可。
- */
 export function validateCompanyInfo(info: CompanyInfo): CompanyInfoErrors {
   const errors: CompanyInfoErrors = {};
 
-  if (info.email?.trim() && !EMAIL_RE.test(info.email.trim())) {
+  if (!info.companyName?.trim()) errors.companyName = "請填寫公司/機構名稱";
+  if (!info.city?.trim()) errors.city = "請選擇登記地址所處縣市";
+  if (!info.employeeScale?.trim()) errors.employeeScale = "請選擇員工人數規模";
+  if (!info.respondentName?.trim()) errors.respondentName = "請填寫姓名";
+  if (!info.respondentTitle?.trim()) errors.respondentTitle = "請填寫職稱與職級";
+
+  if (!info.email?.trim()) {
+    errors.email = "請填寫 E-mail";
+  } else if (!EMAIL_RE.test(info.email.trim())) {
     errors.email = "格式錯誤，請輸入正確的 E-mail";
   }
-  if (info.phone?.trim() && !PHONE_RE.test(info.phone.trim())) {
+
+  if (!info.phone?.trim()) {
+    errors.phone = "請填寫電話";
+  } else if (!PHONE_RE.test(info.phone.trim())) {
     errors.phone = "格式錯誤，請輸入正確的電話號碼";
   }
 

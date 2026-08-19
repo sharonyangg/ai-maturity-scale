@@ -172,9 +172,9 @@ export default function ResultPage() {
   return (
     <div className="min-h-screen px-4 py-8 sm:py-12">
       <div className="mx-auto max-w-4xl space-y-6">
-        {/* Hero：最終加權總分與企業成熟度等級，窄一點、置中，像個徽章而不是滿版橫幅 */}
+        {/* Hero：最終加權總分與企業成熟度等級，跟下面卡片同寬對齊 */}
         <div
-          className="animate-fade-up mx-auto max-w-xl rounded-[2rem] px-6 py-6 text-center text-white shadow-[0_12px_32px_-12px_var(--glow)] sm:px-8 sm:py-7"
+          className="animate-fade-up rounded-[2rem] px-6 py-5 text-center text-white shadow-[0_12px_32px_-12px_var(--glow)] sm:px-8 sm:py-6"
           style={
             {
               backgroundImage: `linear-gradient(135deg, ${color.from}, ${color.to})`,
@@ -188,15 +188,15 @@ export default function ResultPage() {
           <p className="mt-2 text-base font-medium text-white/80">
             您的企業成熟度等級{isPost ? "（後測）" : "（前測）"}
           </p>
-          <div className="mt-2 flex items-baseline justify-center gap-2">
+          <div className="mt-1.5 flex items-baseline justify-center gap-2">
             <span className="font-heading text-5xl font-extrabold tabular-nums sm:text-6xl">
               {result.weightedScore.toFixed(1)}
             </span>
             <span className="text-lg text-white/80">/ 100 分</span>
           </div>
-          <h1 className="mt-2 text-2xl font-bold break-words sm:text-3xl">{result.levelName}</h1>
+          <h1 className="mt-1.5 text-2xl font-bold break-words sm:text-3xl">{result.levelName}</h1>
           <p className="mt-1 text-base text-white/90">{LEVEL_DESCRIPTIONS[result.level]}</p>
-          <div className="mx-auto mt-4 max-w-xs">
+          <div className="mx-auto mt-3 max-w-xs">
             <div className="h-3 rounded-full bg-white/20 shadow-inner">
               <div
                 className="h-3 rounded-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.8)] transition-all duration-700 ease-out"
@@ -279,9 +279,6 @@ export default function ResultPage() {
                 {weakestNote}
               </p>
               <p className="mt-4 text-lg leading-relaxed text-slate-600">{commentary.strategyAdvice}</p>
-              <p className="mt-4 rounded-[1.5rem] border border-rose-200 bg-rose-100/60 p-4 text-lg leading-relaxed font-medium text-rose-700 backdrop-blur-md">
-                下一步：請依據上述弱項構面，聯繫窗口安排後續一對一輔導，共同擬定包含具體任務、負責人與期限的改善行動計畫。
-              </p>
             </div>
           </div>
         </div>
