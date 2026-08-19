@@ -42,7 +42,10 @@ export async function svgElementToPngBytes(
 
     const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/png"));
     if (!blob) throw new Error("canvas 轉 PNG 失敗");
-    return { bytes: new Uint8Array(await blob.arrayBuffer()), width, height };
+    // width/height 要回傳畫布的實際像素尺寸（canvas.width/height，已經乘上 scale），
+    // 不能回傳 svg 原本的 CSS 尺寸，否則後續 docx 裡用來計算圖片顯示大小的
+    // fitWithinBox 會拿到跟實際圖片像素對不起來的來源尺寸。
+    return { bytes: new Uint8Array(await blob.arrayBuffer()), width: canvas.width, height: canvas.height };
   } finally {
     URL.revokeObjectURL(svgUrl);
   }

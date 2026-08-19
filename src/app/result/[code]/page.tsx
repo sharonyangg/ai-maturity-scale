@@ -41,8 +41,13 @@ export default function ResultPage() {
 
   // 測驗一送出、結果頁一打開就自動把報告寄到填答時留的 email；用 sessionStorage 記錄
   // 這個結果連結是否已經寄過，避免重新整理頁面就再寄一次。
+  //
+  // 一定要等 configLoaded 才能做：頁面在權重設定抓回來之前只會顯示「結果計算中…」，
+  // 這時候雷達圖那個 div 根本還沒被畫出來、chartContainerRef.current 是 null。
+  // 如果沒等，這個 effect 會在第一次 mount（configLoaded 還是 false）就先跑掉，抓不到圖表，
+  // 寄出去的報告永遠不會有雷達圖——而且依賴陣列若沒放 configLoaded，等設定真的載入後也不會再跑一次。
   useEffect(() => {
-    if (!answers || typeof window === "undefined") return;
+    if (!answers || !configLoaded || typeof window === "undefined") return;
     const sentKey = `emailed:${params.code}${isPost ? ":post" : ":pre"}`;
 
     let cancelled = false;
@@ -96,7 +101,7 @@ export default function ResultPage() {
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- 每個結果連結只在第一次載入時嘗試寄送一次
-  }, [params.code, isPost]);
+  }, [params.code, isPost, configLoaded]);
 
   if (!answers) {
     return (

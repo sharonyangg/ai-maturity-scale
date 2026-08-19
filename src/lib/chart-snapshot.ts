@@ -16,6 +16,11 @@ export function pngBytesToBase64(bytes: Uint8Array): string {
  * 供下載按鈕（圖表已經畫好，通常一次就抓到）與結果頁一進來就自動觸發的寄信流程
  * （圖表可能還沒 layout 完、寬高是 0）共用；後者需要輪詢等圖表長出實際尺寸。
  */
+/** Recharts 的 <Radar> 進場動畫時間（見 DimensionRadarChart 的 animationDuration），
+ * 抓圖前要等它跑完，不然雷達圖的面積／線還在從中心點長出來，抓到的會是幾乎全空、
+ * 只剩座標軸格線跟一個中心點的圖。 */
+const CHART_ANIMATION_MS = 900;
+
 export async function captureLargestChartSvg(
   container: HTMLElement | null,
   opts: { attempts?: number; intervalMs?: number; minSize?: number } = {}
@@ -29,6 +34,7 @@ export async function captureLargestChartSvg(
     const svgs = Array.from(container.querySelectorAll("svg"));
     const svg = svgs.sort((a, b) => b.clientWidth * b.clientHeight - a.clientWidth * a.clientHeight)[0];
     if (svg && svg.clientWidth >= minSize && svg.clientHeight >= minSize) {
+      await new Promise((resolve) => setTimeout(resolve, CHART_ANIMATION_MS + 150));
       return svgElementToPngBytes(svg);
     }
     await new Promise((resolve) => setTimeout(resolve, intervalMs));
