@@ -7,6 +7,9 @@ import {
 } from "@/lib/scoring/config-store";
 import { QUESTIONS } from "@/lib/scoring/questions";
 import { DIMENSION_ORDER } from "@/lib/scoring/dimensions";
+import type { Level } from "@/lib/scoring/types";
+
+const VALID_LEVELS: Level[] = [1, 2, 3, 4];
 
 // 要用 fs 讀寫本機檔案，不能跑在 edge runtime。
 export const runtime = "nodejs";
@@ -71,8 +74,34 @@ export async function PUT(request: Request) {
     }
   }
 
+  const levelRanges: ScoringOverrides["levelRanges"] = {};
+  if (body.levelRanges) {
+    for (const [levelKey, range] of Object.entries(body.levelRanges)) {
+      const level = Number(levelKey) as Level;
+      if (!VALID_LEVELS.includes(level)) {
+        return NextResponse.json({ ok: false, error: `未知的等級：${levelKey}` }, { status: 400 });
+      }
+      if (
+        !range ||
+        typeof range.min !== "number" ||
+        typeof range.max !== "number" ||
+        !Number.isFinite(range.min) ||
+        !Number.isFinite(range.max) ||
+        range.min < 0 ||
+        range.max > 100 ||
+        range.min > range.max
+      ) {
+        return NextResponse.json(
+          { ok: false, error: `等級 ${levelKey} 的分數區間不正確（要是 0～100 之間，且最低分不能大於最高分）` },
+          { status: 400 }
+        );
+      }
+      levelRanges[level] = { min: range.min, max: range.max };
+    }
+  }
+
   try {
-    await writeOverrides({ questionTitles, dimensionWeights });
+    await writeOverrides({ questionTitles, dimensionWeights, levelRanges });
     return noStore(await getEffectiveConfig());
   } catch (err) {
     return serverError(err);

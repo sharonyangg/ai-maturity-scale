@@ -15,11 +15,19 @@ import {
 import { encodeAnswers } from "./answer-codec";
 import { pretestMarkerLine } from "./docx-code";
 import { COMPANY_FIELD_LABELS, type CompanyInfo } from "./quiz-store";
-import { DIMENSION_DESCRIPTIONS, DIMENSION_LABELS, DIMENSION_ORDER, DIMENSION_WEIGHTS, LEVEL_NAMES } from "./scoring/dimensions";
+import {
+  DEFAULT_LEVEL_RANGES,
+  DIMENSION_DESCRIPTIONS,
+  DIMENSION_LABELS,
+  DIMENSION_ORDER,
+  DIMENSION_WEIGHTS,
+  LEVEL_NAMES,
+  type LevelRange,
+} from "./scoring/dimensions";
 import { buildWeakestDimensionNote, LEVEL_COMMENTARY } from "./scoring/commentary";
 import { compareDimensionScores, computeResult } from "./scoring/engine";
 import { QUESTIONS_BY_ID, QUESTION_PAGES, REPORT_SECTION_TITLES } from "./scoring/questions";
-import type { Answers, DimensionKey, Question, QuizResult } from "./scoring/types";
+import type { Answers, DimensionKey, Level, Question, QuizResult } from "./scoring/types";
 import type { PngSnapshot } from "./svg-to-png";
 
 const ACCENT = "3D4E17"; // 深橄欖綠，docx 顏色字串不含 #
@@ -168,9 +176,10 @@ export interface DocxExportParams {
   chartSnapshot: PngSnapshot | null;
   /** 有值代表這是後測報告，會加上前測後測比較彙總表與比較雷達圖說明 */
   prevAnswers?: Answers;
-  /** 後台若有改過題目文字／構面權重，傳進來覆蓋預設值；沒傳就用 questions.ts / dimensions.ts 的預設值 */
+  /** 後台若有改過題目文字／構面權重／等級分數區間，傳進來覆蓋預設值；沒傳就用 questions.ts / dimensions.ts 的預設值 */
   questionTitles?: Record<string, string>;
   dimensionWeights?: Record<DimensionKey, number>;
+  levelRanges?: Record<Level, LevelRange>;
 }
 
 /** 純 docx 物件組裝，不碰任何瀏覽器專屬 API，client（下載）與 server（寄信）都能用 */
@@ -178,8 +187,9 @@ export function buildResultDocument(params: DocxExportParams): Document {
   const { result, companyInfo, answers, chartSnapshot, prevAnswers } = params;
   const questionTitles = params.questionTitles ?? {};
   const dimensionWeights = params.dimensionWeights ?? DIMENSION_WEIGHTS;
+  const levelRanges = params.levelRanges ?? DEFAULT_LEVEL_RANGES;
   const isPost = Boolean(prevAnswers);
-  const prevResult = prevAnswers ? computeResult(prevAnswers, dimensionWeights) : null;
+  const prevResult = prevAnswers ? computeResult(prevAnswers, dimensionWeights, levelRanges) : null;
 
   const commentary = LEVEL_COMMENTARY[result.level];
   const weakestNote = buildWeakestDimensionNote(result.dimensionScores);

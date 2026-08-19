@@ -1,6 +1,13 @@
-import { DIMENSION_ORDER, DIMENSION_WEIGHTS, LEVEL_NAMES, levelFromWeightedScore } from "./dimensions";
+import {
+  DEFAULT_LEVEL_RANGES,
+  DIMENSION_ORDER,
+  DIMENSION_WEIGHTS,
+  LEVEL_NAMES,
+  levelFromWeightedScore,
+  type LevelRange,
+} from "./dimensions";
 import { QUESTIONS } from "./questions";
-import type { Answers, DimensionKey, QuizResult } from "./types";
+import type { Answers, DimensionKey, Level, QuizResult } from "./types";
 
 /** 1～5 分的原始作答換算成 0～100 分（1→0、2→25、3→50、4→75、5→100） */
 function toPercent(rawValue: number): number {
@@ -52,11 +59,12 @@ export function computeWeightedScore(
 
 export function computeResult(
   answers: Answers,
-  weights: Record<DimensionKey, number> = DIMENSION_WEIGHTS
+  weights: Record<DimensionKey, number> = DIMENSION_WEIGHTS,
+  levelRanges: Record<Level, LevelRange> = DEFAULT_LEVEL_RANGES
 ): QuizResult {
   const dimensionScores = computeDimensionScores(answers);
   const weightedScore = computeWeightedScore(dimensionScores, weights);
-  const level = levelFromWeightedScore(weightedScore);
+  const level = levelFromWeightedScore(weightedScore, levelRanges);
   return {
     dimensionScores,
     weightedScore,

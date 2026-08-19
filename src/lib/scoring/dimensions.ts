@@ -58,13 +58,31 @@ export const LEVEL_COLORS: Record<Level, { from: string; to: string; glow: strin
   4: { from: "#5eead4", to: "#2dd4bf", glow: "rgba(45,212,191,0.45)" }, // teal-300 → teal-400，成熟期
 };
 
-/** 加權總分（0～100 分）分級門檻：0~25／26~50／51~75／76~100 */
-export const LEVEL_THRESHOLDS: [number, number, number] = [25, 50, 75];
+export interface LevelRange {
+  min: number;
+  max: number;
+}
 
-export function levelFromWeightedScore(weightedScore: number): Level {
-  const [t1, t2, t3] = LEVEL_THRESHOLDS;
-  if (weightedScore <= t1) return 1;
-  if (weightedScore <= t2) return 2;
-  if (weightedScore <= t3) return 3;
-  return 4;
+/** 四個等級各自的分數區間（0～100 分），後台可個別調整每個等級的最低分／最高分。 */
+export const DEFAULT_LEVEL_RANGES: Record<Level, LevelRange> = {
+  1: { min: 0, max: 25 },
+  2: { min: 26, max: 50 },
+  3: { min: 51, max: 75 },
+  4: { min: 76, max: 100 },
+};
+
+const LEVELS: Level[] = [1, 2, 3, 4];
+
+export function levelFromWeightedScore(
+  weightedScore: number,
+  ranges: Record<Level, LevelRange> = DEFAULT_LEVEL_RANGES
+): Level {
+  const matched = LEVELS.find((level) => weightedScore >= ranges[level].min && weightedScore <= ranges[level].max);
+  if (matched) return matched;
+
+  // 後台的區間如果被改到中間有空隙（例如等級二最高到 48、等級三從 51 開始），
+  // 分數剛好落在空隙裡就會找不到對應等級：退而求其次，挑「最低分不超過目前分數」裡門檻最高的等級。
+  const eligible = LEVELS.filter((level) => weightedScore >= ranges[level].min);
+  if (eligible.length > 0) return eligible[eligible.length - 1];
+  return 1;
 }

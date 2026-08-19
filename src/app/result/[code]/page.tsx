@@ -127,8 +127,8 @@ export default function ResultPage() {
     );
   }
 
-  const result = computeResult(answers, config.dimensionWeights);
-  const prevResult = prevAnswers ? computeResult(prevAnswers, config.dimensionWeights) : null;
+  const result = computeResult(answers, config.dimensionWeights, config.levelRanges);
+  const prevResult = prevAnswers ? computeResult(prevAnswers, config.dimensionWeights, config.levelRanges) : null;
   const color = LEVEL_COLORS[result.level];
   const commentary = LEVEL_COMMENTARY[result.level];
   const weakestNote = buildWeakestDimensionNote(result.dimensionScores);
@@ -162,6 +162,7 @@ export default function ResultPage() {
         prevAnswers: prevAnswers ?? undefined,
         questionTitles: config.questionTitles,
         dimensionWeights: config.dimensionWeights,
+        levelRanges: config.levelRanges,
       });
     } finally {
       setDownloading(false);

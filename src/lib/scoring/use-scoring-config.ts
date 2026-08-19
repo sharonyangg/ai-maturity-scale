@@ -2,23 +2,25 @@
 
 import { useEffect, useState } from "react";
 import { QUESTIONS } from "./questions";
-import { DIMENSION_WEIGHTS } from "./dimensions";
-import type { DimensionKey } from "./types";
+import { DEFAULT_LEVEL_RANGES, DIMENSION_WEIGHTS, type LevelRange } from "./dimensions";
+import type { DimensionKey, Level } from "./types";
 
 export interface EffectiveScoringConfig {
   questionTitles: Record<string, string>;
   dimensionWeights: Record<DimensionKey, number>;
+  levelRanges: Record<Level, LevelRange>;
 }
 
 export function defaultScoringConfig(): EffectiveScoringConfig {
   return {
     questionTitles: Object.fromEntries(QUESTIONS.map((q) => [q.id, q.title])),
     dimensionWeights: { ...DIMENSION_WEIGHTS },
+    levelRanges: { ...DEFAULT_LEVEL_RANGES },
   };
 }
 
 /**
- * 從 /api/config 抓後台目前設定的題目文字／構面權重（全站共用的覆寫值）。
+ * 從 /api/config 抓後台目前設定的題目文字／構面權重／等級分數區間（全站共用的覆寫值）。
  * 抓到之前先用程式內建的預設值顯示，避免畫面空白；抓取失敗也維持預設值。
  */
 export function useScoringConfig(): { config: EffectiveScoringConfig; loaded: boolean } {

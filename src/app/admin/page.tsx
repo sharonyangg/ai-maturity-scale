@@ -2,16 +2,17 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { DIMENSION_LABELS, DIMENSION_ORDER } from "@/lib/scoring/dimensions";
+import { DIMENSION_LABELS, DIMENSION_ORDER, LEVEL_NAMES } from "@/lib/scoring/dimensions";
 import { QUESTION_PAGES } from "@/lib/scoring/questions";
 import { defaultScoringConfig, type EffectiveScoringConfig } from "@/lib/scoring/use-scoring-config";
 import { MailSettingsForm } from "@/components/admin/MailSettingsForm";
 import { ChangePasswordForm } from "@/components/admin/ChangePasswordForm";
 import { AdminAuthGate } from "@/components/admin/AdminAuthGate";
-import type { DimensionKey } from "@/lib/scoring/types";
+import { AccordionSection } from "@/components/admin/AccordionSection";
+import type { DimensionKey, Level } from "@/lib/scoring/types";
 
-const CARD_CLASS =
-  "rounded-[2rem] border border-white/60 bg-white/40 p-5 shadow-[0_8px_32px_rgba(148,163,223,0.15)] backdrop-blur-xl transition-all duration-300 sm:p-6";
+const LEVELS: Level[] = [1, 2, 3, 4];
+type LevelRangeInputs = Record<Level, { min: string; max: string }>;
 
 export default function AdminPage() {
   return (
@@ -26,6 +27,9 @@ function AdminPageContent() {
   const [weightInputs, setWeightInputs] = useState<Record<DimensionKey, string>>(() =>
     Object.fromEntries(DIMENSION_ORDER.map((dim) => [dim, "20"])) as Record<DimensionKey, string>
   );
+  const [levelRangeInputs, setLevelRangeInputs] = useState<LevelRangeInputs>(() =>
+    Object.fromEntries(LEVELS.map((level) => [level, { min: "0", max: "0" }])) as LevelRangeInputs
+  );
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
@@ -36,6 +40,14 @@ function AdminPageContent() {
       Object.fromEntries(
         DIMENSION_ORDER.map((dim) => [dim, String(Math.round(data.dimensionWeights[dim] * 100))])
       ) as Record<DimensionKey, string>
+    );
+    setLevelRangeInputs(
+      Object.fromEntries(
+        LEVELS.map((level) => [
+          level,
+          { min: String(data.levelRanges[level].min), max: String(data.levelRanges[level].max) },
+        ])
+      ) as LevelRangeInputs
     );
   };
 
@@ -64,6 +76,31 @@ function AdminPageContent() {
     setWeightInputs((prev) => ({ ...prev, [dim]: value }));
   };
 
+  const setLevelRange = (level: Level, field: "min" | "max", value: string) => {
+    setLevelRangeInputs((prev) => ({ ...prev, [level]: { ...prev[level], [field]: value } }));
+  };
+
+  /** 區間有沒有中間留空隙、或跟上一級重疊——只是提醒，不會擋儲存 */
+  const levelRangeWarning = (() => {
+    for (const level of LEVELS) {
+      const min = Number(levelRangeInputs[level].min);
+      const max = Number(levelRangeInputs[level].max);
+      if (!Number.isFinite(min) || !Number.isFinite(max) || min > max) {
+        return `等級 ${level}（${LEVEL_NAMES[level]}）的最低分不能大於最高分`;
+      }
+    }
+    for (let i = 1; i < LEVELS.length; i++) {
+      const prevMax = Number(levelRangeInputs[LEVELS[i - 1]].max);
+      const currentMin = Number(levelRangeInputs[LEVELS[i]].min);
+      if (currentMin === prevMax + 1) continue;
+      if (currentMin > prevMax + 1) {
+        return `等級 ${LEVELS[i - 1]} 與等級 ${LEVELS[i]} 之間有分數區間沒被涵蓋到（${prevMax + 1} ~ ${currentMin - 1} 分）`;
+      }
+      return `等級 ${LEVELS[i - 1]} 與等級 ${LEVELS[i]} 的分數區間重疊了`;
+    }
+    return null;
+  })();
+
   const handleSave = async () => {
     setSaving(true);
     setMessage(null);
@@ -71,10 +108,16 @@ function AdminPageContent() {
       const dimensionWeights = Object.fromEntries(
         DIMENSION_ORDER.map((dim) => [dim, (Number(weightInputs[dim]) || 0) / 100])
       );
+      const levelRanges = Object.fromEntries(
+        LEVELS.map((level) => [
+          level,
+          { min: Number(levelRangeInputs[level].min) || 0, max: Number(levelRangeInputs[level].max) || 0 },
+        ])
+      );
       const res = await fetch("/api/config", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ questionTitles: config.questionTitles, dimensionWeights }),
+        body: JSON.stringify({ questionTitles: config.questionTitles, dimensionWeights, levelRanges }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -116,20 +159,23 @@ function AdminPageContent() {
 
   return (
     <div className="min-h-screen px-4 py-8 sm:py-12">
-      <div className="mx-auto max-w-4xl space-y-6">
+      <div className="mx-auto max-w-4xl space-y-4">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-slate-700 sm:text-4xl">題目與權重編輯</h1>
           <p className="mt-2 text-lg leading-relaxed text-slate-600">
-            修改後按「儲存」，所有人之後填答、算分數、產出報告都會套用新內容。
+            點各區塊標題展開／收合。修改後按最下面的「儲存」，所有人之後填答、算分數、產出報告都會套用新內容。
           </p>
         </div>
 
-        <MailSettingsForm />
+        <AccordionSection title="寄信設定">
+          <MailSettingsForm />
+        </AccordionSection>
 
-        <ChangePasswordForm />
+        <AccordionSection title="修改後台密碼">
+          <ChangePasswordForm />
+        </AccordionSection>
 
-        <div className={CARD_CLASS}>
-          <h2 className="mb-3 text-2xl font-semibold text-slate-700">五大構面權重</h2>
+        <AccordionSection title="五大構面權重">
           <div className="space-y-3">
             {DIMENSION_ORDER.map((dim) => (
               <label key={dim} className="flex items-center justify-between gap-4">
@@ -151,11 +197,46 @@ function AdminPageContent() {
           <p className={`mt-4 text-base font-medium ${weightSum === 100 ? "text-sky-700" : "text-red-600"}`}>
             權重總和：{weightSum}%{weightSum !== 100 && "（建議調整成剛好 100%）"}
           </p>
-        </div>
+        </AccordionSection>
+
+        <AccordionSection title="四個等級的分數區間">
+          <p className="mb-4 text-base leading-relaxed text-slate-600">
+            加權分數（0～100 分）落在哪個區間，就會判定成哪個等級；四個等級的最低分／最高分可以分別調整。
+          </p>
+          <div className="space-y-3">
+            {LEVELS.map((level) => (
+              <div key={level} className="flex flex-wrap items-center justify-between gap-3">
+                <span className="text-lg font-medium text-slate-700">
+                  Lv.{level}　{LEVEL_NAMES[level]}
+                </span>
+                <span className="flex items-center gap-2">
+                  <input
+                    type="number"
+                    min={0}
+                    max={100}
+                    value={levelRangeInputs[level].min}
+                    onChange={(e) => setLevelRange(level, "min", e.target.value)}
+                    className="w-20 rounded-lg border border-slate-300 px-3 py-2 text-right text-base text-slate-700 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/25"
+                  />
+                  <span className="text-lg text-slate-500">～</span>
+                  <input
+                    type="number"
+                    min={0}
+                    max={100}
+                    value={levelRangeInputs[level].max}
+                    onChange={(e) => setLevelRange(level, "max", e.target.value)}
+                    className="w-20 rounded-lg border border-slate-300 px-3 py-2 text-right text-base text-slate-700 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/25"
+                  />
+                  <span className="text-lg text-slate-500">分</span>
+                </span>
+              </div>
+            ))}
+          </div>
+          {levelRangeWarning && <p className="mt-4 text-base font-medium text-red-600">{levelRangeWarning}</p>}
+        </AccordionSection>
 
         {QUESTION_PAGES.map((page) => (
-          <div key={page.dimension} className={CARD_CLASS}>
-            <h2 className="mb-4 text-2xl font-semibold text-slate-700">{DIMENSION_LABELS[page.dimension]}</h2>
+          <AccordionSection key={page.dimension} title={DIMENSION_LABELS[page.dimension]}>
             <div className="space-y-4">
               {page.questionIds.map((id) => (
                 <label key={id} className="block">
@@ -169,7 +250,7 @@ function AdminPageContent() {
                 </label>
               ))}
             </div>
-          </div>
+          </AccordionSection>
         ))}
 
         {message && (

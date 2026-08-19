@@ -40,8 +40,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: "缺少作答資料" }, { status: 400 });
   }
 
-  const { questionTitles, dimensionWeights } = await getEffectiveConfig();
-  const result = computeResult(body.answers, dimensionWeights);
+  const { questionTitles, dimensionWeights, levelRanges } = await getEffectiveConfig();
+  const result = computeResult(body.answers, dimensionWeights, levelRanges);
   const chartSnapshot =
     body.chartPngBase64 && body.chartWidth && body.chartHeight
       ? {
@@ -60,6 +60,7 @@ export async function POST(request: Request) {
       prevAnswers: body.prevAnswers,
       questionTitles,
       dimensionWeights,
+      levelRanges,
     };
     const buffer = await buildResultDocxBuffer(params);
     const filename = resultDocxFilename(params);

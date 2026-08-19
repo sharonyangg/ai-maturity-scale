@@ -2,8 +2,6 @@
 
 import { useEffect, useState } from "react";
 
-const CARD_CLASS =
-  "rounded-[2rem] border border-white/60 bg-white/40 p-5 shadow-[0_8px_32px_rgba(148,163,223,0.15)] backdrop-blur-xl transition-all duration-300 sm:p-6";
 const INPUT_CLASS =
   "w-full rounded-lg border border-slate-300 px-3 py-2 text-base text-slate-700 focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500/25";
 
@@ -98,16 +96,11 @@ export function MailSettingsForm() {
   };
 
   if (loading) {
-    return (
-      <div className={CARD_CLASS}>
-        <p className="text-base text-slate-500">寄信設定讀取中…</p>
-      </div>
-    );
+    return <p className="text-base text-slate-500">寄信設定讀取中…</p>;
   }
 
   return (
-    <div className={CARD_CLASS}>
-      <h2 className="mb-1 text-2xl font-semibold text-slate-700">寄信設定</h2>
+    <>
       <p className="mb-4 text-base leading-relaxed text-slate-600">
         「發信」是系統用來寄信的信箱帳密；「副本收件」是額外固定加寄一份給指定信箱，方便留存紀錄。
       </p>
@@ -287,6 +280,6 @@ export function MailSettingsForm() {
           {saving ? "儲存中…" : "儲存寄信設定"}
         </button>
       </div>
-    </div>
+    </>
   );
 }

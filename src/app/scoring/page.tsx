@@ -1,12 +1,5 @@
 import Link from "next/link";
-import {
-  DIMENSION_LABELS,
-  DIMENSION_ORDER,
-  LEVEL_COLORS,
-  LEVEL_DESCRIPTIONS,
-  LEVEL_NAMES,
-  LEVEL_THRESHOLDS,
-} from "@/lib/scoring/dimensions";
+import { DIMENSION_LABELS, DIMENSION_ORDER, LEVEL_COLORS, LEVEL_DESCRIPTIONS, LEVEL_NAMES } from "@/lib/scoring/dimensions";
 import { getEffectiveConfig } from "@/lib/scoring/config-store";
 import type { Level } from "@/lib/scoring/types";
 
@@ -18,18 +11,9 @@ const CARD_CLASS =
 
 const LEVELS: Level[] = [1, 2, 3, 4];
 
-/** 依 LEVEL_THRESHOLDS 換算成給使用者看的分數區間 */
-function levelScoreRange(level: Level): string {
-  const [t1, t2, t3] = LEVEL_THRESHOLDS;
-  if (level === 1) return `0 ~ ${t1} 分`;
-  if (level === 2) return `${t1 + 1} ~ ${t2} 分`;
-  if (level === 3) return `${t2 + 1} ~ ${t3} 分`;
-  return `${t3 + 1} ~ 100 分`;
-}
-
 export default async function ScoringGuidePage() {
   // 這頁是 server component，可以直接讀後台設定檔，不用額外打 API。
-  const { dimensionWeights } = await getEffectiveConfig();
+  const { dimensionWeights, levelRanges } = await getEffectiveConfig();
   const maxWeight = Math.max(...Object.values(dimensionWeights));
   const weightedFormula = DIMENSION_ORDER.map(
     (dim) => `${DIMENSION_LABELS[dim]}×${Math.round(dimensionWeights[dim] * 100)}%`
@@ -100,7 +84,7 @@ export default async function ScoringGuidePage() {
                     className="mt-1 inline-block w-fit rounded-full border px-3 py-1 text-base font-semibold backdrop-blur-md"
                     style={{ backgroundColor: `${color.to}1a`, borderColor: `${color.to}40`, color: color.to }}
                   >
-                    {levelScoreRange(level)}
+                    {levelRanges[level].min} ~ {levelRanges[level].max} 分
                   </span>
                 </div>
               );
