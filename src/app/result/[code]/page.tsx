@@ -23,7 +23,7 @@ import { DimensionBreakdown } from "@/components/result/DimensionBreakdown";
 import { DimensionNotes } from "@/components/result/DimensionNotes";
 
 const CARD_CLASS =
-  "animate-fade-up rounded-2xl bg-[#faf7ea] p-5 shadow-[0_2px_16px_rgba(21,31,30,0.08)] sm:p-6";
+  "animate-fade-up rounded-[2rem] border border-white/60 bg-white/40 p-5 shadow-[0_8px_32px_rgba(148,163,223,0.15)] backdrop-blur-xl transition-all duration-300 sm:p-6";
 
 export default function ResultPage() {
   const params = useParams<{ code: string }>();
@@ -102,9 +102,9 @@ export default function ResultPage() {
     return (
       <div className="flex min-h-screen items-center justify-center px-4">
         <div className="max-w-xl text-center">
-          <h1 className="text-2xl font-semibold text-slate-900">連結無法解析</h1>
-          <p className="mt-2 text-lg text-slate-500">這個結果連結可能已損毀，請重新填寫問卷。</p>
-          <Link href="/" className="mt-6 inline-block text-olive-700 hover:underline">
+          <h1 className="text-2xl font-semibold text-slate-700">連結無法解析</h1>
+          <p className="mt-2 text-lg text-slate-600">這個結果連結可能已損毀，請重新填寫問卷。</p>
+          <Link href="/" className="mt-6 inline-block text-sky-700 hover:underline">
             回到首頁
           </Link>
         </div>
@@ -117,7 +117,7 @@ export default function ResultPage() {
     // 避免先用預設權重算一次、等一下又用新權重跳成另一個數字。
     return (
       <div className="flex min-h-screen items-center justify-center px-4">
-        <p className="text-lg text-slate-500">結果計算中…</p>
+        <p className="text-lg text-slate-600">結果計算中…</p>
       </div>
     );
   }
@@ -166,8 +166,9 @@ export default function ResultPage() {
   return (
     <div className="min-h-screen px-4 py-8 sm:py-12">
       <div className="mx-auto max-w-4xl space-y-6">
+        {/* Hero：最終加權總分與企業成熟度等級 */}
         <div
-          className="animate-fade-up rounded-2xl px-5 py-8 text-white shadow-[0_12px_32px_-12px_var(--glow)] sm:px-8 sm:py-10"
+          className="animate-fade-up rounded-[2rem] px-5 py-10 text-center text-white shadow-[0_12px_32px_-12px_var(--glow)] sm:px-8 sm:py-12"
           style={
             {
               backgroundImage: `linear-gradient(135deg, ${color.from}, ${color.to})`,
@@ -175,57 +176,55 @@ export default function ResultPage() {
             } as React.CSSProperties
           }
         >
-          <div className="text-center">
-            <p className="text-lg font-medium text-white/80">
-              您的企業成熟度等級{isPost ? "（後測）" : "（前測）"}
-            </p>
-            <h1 className="mt-2 text-4xl font-bold break-words sm:text-5xl">{result.levelName}</h1>
-            <p className="mt-1 text-lg text-white/90">{LEVEL_DESCRIPTIONS[result.level]}</p>
-            <div className="mx-auto mt-6 max-w-xs">
-              <div className="h-2 rounded-full bg-white/20">
-                <div
-                  className="h-2 rounded-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.8)] transition-all duration-700 ease-out"
-                  style={{ width: `${Math.min(100, Math.max(0, result.weightedScore))}%` }}
-                />
-              </div>
-              <p className="mt-2 text-lg text-white/80">加權分數 {result.weightedScore.toFixed(1)} / 100</p>
-              {prevResult && totalDelta !== null && (
-                <p className="mt-1 text-base text-white/80">
-                  較前測（{prevResult.weightedScore.toFixed(1)} 分／{prevResult.levelName}）
-                  {totalDelta >= 0 ? "成長" : "下降"} {Math.abs(totalDelta).toFixed(1)} 分
-                </p>
-              )}
-            </div>
+          <span className="font-heading inline-flex h-14 w-14 items-center justify-center rounded-full bg-white/25 text-lg font-bold text-white shadow-[inset_0_2px_4px_rgba(255,255,255,0.5),inset_0_-2px_4px_rgba(0,0,0,0.1)] backdrop-blur-md">
+            Lv.{result.level}
+          </span>
+          <p className="mt-3 text-lg font-medium text-white/80">
+            您的企業成熟度等級{isPost ? "（後測）" : "（前測）"}
+          </p>
+          <div className="mt-3 flex items-baseline justify-center gap-2">
+            <span className="font-heading text-6xl font-extrabold tabular-nums sm:text-7xl">
+              {result.weightedScore.toFixed(1)}
+            </span>
+            <span className="text-xl text-white/80">/ 100 分</span>
           </div>
-
-          <div className="mt-8 border-t border-white/25 pt-6">
-            <h2 className="mb-2 text-xl font-semibold">整體評語</h2>
-            <p className="text-lg leading-relaxed text-white/90">{commentary.overall}</p>
-            <p className="mt-4 rounded-xl bg-white/15 p-4 text-lg leading-relaxed font-medium text-white">
-              {weakestNote}
-            </p>
+          <h1 className="mt-3 text-3xl font-bold break-words sm:text-4xl">{result.levelName}</h1>
+          <p className="mt-1 text-lg text-white/90">{LEVEL_DESCRIPTIONS[result.level]}</p>
+          <div className="mx-auto mt-6 max-w-xs">
+            <div className="h-3 rounded-full bg-white/20 shadow-inner">
+              <div
+                className="h-3 rounded-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.8)] transition-all duration-700 ease-out"
+                style={{ width: `${Math.min(100, Math.max(0, result.weightedScore))}%` }}
+              />
+            </div>
+            {prevResult && totalDelta !== null && (
+              <p className="mt-2 text-base text-white/80">
+                較前測（{prevResult.weightedScore.toFixed(1)} 分／{prevResult.levelName}）
+                {totalDelta >= 0 ? "成長" : "下降"} {Math.abs(totalDelta).toFixed(1)} 分
+              </p>
+            )}
           </div>
         </div>
 
         {comparison && prevResult && (
           <div className={CARD_CLASS} style={{ animationDelay: "120ms" }}>
-            <h2 className="mb-4 text-2xl font-semibold text-black">前測後測比較彙總</h2>
+            <h2 className="mb-4 text-2xl font-semibold text-slate-700">前測後測比較彙總</h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div className="rounded-xl bg-olive-900/5 p-4">
-                <p className="text-sm text-gray-500">前測加權總分／分級</p>
-                <p className="mt-1 text-xl font-bold text-olive-700">
+              <div className="rounded-[1.5rem] bg-white/50 p-4 backdrop-blur-md">
+                <p className="text-sm text-slate-500">前測加權總分／分級</p>
+                <p className="mt-1 text-xl font-bold text-sky-600">
                   {prevResult.weightedScore.toFixed(1)} 分／{LEVEL_NAMES[prevResult.level]}
                 </p>
               </div>
-              <div className="rounded-xl bg-olive-900/5 p-4">
-                <p className="text-sm text-gray-500">後測加權總分／分級</p>
-                <p className="mt-1 text-xl font-bold text-olive-700">
+              <div className="rounded-[1.5rem] bg-white/50 p-4 backdrop-blur-md">
+                <p className="text-sm text-slate-500">後測加權總分／分級</p>
+                <p className="mt-1 text-xl font-bold text-sky-600">
                   {result.weightedScore.toFixed(1)} 分／{LEVEL_NAMES[result.level]}
                 </p>
               </div>
-              <div className="rounded-xl bg-gold-50 p-4">
-                <p className="text-sm text-gray-500">最大進步構面</p>
-                <p className="mt-1 text-xl font-bold text-gold-700">
+              <div className="rounded-[1.5rem] bg-emerald-100/60 p-4 backdrop-blur-md">
+                <p className="text-sm text-slate-500">最大進步構面</p>
+                <p className="mt-1 text-xl font-bold text-emerald-700">
                   {DIMENSION_LABELS[comparison.mostImproved]}
                   <span className="ml-2 text-base font-medium">
                     {comparison.deltas[comparison.mostImproved] >= 0 ? "+" : ""}
@@ -233,9 +232,9 @@ export default function ResultPage() {
                   </span>
                 </p>
               </div>
-              <div className="rounded-xl bg-gold-50 p-4">
-                <p className="text-sm text-gray-500">仍待強化構面</p>
-                <p className="mt-1 text-xl font-bold text-gold-700">
+              <div className="rounded-[1.5rem] bg-amber-100/60 p-4 backdrop-blur-md">
+                <p className="text-sm text-slate-500">仍待強化構面</p>
+                <p className="mt-1 text-xl font-bold text-amber-700">
                   {DIMENSION_LABELS[comparison.stillWeak]}
                   <span className="ml-2 text-base font-medium">
                     現為 {result.dimensionScores[comparison.stillWeak].toFixed(1)} 分
@@ -246,11 +245,12 @@ export default function ResultPage() {
           </div>
         )}
 
+        {/* 雷達圖（左） + AI 綜合評估與建議（右） */}
         <div className={CARD_CLASS} style={{ animationDelay: "160ms" }}>
-          <div className="grid grid-cols-1 items-center gap-6 md:grid-cols-2 md:gap-8">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8">
             <div>
               <div className="mb-2 flex items-center gap-2">
-                <span className="rounded-full bg-olive-900/5 px-2 py-0.5 text-sm font-medium text-olive-700">
+                <span className="rounded-full bg-sky-100/70 px-3 py-1 text-sm font-medium text-sky-700 backdrop-blur-md">
                   {isPost ? "前測 vs 後測對照" : "前測（Baseline）"}
                 </span>
               </div>
@@ -260,40 +260,45 @@ export default function ResultPage() {
                 containerRef={chartContainerRef}
               />
               {!isPost && (
-                <p className="mt-1 text-sm text-gray-500">
+                <p className="mt-1 text-sm text-slate-500">
                   本圖為本次測驗的前測數據；未來完成輔導後，於首頁選擇「開始後測」並上傳這份前測 Word
                   報告，即可疊加後測分數比較前後差異。
                 </p>
               )}
             </div>
             <div>
-              <h2 className="mb-4 text-2xl font-semibold text-black">五大構面數據</h2>
-              <DimensionBreakdown
-                scores={result.dimensionScores}
-                prevScores={prevResult?.dimensionScores}
-                weights={config.dimensionWeights}
-              />
-              <p className="mt-4 text-sm text-gray-500">各構面權重：{weightSummary}。</p>
+              <h2 className="mb-4 text-2xl font-semibold text-slate-700">AI 綜合評估與建議</h2>
+              <p className="text-lg leading-relaxed text-slate-600">{commentary.overall}</p>
+              <p className="mt-4 rounded-[1.5rem] bg-sky-100/60 p-4 text-lg leading-relaxed font-medium text-sky-800 backdrop-blur-md">
+                {weakestNote}
+              </p>
+              <p className="mt-4 text-lg leading-relaxed text-slate-600">{commentary.strategyAdvice}</p>
+              <p className="mt-4 rounded-[1.5rem] border border-rose-200 bg-rose-100/60 p-4 text-lg leading-relaxed font-medium text-rose-700 backdrop-blur-md">
+                下一步：請依據上述弱項構面，聯繫窗口安排後續一對一輔導，共同擬定包含具體任務、負責人與期限的改善行動計畫。
+              </p>
             </div>
           </div>
         </div>
 
+        {/* 五大構面明細（橫向長條圖） */}
         <div className={CARD_CLASS} style={{ animationDelay: "240ms" }}>
-          <h2 className="mb-4 text-2xl font-semibold text-black">五大構面說明</h2>
-          <DimensionNotes notes={DIMENSION_DESCRIPTIONS} />
+          <h2 className="mb-4 text-2xl font-semibold text-slate-700">五大構面數據</h2>
+          <DimensionBreakdown
+            scores={result.dimensionScores}
+            prevScores={prevResult?.dimensionScores}
+            weights={config.dimensionWeights}
+          />
+          <p className="mt-4 text-sm text-slate-500">各構面權重：{weightSummary}。</p>
         </div>
 
         <div className={CARD_CLASS} style={{ animationDelay: "320ms" }}>
-          <h2 className="mb-3 text-2xl font-semibold text-black">建議行動</h2>
-          <p className="text-lg leading-relaxed text-gray-600">{commentary.strategyAdvice}</p>
-          <p className="mt-4 rounded-xl border border-gold-500 bg-gold-50 p-4 text-lg leading-relaxed font-medium text-olive-900">
-            下一步：請依據上述弱項構面，聯繫窗口安排後續一對一輔導，共同擬定包含具體任務、負責人與期限的改善行動計畫。
-          </p>
+          <h2 className="mb-4 text-2xl font-semibold text-slate-700">五大構面說明</h2>
+          <DimensionNotes notes={DIMENSION_DESCRIPTIONS} />
         </div>
 
         {emailStatus !== "idle" && emailStatus !== "skipped" && (
           <p
-            className="animate-fade-up text-center text-sm text-gray-500"
+            className="animate-fade-up text-center text-sm text-slate-500"
             style={{ animationDelay: "380ms" }}
           >
             {emailStatus === "sending" && "報告寄送中…"}
@@ -310,14 +315,14 @@ export default function ResultPage() {
             type="button"
             onClick={handleDownload}
             disabled={downloading}
-            className="w-full rounded-full border border-gold-500 px-8 py-3 text-center font-medium text-gold-700 transition-all hover:scale-[1.03] hover:bg-gold-50 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+            className="w-full rounded-full bg-gradient-to-br from-rose-300 to-rose-400 px-8 py-3 text-center font-semibold text-slate-700 shadow-[0_8px_20px_rgba(244,114,182,0.35),inset_0_2px_3px_rgba(255,255,255,0.7)] transition-all duration-300 hover:-translate-y-1 hover:scale-105 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
           >
-            {downloading ? "產生中…" : "下載 Word 報告"}
+            {downloading ? "產生中…" : "匯出診斷報告（Word）"}
           </button>
           <Link
             href="/"
             onClick={clearStoredQuizState}
-            className="w-full rounded-full bg-gradient-to-r from-olive-500 to-olive-900 px-8 py-3 text-center font-medium text-white shadow-[0_8px_30px_rgba(61,78,23,0.35)] transition-all hover:scale-[1.03] hover:shadow-[0_8px_40px_rgba(61,78,23,0.5)] active:scale-[0.97] sm:w-auto"
+            className="w-full rounded-full border-2 border-white/40 bg-white/50 px-8 py-3 text-center font-medium text-slate-600 shadow-[0_4px_10px_rgba(148,163,223,0.15)] backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:scale-105 hover:bg-white/70 active:scale-95 sm:w-auto"
           >
             回到首頁
           </Link>

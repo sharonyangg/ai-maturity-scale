@@ -52,10 +52,10 @@ export const LEVEL_DESCRIPTIONS: Record<Level, string> = {
 };
 
 export const LEVEL_COLORS: Record<Level, { from: string; to: string; glow: string }> = {
-  1: { from: "#f87171", to: "#b91c1c", glow: "rgba(185,28,28,0.4)" }, // red-400 → red-700，萌芽期
-  2: { from: "#fb923c", to: "#c2410c", glow: "rgba(194,65,12,0.4)" }, // orange-400 → orange-700，發展期
-  3: { from: "#22d3ee", to: "#0e7490", glow: "rgba(14,116,144,0.4)" }, // cyan-400 → cyan-700，成長期
-  4: { from: "#10b981", to: "#047857", glow: "rgba(4,120,87,0.45)" }, // emerald-500 → 700，成熟期
+  1: { from: "#fda4af", to: "#fb7185", glow: "rgba(251,113,133,0.4)" }, // rose-300 → rose-400，萌芽期
+  2: { from: "#fdba74", to: "#fb923c", glow: "rgba(251,146,60,0.4)" }, // orange-300 → orange-400，發展期
+  3: { from: "#7dd3fc", to: "#38bdf8", glow: "rgba(56,189,248,0.4)" }, // sky-300 → sky-400，成長期
+  4: { from: "#5eead4", to: "#2dd4bf", glow: "rgba(45,212,191,0.45)" }, // teal-300 → teal-400，成熟期
 };
 
 /** 加權總分（0～100 分）分級門檻：0~19／20~44／45~56／57~100 */

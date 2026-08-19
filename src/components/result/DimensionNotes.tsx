@@ -6,8 +6,8 @@ export function DimensionNotes({ notes }: { notes: Record<DimensionKey, string> 
     <div className="space-y-4">
       {DIMENSION_ORDER.map((dim) => (
         <div key={dim}>
-          <p className="mb-1 text-xl font-semibold text-black">{DIMENSION_LABELS[dim]}</p>
-          <p className="text-lg leading-relaxed text-gray-600">{notes[dim]}</p>
+          <p className="mb-1 text-xl font-semibold text-slate-700">{DIMENSION_LABELS[dim]}</p>
+          <p className="text-lg leading-relaxed text-slate-600">{notes[dim]}</p>
         </div>
       ))}
     </div>

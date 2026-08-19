@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { CompanyInfoForm } from "@/components/quiz/CompanyInfoForm";
 import { PretestUploadForm } from "@/components/quiz/PretestUploadForm";
@@ -75,7 +76,7 @@ export default function QuizStepPage() {
 
       {dimensionPage && (
         <div className="space-y-6">
-          <h2 className="text-center text-2xl font-bold text-slate-900">
+          <h2 className="text-center text-2xl font-bold text-slate-700">
             {dimensionPage.sectionTitle}
           </h2>
           <div className="space-y-6">
@@ -103,18 +104,26 @@ export default function QuizStepPage() {
       )}
 
       <div className="flex justify-between pt-4">
-        <button
-          type="button"
-          onClick={goPrev}
-          disabled={step === 0}
-          className="rounded-lg px-4 py-2 text-slate-500 transition-colors hover:text-slate-900 disabled:opacity-0"
-        >
-          上一步
-        </button>
+        {step === 0 ? (
+          <Link
+            href="/"
+            className="rounded-full border-2 border-white/40 bg-white/50 px-6 py-2.5 font-medium text-slate-600 shadow-[0_4px_10px_rgba(148,163,223,0.15)] backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:scale-105 hover:bg-white/70 active:scale-95"
+          >
+            回到首頁
+          </Link>
+        ) : (
+          <button
+            type="button"
+            onClick={goPrev}
+            className="rounded-lg px-4 py-2 text-slate-500 transition-all duration-300 hover:-translate-y-0.5 hover:text-slate-700"
+          >
+            上一步
+          </button>
+        )}
         <button
           type="button"
           onClick={goNext}
-          className="rounded-full bg-gradient-to-r from-olive-500 to-olive-900 px-8 py-2.5 font-medium text-white shadow-[0_4px_20px_rgba(61,78,23,0.35)] transition-all hover:scale-[1.03] hover:shadow-[0_4px_28px_rgba(61,78,23,0.5)] active:scale-[0.97]"
+          className="rounded-full bg-gradient-to-br from-sky-300 to-sky-400 px-8 py-2.5 font-semibold text-slate-700 shadow-[0_8px_20px_rgba(56,189,248,0.35),inset_0_2px_3px_rgba(255,255,255,0.7)] transition-all duration-300 hover:-translate-y-1 hover:scale-105 active:scale-95"
         >
           {step === lastStep ? "確認送出" : "下一步"}
         </button>

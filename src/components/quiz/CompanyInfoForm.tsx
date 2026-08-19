@@ -3,17 +3,18 @@
 import { CITY_OPTIONS, EMPLOYEE_SCALE_OPTIONS, useQuizStore } from "@/lib/quiz-store";
 import { validateCompanyInfo } from "@/lib/validation";
 
-const CARD_CLASS = "rounded-2xl bg-[#faf7ea] p-5 shadow-[0_2px_16px_rgba(21,31,30,0.08)] sm:p-6";
+const CARD_CLASS =
+  "rounded-[2rem] border border-white/60 bg-white/40 p-5 shadow-[0_8px_32px_rgba(148,163,223,0.15)] backdrop-blur-xl transition-all duration-300 sm:p-6";
 const BASE_INPUT_CLASS =
-  "w-full rounded-lg border px-3 py-2 text-base text-black focus:outline-none focus:ring-2";
-const labelClass = "mb-3 block text-lg font-semibold text-black";
-const ERROR_TEXT_CLASS = "mt-1.5 text-sm font-medium text-red-600";
+  "w-full rounded-full border-2 bg-white/60 px-5 py-2.5 text-base text-slate-700 backdrop-blur-md transition-all duration-300 focus:outline-none focus:ring-2";
+const labelClass = "mb-3 block text-lg font-semibold text-slate-700";
+const ERROR_TEXT_CLASS = "mt-1.5 text-sm font-medium text-rose-500";
 
 function inputClass(hasError: boolean): string {
   return `${BASE_INPUT_CLASS} ${
     hasError
-      ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
-      : "border-gray-300 focus:border-gold-500 focus:ring-gold-500/25"
+      ? "border-rose-300 focus:border-rose-400 focus:ring-rose-300/30"
+      : "border-white/40 focus:border-sky-300 focus:ring-sky-300/30"
   }`;
 }
 
@@ -24,8 +25,8 @@ export function CompanyInfoForm({ showErrors = false }: { showErrors?: boolean }
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-slate-900">公司個人資料</h2>
-        <p className="mt-1 text-base text-slate-500">
+        <h2 className="text-2xl font-bold text-slate-700">公司個人資料</h2>
+        <p className="mt-1 text-base leading-relaxed text-slate-600">
           此頁不影響計分結果，僅供產出報告時顯示公司資訊。
         </p>
       </div>

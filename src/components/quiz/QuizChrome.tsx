@@ -17,9 +17,9 @@ export function QuizChrome({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen">
       <div className="mx-auto max-w-4xl px-4 pt-6 sm:pt-8">
-        <div className="h-1.5 w-full rounded-full bg-slate-200">
+        <div className="h-4 w-full rounded-full border border-white/60 bg-white/50 shadow-inner backdrop-blur-md">
           <div
-            className="h-1.5 rounded-full bg-gold-500 transition-all duration-500 ease-out"
+            className="h-4 rounded-full bg-gradient-to-r from-rose-300 via-sky-300 to-violet-300 shadow-[inset_0_2px_3px_rgba(255,255,255,0.7),inset_0_-2px_3px_rgba(0,0,0,0.06)] transition-all duration-500 ease-out"
             style={{ width: `${progress}%` }}
           />
         </div>

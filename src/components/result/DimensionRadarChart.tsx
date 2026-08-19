@@ -30,8 +30,8 @@ function ChartTooltip({ active, payload }: { active?: boolean; payload?: Tooltip
   if (!active || !payload?.length) return null;
   const dimension = payload[0].payload.dimension;
   return (
-    <div className="rounded-lg bg-white px-3 py-2 text-lg shadow-[0_4px_16px_rgba(15,23,42,0.15)]">
-      <span className="font-medium text-black">{dimension}</span>
+    <div className="rounded-[1.25rem] border border-white/60 bg-white/80 px-3 py-2 text-lg shadow-[0_8px_24px_rgba(148,163,223,0.2)] backdrop-blur-md">
+      <span className="font-medium text-slate-700">{dimension}</span>
       {payload.map((entry) => (
         <div key={entry.name} className="flex items-center justify-between gap-4">
           <span className="text-base" style={{ color: entry.color }}>
@@ -57,24 +57,24 @@ export function DimensionRadarChart({ scores, prevScores, containerRef }: Dimens
     <div ref={containerRef} className="h-80 w-full sm:h-[26rem]">
       <ResponsiveContainer width="100%" height="100%">
         <RadarChart data={data} outerRadius="58%">
-          <PolarGrid stroke="#ddd6b8" />
+          <PolarGrid stroke="#e9d5ff" />
           <PolarAngleAxis
             dataKey="dimension"
-            tick={{ fontSize: 18, fontWeight: 600, fill: "#1f2937" }}
+            tick={{ fontSize: 18, fontWeight: 600, fill: "#475569" }}
           />
           <PolarRadiusAxis angle={90} domain={[0, 100]} tick={false} axisLine={false} />
           <Tooltip content={<ChartTooltip />} />
-          <Legend height={32} wrapperStyle={{ fontSize: 14, color: "#3d4e17" }} />
+          <Legend height={32} wrapperStyle={{ fontSize: 14, color: "#0284c7" }} />
           {prevScores && (
             <Radar
               name="前測（Baseline）"
               dataKey="prev"
-              stroke="#9ca3af"
+              stroke="#c4b5fd"
               strokeWidth={2}
               strokeDasharray="4 3"
-              fill="#9ca3af"
-              fillOpacity={0.15}
-              dot={{ r: 3, fill: "#9ca3af", stroke: "#ffffff", strokeWidth: 1.5 }}
+              fill="#c4b5fd"
+              fillOpacity={0.2}
+              dot={{ r: 3, fill: "#c4b5fd", stroke: "#ffffff", strokeWidth: 1.5 }}
               animationDuration={900}
               animationEasing="ease-out"
             />
@@ -82,11 +82,11 @@ export function DimensionRadarChart({ scores, prevScores, containerRef }: Dimens
           <Radar
             name={prevScores ? "後測（Post-test）" : "前測（Baseline）"}
             dataKey="current"
-            stroke="#3d4e17"
+            stroke="#38bdf8"
             strokeWidth={2.5}
-            fill="#c7a003"
-            fillOpacity={0.35}
-            dot={{ r: 4, fill: "#3d4e17", stroke: "#ffffff", strokeWidth: 2 }}
+            fill="#7dd3fc"
+            fillOpacity={0.45}
+            dot={{ r: 4, fill: "#0ea5e9", stroke: "#ffffff", strokeWidth: 2 }}
             animationDuration={900}
             animationEasing="ease-out"
           />
