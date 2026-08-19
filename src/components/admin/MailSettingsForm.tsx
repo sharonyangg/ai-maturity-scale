@@ -32,6 +32,7 @@ export function MailSettingsForm() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [showPasswordHelp, setShowPasswordHelp] = useState(false);
+  const [showHostHelp, setShowHostHelp] = useState(false);
 
   const load = () => {
     fetch("/api/admin/mail-settings", { cache: "no-store" })
@@ -112,27 +113,80 @@ export function MailSettingsForm() {
       </p>
 
       <div className="space-y-4">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-[1fr_auto]">
-          <label className="block">
-            <span className="mb-1 block text-sm font-medium text-slate-500">主機（SMTP Host）</span>
-            <input
-              type="text"
-              value={view.smtpHost}
-              onChange={(e) => set("smtpHost", e.target.value)}
-              placeholder="例如 smtp.gmail.com、smtp.office365.com"
-              className={INPUT_CLASS}
-            />
-          </label>
+        <div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-[1fr_auto]">
+            <label className="block">
+              <span className="mb-1 flex flex-wrap items-center justify-between gap-x-1.5 gap-y-0.5 text-sm font-medium text-slate-500">
+                <span>主機（SMTP Host）</span>
+                <button
+                  type="button"
+                  onClick={() => setShowHostHelp((prev) => !prev)}
+                  className="text-sky-600 underline decoration-sky-300 decoration-2 underline-offset-2 transition-colors duration-300 hover:text-sky-700"
+                >
+                  {showHostHelp ? "收起說明" : "常見的信箱主機？"}
+                </button>
+              </span>
+              <input
+                type="text"
+                value={view.smtpHost}
+                onChange={(e) => set("smtpHost", e.target.value)}
+                placeholder="例如 smtp.gmail.com、smtp.office365.com"
+                className={INPUT_CLASS}
+              />
+            </label>
 
-          <label className="block">
-            <span className="mb-1 block text-sm font-medium text-slate-500">連接埠</span>
-            <input
-              type="number"
-              value={view.smtpPort}
-              onChange={(e) => set("smtpPort", Number(e.target.value))}
-              className={`${INPUT_CLASS} sm:w-28`}
-            />
-          </label>
+            <label className="block">
+              <span className="mb-1 block text-sm font-medium text-slate-500">連接埠</span>
+              <input
+                type="number"
+                value={view.smtpPort}
+                onChange={(e) => set("smtpPort", Number(e.target.value))}
+                className={`${INPUT_CLASS} sm:w-28`}
+              />
+            </label>
+          </div>
+
+          {showHostHelp && (
+            <div className="mt-2 space-y-3 rounded-2xl border border-white/60 bg-white/60 p-4 text-sm leading-relaxed text-slate-600 backdrop-blur-md">
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[420px] border-collapse text-left">
+                  <thead>
+                    <tr className="border-b border-slate-300/60 text-slate-500">
+                      <th className="py-1 pr-3 font-semibold">服務商</th>
+                      <th className="py-1 pr-3 font-semibold">主機</th>
+                      <th className="py-1 font-semibold">連接埠</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="border-b border-slate-200/60">
+                      <td className="py-1 pr-3">Gmail</td>
+                      <td className="py-1 pr-3 font-mono">smtp.gmail.com</td>
+                      <td className="py-1 font-mono">587</td>
+                    </tr>
+                    <tr className="border-b border-slate-200/60">
+                      <td className="py-1 pr-3">Office365／Outlook（企業信箱）</td>
+                      <td className="py-1 pr-3 font-mono">smtp.office365.com</td>
+                      <td className="py-1 font-mono">587</td>
+                    </tr>
+                    <tr className="border-b border-slate-200/60">
+                      <td className="py-1 pr-3">Yahoo Mail</td>
+                      <td className="py-1 pr-3 font-mono">smtp.mail.yahoo.com</td>
+                      <td className="py-1 font-mono">587</td>
+                    </tr>
+                    <tr>
+                      <td className="py-1 pr-3">iCloud Mail</td>
+                      <td className="py-1 pr-3 font-mono">smtp.mail.me.com</td>
+                      <td className="py-1 font-mono">587</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <p>
+                連接埠 587 是目前最通用的加密方式，幾乎所有服務商都支援，沒有特殊需求就用
+                587。
+              </p>
+            </div>
+          )}
         </div>
 
         <label className="block">
