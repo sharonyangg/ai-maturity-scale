@@ -58,10 +58,10 @@ export default function QuizStepPage() {
     if (step === lastStep) {
       if (isPost && prevAnswers) {
         const code = encodePostResult({ answers, prevAnswers });
-        router.push(`/result/${code}?mode=post`);
+        router.push(`/submitted/${code}?mode=post`);
       } else {
         const code = encodeAnswers(answers);
-        router.push(`/result/${code}`);
+        router.push(`/submitted/${code}`);
       }
       return;
     }
